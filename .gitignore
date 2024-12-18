@@ -1,0 +1,5 @@
+bin/
+**/.Trashes
+**/.DS_Store
+**/desktop.ini
+.vscode
