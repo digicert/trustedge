@@ -22,7 +22,7 @@ The demo files are packaged in [here](https://github.com/digicert/trustedge/tree
 ## Installation Guide
 
 ### Step 1: Download TrustEdge Binary
-Download the latest version of TrustEdge binary from the [TrustEdge GitHub Repository](https://github.com/digicert/trustedge).
+Download the latest version of TrustEdge binary from the [TrustEdge GitHub Repository](https://github.com/digicert/trustedge/releases/tag/trustedge_24.7.2-2187).
 
 Example (ARM64):
 ```bash
