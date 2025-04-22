@@ -35,7 +35,7 @@ Ensure you use TrustEdge v24.7.2 Build 2187 or above:
 2. Install the binary downloaded in Step 1.
 
 ### Step 3: Generate ML-DSA Certificates
-Follow the instructions in the appendix to generate self-signed ML-DSA certificates.
+Follow the instructions to generate self-signed ML-DSA certificates. CSR content samples are [given below](#notes)
 
 ```bash
 suod trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651 
@@ -123,4 +123,6 @@ Publishes payloads to topic `pqc/secure/channel`:
   ```
 
 For additional details, refer to the appendix or visit [TrustEdge Documentation](https://dev.digicert.com/en/trustedge.html).
+
+
 
