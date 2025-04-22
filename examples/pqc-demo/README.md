@@ -1,5 +1,6 @@
 ```markdown
 # Post-Quantum Cryptography (PQC) Demo Using TrustEdge and Mosquitto MQTT Broker
+```
 
 ## Overview
 This demo showcases the integration of Post-Quantum Cryptography (PQC) in action. It demonstrates a TLS 1.3 session between the TrustEdge MQTT client and the open-source Mosquitto MQTT broker. The MQTT session is secured using ML-DSA certificates (issued by Device Trust Manager) and employs ML-KEM for key exchange during the TLS 1.3 session.
@@ -9,12 +10,12 @@ This demo showcases the integration of Post-Quantum Cryptography (PQC) in action
 ---
 
 ## Linux Package File Structure
-The demo files are packaged in `(https://github.com/digicert/trustedge/tree/master/examples/pqc-demo)`, which includes all necessary components for running the PQC demo. Both x86_64 and ARM64 binaries are provided.
+The demo files are packaged in [here](https://github.com/digicert/trustedge/tree/master/examples/pqc-demo), which includes all necessary components for running the PQC demo. Both x86_64 and ARM64 binaries are provided.
 
 ### Key Files
-- **start_broker.sh**: Discovers the platform using `uname -m` and launches appropriate Mosquitto & OpenSSL binaries.
-- [**trustedge TLS stack**](https://github.com/digicert/trustedge/releases/tag/trustedge_24.7.2-2187): Generate ML-DSA Certificates and Negotiate PQC exclusively.
-- **Keystore Directory**: Contains certificates and keys required for authentication.
+- [start_broker.sh](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/start_broker.sh): Discovers the platform using `uname -m` and starts ML-DSA Certificates Compliant MQTT BROKER.
+- [TrustEdge TLS stack](https://github.com/digicert/trustedge/releases/tag/trustedge_24.7.2-2187): Generate ML-DSA Certificates and Negotiate PQC exclusively.
+- [TrustEdge Keystore Directory](https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html): Generates certificates and keys required for authentication.
 
 ---
 
