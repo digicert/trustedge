@@ -9,7 +9,7 @@ This demo showcases the integration of Post-Quantum Cryptography (PQC) in action
 
 ---
 
-## Linux Package File Structure
+## Ubuntu Package File Structure
 The demo files are packaged in [here](https://github.com/digicert/trustedge/tree/master/examples/pqc-demo), which includes all necessary components for running the PQC demo. Both x86_64 and ARM64 binaries are provided.
 
 ### Key Files
@@ -37,7 +37,7 @@ Ensure you use TrustEdge v24.7.2 Build 2187 or above:
 > **Note:** Generation of ML-DSA certificate using TrustEdge and copying it to Broker in next Steps 3 to 5 are automated in [certGeneration.sh](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/keyCert.sh). Skip to Step 6 if you choose to run the script.
 
 ### Step 3: Generate ML-DSA Certificates
-Follow the instructions to generate self-signed ML-DSA certificates. CSR content samples are [given below](#notes)
+Follow the instructions to generate self-signed ML-DSA certificates. CSR content samples are [given below](#notes). The CSR files in the following commands `ca_csr.cnf` and `server_csr.cnf` should be stored at '/etc/digicert/keystore/conf/'
 
 ```bash
 suod trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651 
