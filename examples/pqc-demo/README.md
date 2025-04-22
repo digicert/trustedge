@@ -42,7 +42,7 @@ suod trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -
 sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt
 ```
 
-### Step 4: Update Certificate Store
+### Step 4: Update MQTT Broker Certificate Store
 Copy the newly generated ML-DSA certificates to the MQTT Broker certificate store using:
 ```bash
 sudo cp /etc/digicert/keystore/keys/server.key ./keystore/server.key
@@ -63,7 +63,7 @@ trustedge certificate -pc keystore/server.crt
 ### MQTT Broker (Mosquitto)
 - **Binds**: `0.0.0.0`
 - **Port**: `8883 (MQTTS)`
-- **Server Name**: `mosquitto-service-01`
+- **Server Name**: `mqtt-pqc-broker`
 
 Start Broker:
 ```bash
@@ -73,13 +73,13 @@ Start Broker:
 ### MQTT Subscriber (TrustEdge)
 Listens to topic `pqc/secure/channel`:
 ```bash
-./consumer.sh --broker mosquitto-service-01 --port 8883 --ca-cert ./keystore/CA.crt
+./consumer.sh --broker mqtt-pqc-broker --port 8883 --ca-cert ./keystore/CA.crt
 ```
 
 ### MQTT Publisher (TrustEdge)
 Publishes payloads to topic `pqc/secure/channel`:
 ```bash
-./publisher.sh --broker mosquitto-service-01 --port 8883 --ca-cert ./keystore/CA.crt
+./publisher.sh --broker mqtt-pqc-broker --port 8883 --ca-cert ./keystore/CA.crt
 ```
 
 ---
@@ -119,7 +119,7 @@ Publishes payloads to topic `pqc/secure/channel`:
   certPathLen=-1
   keyUsage=keyEncipherment, digitalSignature, keyCertSign
   ##subjectAltNames=numSANs; value1, type1; valueN, typeN
-  subjectAltNames=1; mosquitto-service-01, 2
+  subjectAltNames=1; mqtt-pqc-broker, 2
   ```
 
 For additional details, refer to the appendix or visit [TrustEdge Documentation](https://dev.digicert.com/en/trustedge.html).
