@@ -32,7 +32,9 @@ wget https://github.com/digicert/trustedge/releases/download/trustedge_24.7.2-21
 ### Step 2: Update TrustEdge Binary
 Ensure you use TrustEdge v24.7.2 Build 2187 or above:
 1. Uninstall the old version.
-2. Install the binary downloaded in Step 1.
+2. Install the binary downloaded in [Step 1](#installation-guide).
+
+> **Note:** Generation of ML-DSA certificate using TrustEdge and copying it to Broker in next Steps 3 to 5 are automated in [certGeneration.sh](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/keyCert.sh). Skip to Step 6 if you choose to run the script.
 
 ### Step 3: Generate ML-DSA Certificates
 Follow the instructions to generate self-signed ML-DSA certificates. CSR content samples are [given below](#notes)
@@ -60,7 +62,7 @@ trustedge certificate -pc keystore/server.crt
 
 ## Configuration Details
 
-### MQTT Broker (Mosquitto)
+### MQTT Broker
 - **Binds**: `0.0.0.0`
 - **Port**: `8883 (MQTTS)`
 - **Server Name**: `mqtt-pqc-broker`
