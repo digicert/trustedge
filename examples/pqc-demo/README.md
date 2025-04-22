@@ -1,5 +1,5 @@
 ```markdown
-# Post-Quantum Cryptography (PQC) Demo Using TrustEdge and Mosquitto MQTT Broker
+# Post-Quantum Cryptography (PQC) Demo Using TrustEdge and MQTT Broker secured by ML-DSA certificates 
 ```
 
 ## Overview
@@ -87,6 +87,40 @@ Publishes payloads to topic `pqc/secure/channel`:
 ## Notes
 - ML-DSA certificates are significantly larger than RSA/ECC certificates due to their larger signature sizes.
 - TLS clients and servers must adhere to TLS 1.3 for PQC compatibility.
+- Sample CA CSR to be stored `/etc/digicert/keystore/conf/ca_csr.cnf`
+  ```bash
+  ##Subject
+  countryName=US
+  commonName=DigiCert Broker
+  stateOrProvinceName=California
+  localityName=Sunnyvale
+  organizationName=PM
+  organizationalUnitName=BU
+  ##Requested Extensions
+  hasBasicConstraints=true
+  isCA=true
+  certPathLen=-1
+  keyUsage=keyEncipherment, digitalSignature, keyCertSign
+  ##subjectAltNames=numSANs; value1, type1; valueN, typeN
+  subjectAltNames=1; broker.root.ca, 2
+  ```
+- Sample Server CSR to be stored `/etc/digicert/keystore/conf/server_csr.cnf`
+  ```bash
+  ##Subject
+  countryName=US
+  commonName=DigiCert Server
+  stateOrProvinceName=California
+  localityName=Sunnyvale
+  organizationName=PM
+  organizationalUnitName=BU
+  ##Requested Extensions
+  hasBasicConstraints=true
+  isCA=false
+  certPathLen=-1
+  keyUsage=keyEncipherment, digitalSignature, keyCertSign
+  ##subjectAltNames=numSANs; value1, type1; valueN, typeN
+  subjectAltNames=1; mosquitto-service-01, 2
+  ```
 
 For additional details, refer to the appendix or visit [TrustEdge Documentation](https://dev.digicert.com/en/trustedge.html).
 
