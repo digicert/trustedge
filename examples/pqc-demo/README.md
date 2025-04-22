@@ -9,11 +9,11 @@ This demo showcases the integration of Post-Quantum Cryptography (PQC) in action
 ---
 
 ## Linux Package File Structure
-The demo files are packaged in `demo-pqc.tar.gz`, which includes all necessary components for running the PQC demo. Both x86_64 and ARM64 binaries are provided.
+The demo files are packaged in `(https://github.com/digicert/trustedge/tree/master/examples/pqc-demo)`, which includes all necessary components for running the PQC demo. Both x86_64 and ARM64 binaries are provided.
 
 ### Key Files
 - **start_broker.sh**: Discovers the platform using `uname -m` and launches appropriate Mosquitto & OpenSSL binaries.
-- **trustedge TLS stack**: Pre-configured to negotiate PQC exclusively.
+- [**trustedge TLS stack**](https://github.com/digicert/trustedge/releases/tag/trustedge_24.7.2-2187): Generate ML-DSA Certificates and Negotiate PQC exclusively.
 - **Keystore Directory**: Contains certificates and keys required for authentication.
 
 ---
