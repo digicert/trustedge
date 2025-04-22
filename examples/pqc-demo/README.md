@@ -14,8 +14,8 @@ The demo files are packaged in [here](https://github.com/digicert/trustedge/tree
 
 ### Key Files
 - [start_broker.sh](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/start_broker.sh): Discovers the platform using `uname -m` and starts ML-DSA Certificates Compliant MQTT BROKER.
-- [TrustEdge TLS stack](https://github.com/digicert/trustedge/releases/tag/trustedge_24.7.2-2187): Generate ML-DSA Certificates and Negotiate PQC exclusively.
-- [TrustEdge Keystore Directory](https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html): Generates certificates and keys required for authentication.
+- [TrustEdge PQC Capable Binary](https://github.com/digicert/trustedge/releases/tag/trustedge_24.7.2-2187): Generate ML-DSA Certificates and Negotiate PQC exclusively.
+- [TrustEdge Keystore Directory](https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html): Generates certificates and keys required for authentication. Using Default Keystore for the Demo at `/etc/digicert/keystore`
 
 ---
 
