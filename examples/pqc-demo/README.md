@@ -9,7 +9,8 @@ This demo showcases the integration of Post-Quantum Cryptography (PQC) in action
 ## Architecture
 
 ```markdown
-![Setup Architecture is as follows](assets/MQTTS-PQC-1738287869933.jpg)
+![Setup Architecture is as follows](https://github.com/digicert/trustedge/raw/master/examples/pqc-demo/assets/MQTTS-PQC-1738287869933.jpg)
+
 ```
 
 ## Ubuntu Package File Structure
