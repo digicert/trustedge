@@ -1,19 +1,16 @@
 ```markdown
-# Post-Quantum Cryptography (PQC) Demo Using TrustEdge and MQTT Broker secured by ML-DSA certificates 
+## Post-Quantum Cryptography (PQC) Demo Using TrustEdge and MQTT Broker secured by ML-DSA certificates 
 ```
-```markdown
-![Setup Architecture is as follows:](examples/pqc-demo/assets/MQTTS-PQC-1738287869933.jpg)
-```
-
-
-
-
 ## Overview
 This demo showcases the integration of Post-Quantum Cryptography (PQC) in action. It demonstrates a TLS 1.3 session between the TrustEdge MQTT client and the open-source Mosquitto MQTT broker. The MQTT session is secured using ML-DSA certificates (issued by Device Trust Manager) and employs ML-KEM for key exchange during the TLS 1.3 session.
 
 > **Note:** PQC is only supported in TLS 1.3 as per IETF. TLS 1.2 is feature-frozen, making it essential for all TLS clients and servers to upgrade to TLS 1.3.
 
----
+## Architecture
+
+```markdown
+![Setup Architecture is as follows:](examples/pqc-demo/assets/MQTTS-PQC-1738287869933.jpg)
+```
 
 ## Ubuntu Package File Structure
 The demo files are packaged in [here](https://github.com/digicert/trustedge/tree/master/examples/pqc-demo), which includes all necessary components for running the PQC demo. Both x86_64 and ARM64 binaries are provided.
