@@ -1,0 +1,14 @@
+##Subject
+countryName=US
+commonName=DigiCert Server
+stateOrProvinceName=California
+localityName=Sunnyvale
+organizationName=PM
+organizationalUnitName=BU
+##Requested Extensions
+hasBasicConstraints=true
+isCA=false
+certPathLen=-1
+keyUsage=keyEncipherment, digitalSignature, keyCertSign
+##subjectAltNames=numSANs; value1, type1; valueN, typeN
+subjectAltNames=1; mqtt-pqc-broker, 2

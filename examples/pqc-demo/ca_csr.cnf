@@ -1,0 +1,14 @@
+##Subject
+countryName=US
+commonName=DigiCert Broker
+stateOrProvinceName=California
+localityName=Sunnyvale
+organizationName=PM
+organizationalUnitName=BU
+##Requested Extensions
+hasBasicConstraints=true
+isCA=true
+certPathLen=-1
+keyUsage=keyEncipherment, digitalSignature, keyCertSign
+##subjectAltNames=numSANs; value1, type1; valueN, typeN
+subjectAltNames=1; broker.root.ca, 2
