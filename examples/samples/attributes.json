@@ -1,0 +1,31 @@
+{
+    "attributes": [
+        {
+            "attribute_name": "...",
+            "attribute_value": {
+                "type": "ENV",
+                "variable_name": "${env_variable_name}"
+            }
+        },
+        {
+            "attribute_name": "...",
+            "attribute_value": {
+                "type": "program",
+                "path": "${program_path}",
+                "argument": "...."
+            }
+        },
+        {
+            "attribute_names": [
+                "...",
+                "..."
+            ],
+            "attribute_value": {
+                "type": "program",
+                "path": "${program_path}",
+                "output_format": "TOML|JSON",
+                "argument": "...."
+            }
+        }
+    ]
+}
