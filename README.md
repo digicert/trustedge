@@ -45,11 +45,11 @@ This project is available under a **dual-license model**:
   This license allows you to use, modify, and distribute the code for free in accordance with AGPL terms.
 
 - **Commercial License:**  
-If you wish to use TrustCore SDK in a **proprietary** or **commercial** product (e.g., embedded in closed-source firmware or commercial SaaS applications), a commercial license is available under DigiCert’s [Master Services Agreement](https://www.digicert.com/master-services-agreement/) (MSA).  Contact us at [sales@digicert.com](mailto:sales@digicert.com) for commercial licensing details.
+If you wish to use TrustEdge in a **proprietary** or **commercial** product (e.g., embedded in closed-source firmware or commercial SaaS applications), a commercial license is available under DigiCert’s [Master Services Agreement](https://www.digicert.com/master-services-agreement/) (MSA).  Contact us at [sales@digicert.com](mailto:sales@digicert.com) for commercial licensing details.
 
 ## Contributing
 
-We welcome contributions that improve TrustCore SDK! Please follow these steps:
+We welcome contributions that improve TrustEdge! Please follow these steps:
 
 1. Fork the repository
 2. Create a feature branch
