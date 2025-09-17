@@ -1,177 +1,672 @@
-> **Disclaimer:** Your use of these services, products, and software is limited to non-commercial use cases only, which includes usage for evaluation purposes prior to purchase. Commercial usage in a production environment requires the purchase of an associated entitlement.
-
-# MASTER SERVICES AGREEMENT
-
-Thank you for your interest in the products and services of DigiCert. This Master Services Agreement, together with any appendices, addenda, Order Forms, schedules, and other terms referenced herein (collectively, the "**Agreement**"), is between you and the applicable DigiCert Contracting Party defined in Section 1 ("**DigiCert**") and governs your use of DigiCert's products and services presented in connection with this Agreement. The Service Specific Terms are incorporated by reference into this Agreement. If Customer purchases QTSP Services, Customer understands that any QTSP Services are provided by the Affiliate QTSP of DigiCert in accordance with the terms of this Agreement.
-
-By accessing or using DigiCert's Services, by electronically accepting this Agreement via DigiCert's online services, or by mutually agreeing to an Order Form with DigiCert in the manner specified in Section 2.1 below and which Order Form references this Agreement, Customer hereby accepts this Agreement as it relates to Customer's use of the Services. If Customer does not agree to the terms of this Agreement (or you do not have authority to enter into this Agreement on behalf of Customer), then Customer may not purchase or use any DigiCert Service. This Agreement is effective as of the date Customer first accepted this Agreement (the "**Effective Date**").
-
-WHEREAS, DigiCert is a software company and trusted third-party certification authority that provides digital trust solutions, including digital certificates ("**Certificates**") and other trust products, software, and services (collectively with the Certificates, the "**Services**");
-
-WHEREAS, as part of the Services, DigiCert operates account management interfaces, portals and related APIs to facilitate the management of Services provided by DigiCert (each, a "**Portal**"); and
-
-WHEREAS, Customer wishes to purchase, and DigiCert wishes to provide, one or more Services pursuant to the terms of this Agreement.
-
-NOW THEREFORE, in consideration of the mutual covenants contained herein and good and valuable consideration which is hereby acknowledged, DigiCert and Customer hereby agree as follows:
-
-## 1. Definitions.
-
-Capitalized terms used in this Agreement but not defined herein have the meanings set forth below.
-
-*1.1* "**Affiliate**" means any entity that directly or indirectly controls, is controlled by, or is under common control with a party to this Agreement. 
-
-*1.2* "**Customer**" means you and any entity, business, or individual on whose behalf you are accessing or using Services.
-
-*1.3* "**Customer Content**" means any data, information and other content transmitted by Customer via the Services to DigiCert.
-
-*1.4* "**DigiCert Contracting Party**" means *(i)* DigiCert, Inc., a Utah corporation, if Customer's billing address is located in the United States, *(ii)* DigiCert Ireland Limited, if Customer's billing address is located in any country other than the United States or Japan, and *(iii)* DigiCert Japan G.K., if Customer's billing address is located in Japan. If Customer changes its billing address to a different country, then Customer agrees that this Agreement is assigned to the corresponding DigiCert Contracting Party without further action required by either party.
-
-*1.5* "**Documentation**" means the online documentation and user instructions published by DigiCert to end users on DigiCert's website, such as docs.digicert.com, as may be updated by DigiCert from time to time.
-
-*1.6* "**Feedback**" means all suggestions, comments, opinions, code, input, ideas, reports, information, know-how or other feedback provided by Customer (whether in oral, electronic, or written form) to DigiCert in connection with Customer's use of the Services. For purposes of this Agreement, Feedback will not be treated as Confidential Information or as a trade secret.
-
-*1.7* "**Legal Repository**" means the repository of legal documents applicable to the Services at <https://www.digicert.com/legal-repository/> or <https://www.quovadisglobal.com/repository/> (as applicable for QTSP Services, and as updated from time to time).
-
-*1.8* "**On-Premises Software**" means any software included in the Services that is made available by DigiCert to Customer for installation on hardware, equipment or devices that are owned or controlled by Customer or Customer's personnel, including any updates thereto. For clarity, the On-Premises Software is part of the Services.
-
-*1.9* "**Portal API**" means the portion of the Portal that constitutes an application programming interface and that facilitates the integration of the Portal with Customer's internal systems, as such application programming interface may be made available by DigiCert under this Agreement. 
-
-*1.10* "**Procuring Party**" means a legal entity or business authorized to provide the Services to a subscriber.
-
-*1.11* "**QTSP**" has the meaning set forth in the Certificate Terms of Use.
-
-*1.12* "**QTSP Services**" means Services issued by DigiCert's QTSP (whether acting in its capacity as QTSP or otherwise) or the QTSP of DigiCert's Affiliates.
-
-*1.13* "**Service Specific Terms**" mean additional terms specific to certain Services as set forth at [www.digicert.com/service-specific](http://www.digicert.com/service-specific)-terms, which are incorporated herein to the extent applicable to any specific Services procured by Customer hereunder (which includes the Certificate Terms of Use with respect to Customer's use of any Certificates).
-
-*1.14* "**Third-Party Content**" means information, data, technology, or materials made available to Customer by any third party that Customer licenses and adds to the Services or directs DigiCert to install in connection with the Services. Third-Party Content includes but is not limited to Third-Party Extensions, web-based or offline software applications, data service, or content that is provided by third parties.
-
-## 2. Order Forms; Portal.
-
-*2.1* *Order Forms.*  Customer may purchase specific Services from DigiCert by entering into one or more mutually agreed upon quotes, purchase schedules, purchase orders, or order forms (whether online or electronic) that set forth the specific Services being procured by Customer under this Agreement, the term when each such Service is to be provided by DigiCert (the "**Service Term**") and the related payment terms for such Service (each, an "**Order Form**"). Order Forms are considered "mutually agreed upon" either *(i)* when executed by both parties in writing, *(ii)* when Customer affirms its electronic acceptance of an Order Form that DigiCert has presented to Customer via electronic means (e.g., at https://www.digicert.com/order), or *(iii)* when DigiCert presents Customer with an Order Form and Customer affirms its acceptance by issuing a purchase order. Customer and DigiCert acknowledge and agree that each Order Form will be governed by and incorporated by reference into the terms of this Agreement.
-
-*2.2* *Portal; Portal API.*  Subject to Customer's compliance with the terms and conditions of this Agreement, DigiCert hereby grants Customer permission, during the term of this Agreement, to use the Portal (if, and in the form made available by DigiCert to Customer) to manage Services to the extent permitted in the Portal. Further, subject to Customer's compliance with this Agreement, if Customer has been granted access to the Portal API by DigiCert, then DigiCert hereby grants to Customer a non-exclusive, non-transferable, non-sublicensable, revocable, limited license during the term of this Agreement to install, use and make calls to and from such Portal API solely for the purpose of facilitating Customer's use of the Portal (and its tools and functionalities) directly from Customer's internal systems. DigiCert may throttle any access to the Portal or Portal API if DigiCert believes a system has initiated excessive connections to DigiCert's Portals or Portal API or as DigiCert otherwise deems it necessary to protect DigiCert's technology systems. DigiCert reserves the right to block an IP address that has been used to initiate connections that are not related to normal use of services, or as DigiCert otherwise deems it necessary to protect DigiCert's technology systems. Examples of non-normal use connections include, but are not limited to, vulnerability or load/performance scans.
-
-*2.3* *Portal Accounts.*  In connection with certain applicable Services, DigiCert will provide the Customer with accounts to access and use the Portal (the "**Portal Accounts**"). Customer must maintain security over its Portal Accounts. Customer assumes liability for any use of its Portal Accounts by individuals obtaining access credentials from Customer.
-
-*2.4* *Vendor Entities.*  DigiCert's Affiliates may exercise any right or perform any obligation under this Agreement. For clarity, a DigiCert Affiliate may *(i)* exercise DigiCert's billing rights and obligations, and *(ii)* execute Order Forms with Customer. If Customer purchases QTSP Services, the QTSP will be responsible to perform the QTSP Services.
-
-*2.5* *Purchases for Resale.*  If Customer purchases Services not for itself, its Affiliates, or their employees or contractors but for resale, then Customer agrees that such purchases will be governed by the terms of the Master Partner Agreement, available at https://www.digicert.com/master-partner-agreement (as updated from time to time), which terms are incorporated herein by reference.
-
-*2.6* *Purchase through or as a Procuring Party.*  If Customer purchases or uses the Services through a Procuring Party, then Customer hereby represents and warrants that Customer has authorized such Procuring Party to apply for, accept, install, maintain, renew and, if necessary, revoke the Services on Customer's behalf. By authorizing a Procuring Party to provide or resell the Services to Customer, Customer hereby affirms its acceptance of this Agreement as it relates to Customer's use of the Services. If Customer is accessing or using the Services on behalf of a business, entity, or individual (as a Procuring Party or otherwise), then: (a) it represents and warrants that *(i)* it is an authorized representative of such business, entity, or individual, with the authority to bind the business, entity, or individual to this Agreement, and *(ii)* it will comply with and procure the applicable party's compliance with this Agreement; and (b) such business, entity, or individual is the "Customer" hereunder and is legally and financially responsible for access to and use of the Services as well as for the use of the account by others, including any employees, agents or contractors.
-
-## 3. Fees.
-
-*3.1* *Fees.*  Customer will pay DigiCert the fees for Services provided hereunder pursuant to the latest pricing posted in the Portal or as set forth in an Order Form. All payments are due and payable either within 30 days of the date of purchase or such other period, if any, stated in an Order Form. Fees payable hereunder are in exchange for the provision of Services by DigiCert and are not a royalty or license fee. If Customer submits funds to its Portal Account that are not connected to an Order Form (i.e., funds not connected to the purchase of Services with a definite term length), Customer may use such funds to purchase Services within 12 months. If Customer fails to use all such funds, any remaining funds will be deemed fees earned by DigiCert for Services provided, and Customer may not use them in connection with any other purchase. If any undisputed invoiced amount is not received by DigiCert by the due date, then without limiting DigiCert's rights or remedies, (a) those charges will accrue late interest at the rate of 1.5% of the outstanding balance per month, or the maximum rate permitted by law, whichever is lower, (b) DigiCert may accelerate Customer's unpaid fee obligations so that they become immediately due and payable, and (c) DigiCert may suspend or limit Customer's access to the Portal or Services without notice until full payment is made. Customer must notify DigiCert of any fee disputes within 30 days of the applicable invoice date or such invoice will be deemed accepted. If Customer has purchased the Services through a Procuring Party, the payment terms will be those terms established between Customer and such Procuring Party. If Customer or an applicable Procuring Party does not pay the applicable fees for any Services extended to Customer, then DigiCert may suspend or limit Customer's access to the Portal or Services without notice until full payment is made.
-
-*3.2* *Taxes.*  DigiCert may charge, and Customer will pay, all applicable federal, state, or local sales or use taxes, value added taxes ("**VAT**"), goods and services taxes ("**GST**"), and consumption taxes that DigiCert is legally obligated to charge ("**Taxes**"). All fees charged by DigiCert are exclusive of any Taxes however imposed, e.g., VAT, GST, or consumption taxes, unless such Taxes are stated on the invoice DigiCert provides to Customer. Customer may provide DigiCert an exemption certificate or equivalent information acceptable to the relevant taxing authority. In such case, DigiCert will not charge or collect the Taxes covered by such exemption certificate. If the tax status of Customer were to change from tax-exempt to taxable during the term of this Agreement, Customer shall notify DigiCert of this change within thirty (30) days. If Customer fails to notify DigiCert, then Customer shall be solely responsible for any unpaid Taxes resulting from fees paid to DigiCert. During the term of this Agreement, DigiCert will provide Customer with forms, documents, or certifications as may be required for Customer to satisfy information reporting or withholding tax obligations with respect to payments under this Agreement. Upon DigiCert's receipt of Customer's proof of legally required withholding (which proof must be acceptable in DigiCert's sole discretion), Customer may only deduct or withhold any Taxes that DigiCert and Customer determine Customer is legally obligated to withhold from any amounts payable to DigiCert under this Agreement. Except as stated in this Section 3.2, Customer may not withhold or offset any amount owed to DigiCert for any reason.
-
-## 4. Intellectual Property Rights; Restrictions.
-
-*4.1* *DigiCert Intellectual Property Rights.*  DigiCert and its applicable licensors retain, and Customer will not obtain or claim, any title, interest, or ownership rights in any of DigiCert's products or services, including all software associated with the Portal, the On-Premises Software, any other Services, or techniques and ideas embedded therein; all updates, improvements, enhancements, modifications, copies or derivative works of such products or services or software provided by DigiCert, regardless of who produced, requested, or suggested the updates, improvements, enhancements, modifications, copies or derivative works; all Documentation and marketing material provided by DigiCert to Customer; and all of DigiCert's copyrights, patent rights, trade secret rights and other proprietary rights.
-
-*4.2* *Restrictions.*  Customer will protect DigiCert's intellectual property, and the value, good will, and reputation associated therewith when accessing or using the Services. Customer will not: *(i)* attempt to interfere with, or disrupt the operations of, the Services or attempt to gain access to any systems or networks that connect thereto, except as required to access and use the Portal (including the Portal API) as permitted hereunder; *(ii)* re-engineer, reverse engineer, decompile or disassemble any portion of the Services (except that Customer may decompile the On-Premises Software for the purposes of interoperability only to the extent permitted by and subject to strict compliance under applicable law); *(iii)* use, copy, modify, or create derivative works of the Services for any purpose other than as expressly permitted herein or inconsistent with the uses contemplated in any Documentation; *(iv)* transfer, sublicense, rent, lease, sublease, lend, distribute or otherwise make available the Services to any third party other than as expressly permitted herein; *(v)* use the Services in connection with a service bureau, facility management, timeshare, service provider or like activity whereby Customer operates or uses the Services for the benefit of a third party; *(vi)* replicate, frame or mirror the Services; (vii) remove, erase or tamper with any copyright or other proprietary notice encoded or recorded in the Services; (viii) introduce into the Services any computer virus, malware, software lock or other such harmful program or data which destroys, erases, damages or otherwise disrupts the normal operation of the Services or allows for unauthorized access to the Services ("**Malicious Code**"); (ix) access, or allow another party to access or use, the Services for any benchmarking purposes or to develop or improve a product or service that competes with DigiCert; (x) impersonate or misrepresent Customer's affiliation with any entity; (xi) scan a DigiCert IP address (including through automated means) without obtaining DigiCert's prior written consent; or (xii) encourage or authorize a third party to do any of the foregoing. DigiCert may terminate this Agreement or Customer's Portal Accounts, or restrict Customer's access to the Services, if DigiCert reasonably believes that Customer is using the Services to post or make accessible any material that infringes DigiCert's or any third party's rights or is in breach of this Agreement. Customer will not use any marketing material or Documentation that refers to DigiCert or its products or services without receiving written prior approval from DigiCert, except as may be set forth in any Service Specific Terms.
-
-*4.3* *Feedback.*  If Customer provides DigiCert with any Feedback related to the Services, DigiCert, in its sole discretion, may or may not respond to Feedback or promise to address any Feedback in the development of future features or functionalities of the Services. In the event DigiCert uses Feedback in any way, Customer hereby grants DigiCert an unrestricted, perpetual, worldwide, exclusive, transferable, irrevocable, sublicensable, royalty-free, fully paid-up license to use, copy, modify, create derivative works of, make, have made, distribute (through multiple tiers of distribution), publicly perform or display, import, export, sell, offer to sell, rent, or license copies of the Feedback as part of or in connection with any DigiCert product, service (including the Services), technology, content, material, specification or Documentation. For the avoidance doubt, Customer will not obtain any title, interest, or ownership right to the Services in connection with any Feedback.
-
-*4.4* *Trademark Usage.*  Customer agrees that DigiCert may use Customer's name and trademark to perform its obligations under this Agreement and to indicate that Customer is receiving DigiCert's Service, provided that such use would not foreseeably diminish or damage Customer's rights in any of its trademarks, create a misrepresentation of the parties' relationship, or diminish or damage a party's reputation. Neither party may register or claim any right in the other party's trademarks. Customer grants DigiCert the right to use any trademark of Customer included in the Certificate to the extent necessary to operate such Certificate.
-
-*4.5* *Customer Content.*  Customer retains all right, title and interest in and to its Customer Content. Customer hereby grants to DigiCert and its Affiliates a worldwide, royalty-free, sublicensable, right and license to host, copy, transmit and display Customer Content as necessary for DigiCert and its Affiliates to provide the Services in accordance with this Agreement.
-
-## 5. Additional Terms Applicable to the Services.
-
-*5.1* *On-Premises Software.*  If Customer's use of any Service (or component thereof) includes the use of DigiCert's On-Premises Software, then subject to Customer's compliance with this Agreement and any restrictions that DigiCert may impose on where such On-Premises Software can be installed, DigiCert hereby grants to Customer a non-exclusive, non-transferable license to use, reproduce and install a reasonable number of copies of the On-Premises Software on Customer's hardware, equipment or devices, solely in connection with Customer's use of the Services that the On-Premises Software is provided in connection with. Any updates to the On-Premises Software provided by DigiCert at its sole discretion shall be subject to any terms and conditions provided with such updates. If no terms and conditions are provided, then such updates are subject to this Agreement. Any such updates may affect Customer's product and may require Customer to make changes to Customer's product in order to maintain interoperability.
-
-*5.2* *Third Party Services.*  DigiCert may make third-party services and websites ("**Third-Party Services**"), including any separately downloadable or accessible add-on, plug-in, module, command, function, playbook, content, suite or application that extends the features or functionality of the applicable Service, available for download or access as a convenience to its customers. DigiCert makes no promises or guarantees related to any Third-Party Service and will not be liable for any such Third-Party Service. Nothing in this Agreement will be deemed to be a representation or warranty by DigiCert with respect to any Third-Party Service. DigiCert may, in its reasonable discretion, block or disable access to any Third-Party Service at any time without notice or liability. Customer's use of a Third-Party Service is at its own risk and may be subject to additional terms and conditions applicable to that Third-Party Service (such as license terms of the providers of such Third-Party Service). In addition, the On-Premises Software may contain third party software programs that are available under open source or free software licenses, and this Agreement does not alter any rights or obligations Customer may have under those open source or free software licenses and DigiCert makes no promises or guarantees related to such third-party software.
-
-*5.3* *Third Party Content.*  The Services may contain features or functions that enable interoperation with Third-Party Content that Customer, in its sole discretion, chooses to use in connection with a Service. Customer may be required to obtain access to such Third-Party Content from the respective providers, and Customer may be required to grant DigiCert access to Customer's accounts with such providers to the extent necessary for DigiCert to allow the interoperation with the Services. By requesting or allowing DigiCert to enable access to such Third-Party Content in connection with the Services, Customer represents and warrants that it is authorized under the provider's terms to allow such access. If Customer installs or enables (or directs or otherwise authorizes DigiCert to install or enable) Third-Party Content for use with the Services where the interoperation includes access by the third-party provider of Customer Content or Customer's Confidential Information, Customer hereby authorizes DigiCert to allow the provider of such Third-Party Content to access Customer Content or Customer's Confidential Information as necessary for interoperation. Customer agrees that DigiCert is not responsible or liable for disclosure, modification, or deletion of Customer Content resulting from access to Customer Content by such Third-Party Content, nor is DigiCert liable for any damages or downtime that Customer may incur or any impact on Customer's experience of the Services, directly or indirectly, as a result of Customer's use of or reliance on any Third-Party Content, sites or resources.
-
-## 6. Confidentiality.
-
-*6.1* *Definition.*  **"Confidential Information"** means any information, documentation, system, or process disclosed by a party or a party's Affiliate that is: *(i)* designated as confidential (or a similar designation) at the time of disclosure; *(ii)* disclosed in circumstances of confidence; or *(iii)* understood by the parties, exercising reasonable business judgment, to be confidential.
-
-*6.2* *Exclusions.*  Confidential Information does not include information that: *(i)* was lawfully known or received by the receiving party prior to disclosure; *(ii)* is or becomes part of the public domain other than as a result of a breach of this Agreement; *(iii)* was disclosed to the receiving party by a third party, provided such third party, or any other party from whom such third party receives such information, is not in breach of any confidentiality obligation in respect to such information; or *(iv)* is independently developed by the receiving party as evidenced by independent written materials.
-
-*6.3* *Obligations.*  Each party will keep confidential all Confidential Information it receives from the other party or its Affiliates. Each party will use disclosed Confidential Information only for the purpose of exercising its rights and fulfilling its obligations under this Agreement and will protect all Confidential Information against disclosure using a reasonable degree of care. Each party may disclose Confidential Information to its contractors if the contractor is contractually obligated to confidentiality provisions that are at least as protective as those contained herein. If a receiving party is compelled by law to disclose Confidential Information of the disclosing party, the receiving party may disclose such Confidential Information that it is advised by its legal counsel is legally required, but only after using reasonable efforts to *(i)* seek confidential treatment for the Confidential Information, and *(ii)* send sufficient prior notice to the other party to allow the other party to seek protective or other court orders and reasonably cooperates with such attempts by the other party.
-
-*6.4* *Privacy.*  Customer acknowledges that it must have a lawful basis to provide certain required information (or to cause such information to be provided) relating to an identified or identifiable natural person ("**Personal Data**"), and that Customer must have a lawful basis to provide, or cause to provide, such Personal Data, which is necessary for use of the Services (including the Certificates), and which will be processed and used in accordance with DigiCert's Privacy Policy available at [https://www.digicert.com/digicert-privacy-policy](https://www.digicert.com/digicert-privacy-policy/) (as updated from time to time, the "**Privacy Policy**"). The Privacy Policies applicable to QTSP Services are available at <https://www.quovadisglobal.com/privacy/> (as updated from time to time).
-
-## 7. Term and Termination.
-
-*7.1* *Term.*  This Agreement is effective upon the Effective Date and will remain in effect unless earlier terminated in accordance with this Agreement.
-
-*7.2* *Termination.*  Either party may terminate this Agreement immediately if the other party: *(i)* materially breaches this Agreement (including any appendices, addenda, Order Forms, schedules and other terms referenced herein) and fails to remedy the material breach within thirty (30) days after receiving notice of the material breach; (ii) engages in illegal or fraudulent activity in connection with this Agreement (or in the case of termination by DigiCert, Customer engages in an activity that could otherwise materially harm DigiCert's business in connection with this Agreement); *(iii)* has a receiver, trustee, or liquidator appointed over substantially all of its assets; (iv) has an involuntary bankruptcy proceeding filed against it that is not dismissed within 30 days of filing; or *(v)* files a voluntary petition of bankruptcy or reorganization.
-
-*7.3* *Restrictions on Further Use.*  Upon expiration or termination of the Agreement: *(i)* except as otherwise specified, all other rights and licenses granted herein terminate; *(ii)* each party will immediately discontinue all representations or statements that could imply that a relationship exists between DigiCert and Customer; *(iii)* each party will continue to comply with the confidentiality requirements in this Agreement; and *(iv)* Customer will, within 30 days of the date of termination, pay to DigiCert any fees, or part thereof, still owed as of the date of termination and destroy or deliver to DigiCert all sales manuals, price lists, literature and other materials relating to DigiCert.
-
-*7.4* *Survival.* The Service Specific Terms, and any applicable sections herein or appendices that specifically state they survive termination of this Agreement, will survive expiration or termination of this Agreement until the applicable Services provided by DigiCert expire or are revoked. In addition, the obligations and representations of the parties under Section 4.1, Section 4.2, Section 4.3, Section 6 (Confidentiality), Section 7 (Termination), Section 8 (Disclaimers of Warranties, Limitation of Liability, and Indemnification), and Section 9 (Miscellaneous) survive expiration or termination of this Agreement. Customer's obligation to pay all amounts owed by Customer to DigiCert survive termination of this Agreement.
-
-## 8. Disclaimer of Warranties, Limitation of Liability, and Indemnification.
-
-*8.1* *Warranties.*
-
-*(i)* Each party hereto represents and warrants that (a) such party is duly organized and in good standing under the laws of its jurisdiction of organization and in each other jurisdiction where such organization or good standing is required for the performance of this Agreement; (b) such party's entry into and performance under this Agreement has been duly approved by all necessary corporate action and does not violate any constituent instrument of such party; and (c) such party's entry into and performance under this Agreement does not violate any law or regulation, judicial or executive order, or contractual commitment by which such party is bound.
-
-*(ii)* Except as may otherwise be stated in any Service Specific Terms, DigiCert represents and warrants solely to Customer: (a) that the Services, when used in accordance with the terms of this Agreement, will function substantially in accordance with the Documentation that may be provided by DigiCert for such Services; and (b) that it will perform any professional services associated with the Services in a good and workmanlike manner and in accordance with generally accepted industry standards.
-
-*(iii)* Customer represents and warrants: (a) that Customer is solely responsible for its Customer Content, including without limitation, the security of such Customer Content as it applies to Customer's control of access to such Customer Content via the Services; (b) that Customer has the necessary rights and licenses, consents, permissions, waivers and releases to use its Customer Content and make it available hereunder; and (c) that Customer Content (1) does not violate, misappropriate or infringe any rights of DigiCert or any third party, (2) does not constitute defamation, invasion of privacy or publicity, or otherwise violate any rights of any third party, (3) is not designed for use in any illegal activity or does not promote illegal activities, including, without limitation, in a manner that might be illegal or harmful to any person or entity; and (4) does not include, distribute, share, or facilitate the distribution of Malicious Code.
-
-*8.2* *DISCLAIMERS.*  OTHER THAN AS PROVIDED IN SECTION 8.1, THE SERVICES, AND ANY RELATED SOFTWARE (INCLUDING THE PORTAL) ARE PROVIDED "AS IS" AND "AS AVAILABLE" AND TO THE MAXIMUM EXTENT PERMITTED BY LAW, DIGICERT DISCLAIMS ALL EXPRESS AND IMPLIED WARRANTIES, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. DIGICERT DOES NOT WARRANT THAT ANY SERVICE OR PRODUCT WILL MEET CUSTOMER'S EXPECTATIONS OR THAT ACCESS TO THE SERVICES WILL BE TIMELY OR ERROR-FREE. Notwithstanding anything herein to the contrary, DigiCert does not guarantee the accessibility of any products or services and may modify or discontinue offering any product or service offering at any time. Customer's sole remedy for a defect in the Services or a failure of the Services to function in accordance with the Documentation is for DigiCert to use commercially reasonable efforts, upon notice of such defect or failure from Customer, to correct the defect or failure, except that DigiCert has no obligation to correct defects or failures that arise from *(i)* misuse, modification or damage of the Services, *(ii)* combination of the Services with other products and services by parties other than DigiCert or with any software or hardware not supported by DigiCert, *(iii)* causes external to the Services, such as problems with the hardware, network or other infrastructure with which the Services are used, or *(iv)* Customer's breach of any provision of this Agreement.
-
-*8.3* *Limitation of Liability.*  This Agreement does not limit a party's liability for: *(i)* death or personal injury resulting from the negligence of a party; *(ii)* gross negligence or willful misconduct, or *(iii)* fraud or fraudulent statements made by a party to the other party in connection with this Agreement. TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW AND NOTWITHSTANDING ANY FAILURE OF ESSENTIAL PURPOSE OF ANY LIMITED REMEDY OR LIMITATION OF LIABILITY: (A) DIGICERT AND ITS AFFILIATES, SUBSIDIARIES, OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, PARTNERS AND LICENSORS (THE "**DIGICERT ENTITIES**") WILL NOT BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES (INCLUDING ANY DAMAGES ARISING FROM LOSS OF USE, LOSS OF DATA, LOST PROFITS, BUSINESS INTERRUPTION, OR COSTS OF PROCURING SUBSTITUTE SOFTWARE OR SERVICES) ARISING OUT OF OR RELATING TO THIS AGREEMENT OR THE SUBJECT MATTER HEREOF; AND (B) THE DIGICERT ENTITIES' TOTAL CUMULATIVE LIABILITY ARISING OUT OF OR RELATING TO THIS AGREEMENT OR THE SUBJECT MATTER HEREOF WILL NOT EXCEED THE AMOUNTS PAID BY CUSTOMER TO DIGICERT IN THE TWELVE MONTHS PRIOR TO THE EVENT GIVING RISE TO SUCH LIABILITY, REGARDLESS OF WHETHER SUCH LIABILITY ARISES FROM CONTRACT, INDEMNIFICATION, WARRANTY, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY OR OTHERWISE, AND REGARDLESS OF WHETHER DIGICERT HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH LOSS OR DAMAGE. NO CLAIM, REGARDLESS OF FORM, WHICH IN ANY WAY ARISES OUT OF THIS AGREEMENT, MAY BE MADE OR BROUGHT BY CUSTOMER OR CUSTOMER'S REPRESENTATIVES MORE THAN ONE (1) YEAR AFTER THE BASIS FOR THE CLAIM BECOMES KNOWN TO CUSTOMER.
-
-*8.4* *DigiCert Indemnity.*  DigiCert will defend Customer and its permitted Affiliates that use the Services hereunder (each a "**Customer Indemnified Party**") from and against all third party claims and all related liabilities, damages, and costs, including reasonable attorneys' fees, arising from a claim that the use of the Services as permitted under this Agreement infringes or misappropriates a third party's copyright, patent or trademark rights in the United States, and will indemnify a Customer Indemnified Party for all reasonable attorney's fees incurred and damages and other costs finally awarded against such Customer Indemnified Party in connection with or as a result of any such claim; provided, however, that DigiCert will have no liability or obligation under this section if the claim arises from (a) Customer Content; (b) the use or combination of the Services with any other software or hardware not supported by DigiCert; (c) causes external to the Services, such as problems with the hardware, network or other infrastructure with which the Services are used; (d) unauthorized or improper use of the Services; or (e) any modification of the Services by anyone other than DigiCert. Should the Service become or, in DigiCert's reasonable opinion is likely to become, the subject of any third-party claim of infringement, DigiCert may, at its option and expense, either (x) procure for Customer the right for DigiCert to continue to offer the Services as contemplated by this Agreement; (y) replace or modify the Services to make its use in accordance with this Agreement non-infringing; or (z) with thirty (30) days' notice to Customer, terminate this Agreement and refund to Customer any pre-paid, unused fees covering the remainder of the term after the effective date of termination. This section states DigiCert's sole liability with respect to, and Customer's exclusive remedy against DigiCert or its Affiliates, for any claim that the use of the Services as permitted under this Agreement infringes or misappropriates a third party's intellectual property rights.
-
-*8.5* *Customer Indemnity.*  Customer will indemnify, defend and hold harmless DigiCert and DigiCert's employees, officers, directors, shareholders, Affiliates, and assigns (each a "DigiCert Indemnified Party", and together with the Customer Indemnified Parties, the "Indemnified Parties") from and against all third party claims and all related liabilities, damages, and costs, including reasonable attorneys' fees, arising from (a) Customer's breach of this Agreement; (b) Customer's online properties for which DigiCert provides Services hereunder, or the technology or content embodied therein or made available through such properties; (c) DigiCert's access or use in compliance with this Agreement of any Customer Content or any other information, systems, data or materials provided by or on behalf of Customer to DigiCert hereunder, (d) Customer's failure to protect the authentication mechanisms used to secure the Portal or a Portal Account; (e) Customer's modification of a DigiCert product or service or combination of a DigiCert product or service with any product or service not provided by DigiCert; (f) an allegation that personal injury or property damage was caused by the fault or negligence of Customer; (g) Customer's failure to disclose a material fact related to the use or issuance of the Services; or (h) an allegation that the Customer, or an agent of Customer, used DigiCert's Services to infringe on the rights of a third party.
-
-*8.6* *Indemnity Obligations.*  An Indemnified Party seeking indemnification under this Agreement must notify the indemnifying party promptly of any event requiring indemnification. However, an Indemnified Party's failure to notify will not relieve the indemnifying party from its indemnification obligations, except to the extent that the failure to notify materially prejudices the indemnifying party. The indemnifying party may assume the defense of any proceeding requiring indemnification unless assuming the defense would result in potential conflicting interests as determined by the Indemnified Party in good faith. An Indemnified Party may, at the indemnifying party's expense, defend itself until the indemnifying party's counsel has initiated a defense of the Indemnified Party. Even after the indemnifying party assumes the defense, the Indemnified Party may participate in any proceeding using counsel of its own choice and at its own expense. The indemnifying party may not settle any proceeding related to this Agreement unless the settlement also includes an unconditional release of liability for all Indemnified Parties. The indemnifying party's indemnification obligations hereunder are not an Indemnified Party's sole remedy for events giving rise to indemnity by the indemnifying party hereunder and are in addition to any other remedies an Indemnified Party may have against the indemnifying party under this Agreement.
-
-*8.7* *Injunctive Relief.*  Customer acknowledges that its breach of this Agreement may result in irreparable harm to DigiCert that cannot adequately be redressed by damages. Accordingly, in addition to any other legal remedies which may be available, DigiCert may seek and obtain an injunctive order against a breach or threatened breach of this Agreement by Customer, and without a need to post a bond or similar action.
-
-*8.8* *Extent.*  The limitations and obligations in this section apply to the maximum extent permitted by law and apply regardless of: *(i)* the reason for or nature of the liability, including tort claims; *(ii)* the number of claims of liability; *(iii)* the extent or nature of the damages; or *(iv)* whether any other provisions of this Agreement were breached or proven ineffective.
-
-## 9.  Miscellaneous.
-
-*9.1* *Force Majeure.*  Except for Customer's payment obligations, neither party is liable for any failure or delay in performing its obligations under this Agreement to the extent that the circumstances causing such failure or delay are beyond a party's reasonable control. Customer acknowledges that the Services (including the Portal and Certificates) are subject to the operation and telecommunication infrastructures of the Internet and the operation of Customer's Internet connection services, all of which are beyond DigiCert's control.
-
-*9.2* *Entire Agreement.*  This Agreement, along with all documents referred to herein, including any applicable Order Form, constitutes the entire agreement between the parties with respect to the subject matter, superseding all other prior agreements that might exist. The Services are provided only upon the terms and conditions of this Agreement and the Service Specific Terms, and this Agreement prevails over any conflicting, additional, or different terms and conditions proposed by Customer in any other documentation. Any terms and conditions contained in any purchase order, click-through agreement, or other documentation issued by Customer, before or after the Effective Date, and that may require affirmative acceptance of such terms and conditions by DigiCert as part of a vendor set-up process or otherwise, are expressly rejected and will have no effect. Except as otherwise allowed herein, neither party may amend this Agreement unless the amendment is in writing and signed by the parties. In the event of an inconsistency between documents, the following order of precedence will apply: (1) this Agreement, (2) Service Specific Terms; (3) other applicable appendices, addenda, and schedules, and (4) Order Forms, unless the Order Form expressly states that it will take precedence.
-
-*9.3* *Amendment.*  DigiCert may amend: *(i)* the Service Specific Terms; *(ii)* the Privacy Policy; and *(iii)* any other applicable appendices, addenda and schedules (but for clarity not an Order Form) at any time and will give notice of any material changes via the Portal, by posting the amended version to the Legal Repository, or by a means set forth in Section 9.7. If such an amendment materially and adversely affects Customer's rights herein, Customer will have the right, as its sole and exclusive remedy in connection with such amendment, to terminate this Agreement during the 30-day period after DigiCert's notice of such amendment, by providing written notice of termination to DigiCert. Customer's continued use of the Services after 30 days of DigiCert's notice of the amendment constitutes Customer's acceptance of the amendment.
-
-*9.4* *Waiver.*  A party's failure to enforce or delay in enforcing a provision of this Agreement does not waive the party's right to enforce the same provision later or the party's right to enforce any other provision of this Agreement. A waiver is only effective if in writing and signed by both parties.
-
-*9.5* *Assignment.*  Customer may not assign or delegate any of its rights or obligations under this Agreement without the prior written consent of DigiCert. DigiCert may assign or delegate any of its rights and obligations under this Agreement without Customer's consent. Any purported assignment or delegation in violation of this Agreement is null and void.
-
-*9.6* *Relationship.*  DigiCert and Customer are independent contractors and not agents or employees of each other. Neither party has the power to bind or obligate the other or to make any statements, representations, warranties or commitments on behalf of the other party. Each party is responsible for its own expenses and employees. All persons employed by a party will be employees of such party and not of the other party and all costs and obligations incurred by reason of any such employment will be for the account and expense of such party.
-
-*9.7* *Notices.* DigiCert will send notices of early termination or breach of this Agreement to Customer by first class mail to the address listed in the Portal Account, which notices are effective upon receipt. DigiCert will send all other notices (or if no physical address is provided by Customer, then DigiCert will send all notices hereunder including notices of early termination or breach of this Agreement) by posting the notice in the Portal Account or by email via the email address of Customer's administrator in the Portal Account (or other alternate email address associated with the Portal Account if provided), or by regular mail. All such notices are effective when posted in the Portal or when sent to the Portal Account. It is Customer's responsibility to keep its email address current. Customer will be deemed to have received any email sent to the email address then associated with the Portal Account when DigiCert sends the email, regardless of whether Customer receives the email. Customer will send DigiCert notices in writing by postal mail that is addressed to DigiCert, Inc., Attn: General Counsel, 2801 North Thanksgiving Way, Suite 500, Lehi, Utah 84043. Notices from Customer are effective upon receipt. DigiCert may change its address for notice either by providing written (including email) notice to Customer or by publishing a new address for notice through the Portal.
-
-*9.8* *Governing Law and Jurisdiction.*  The *(i)* laws that govern the interpretation, construction, and enforcement of this Agreement and all matters, claims or disputes related to it, including tort claims, and *(ii)* the courts or arbitration bodies that have exclusive jurisdiction over any of the matters, claims or disputes contemplated in sub-section *(i)* above, will each depend on where Customer is domiciled, as set forth in the table below; provided, for clarity, that rights and obligations arising from applicable local laws continue to be governed by such laws, including with respect to EU Regulation 910/2014 (eIDAS), the General Data Protection Regulation (GDPR), and trade compliance laws. In instances where the International Chamber of Commerce is designated below as the court or arbitration body with exclusive jurisdiction of such matters, claims or disputes, then the parties hereby agree that (x) all matters, claims or disputes arising out of or in connection with this Agreement shall be finally settled under the Rules of Arbitration of the International Chamber of Commerce ("**Rules**") by one or more arbitrators appointed in accordance with the Rules, (y) judgment on the award rendered by such arbitration may be entered in any court having jurisdiction, and (z) this arbitration clause shall not preclude parties from seeking provisional remedies in aid of arbitration from a court of appropriate jurisdiction.
-
-| Customer is Domiciled in or the Services are: | Governing Law is laws of: | Court or arbitration body with exclusive jurisdiction: |
-|----------------------------------------------|----------------------------|--------------------------------------------------------|
-| The United States of America, Canada, Mexico, Central America, South America, the Caribbean, or any other country not otherwise included in the rest of the table below | Utah state law and United States federal law | State and Federal courts located in Salt Lake County, Utah |
-| Europe, the United Kingdom, Switzerland, Russia, the Middle East or Africa | England | International Chamber of Commerce, International Court of Arbitration, with seat of arbitration in London |
-| Japan | Japan | International Chamber of Commerce, International Court of Arbitration, with seat of arbitration in Tokyo |
-| Australia or New Zealand | Australia | International Chamber of Commerce, International Court of Arbitration, with seat of arbitration in Melbourne |
-| A Country in Asia or the Pacific region, other than Japan, Australia or New Zealand | Singapore | International Chamber of Commerce, International Court of Arbitration, with seat of arbitration in Singapore |
-| PKIoverheid Certificates | The Netherlands | International Chamber of Commerce, International Court of Arbitration, with seat of arbitration in Amsterdam |
-
-
-*9.9* *Dispute Resolution.* To the extent permitted by law, before Customer files suit or initiates an arbitration claim with respect to a dispute involving any aspect of this Agreement, Customer shall notify DigiCert, and any other party to the dispute for the purpose of seeking business resolution. Both Customer and DigiCert shall make good faith efforts to resolve such dispute via business discussions. If the dispute is not resolved within sixty (60) days after the initial notice, then a party may proceed as permitted under applicable law and as specified under this Agreement.
-
-*(i)* *Arbitration.* In the event a dispute is allowed or required under this agreement to be resolved through arbitration, the parties will maintain the confidential nature of the existence, content, or results of any arbitration hereunder, except as may be necessary to prepare for or conduct the arbitration hearing on the merits, or except as may be necessary in connection with a court application for a preliminary remedy, a judicial confirmation or challenge to an arbitration award or its enforcement, or unless otherwise required by law or judicial decision.
-
-*(ii)* *Class Action and Jury Trial Waiver.* THE PARTIES EXPRESSLY WAIVE THEIR RESPECTIVE RIGHTS TO A JURY TRIAL FOR THE PURPOSES OF LITIGATING DISPUTES HEREUNDER. Each party agrees that any dispute must be brought in the respective party's individual capacity, and not as a plaintiff or class member in any purported class, collective, representative, multiple plaintiff, or similar proceeding ("**Class Action**"). The parties expressly waive any ability to maintain any Class Action in any forum in connection with any dispute. If the dispute is subject to arbitration, the arbitrator will not have authority to combine or aggregate similar claims or conduct any Class Action nor make an award to any person or entity not a party to the arbitration. Any claim that all or part of this Class Action waiver is unenforceable, unconscionable, void, or voidable may be determined only by a court of competent jurisdiction and not by an arbitrator.
-
-*9.10* *Compliance with Law.*  Each party will comply with all applicable laws, including federal, state and local laws and regulations in connection with its performance under this Agreement. Customer acknowledges that Services provided or offered under this Agreement may be subject to, and Customer agrees to comply with all applicable laws in connection with its use of the Services, including all applicable export controls, trade sanctions, and physical or electronic import laws, advertising laws, privacy laws, regulations, and rules. DigiCert may suspend performance of any of its obligations under the Agreement, without any prior notice or cure period and without any liability, if Customer fails to comply with this provision. Customer acknowledges that it is not located in or a national of Cuba, North Korea, Iran, Syria or the Crimea, Donetsk People's Republic or Luhansk People's Republic Region of Ukraine or any other country or region subject to comprehensive U.S. economic sanctions or on any United States Government list or other government list of prohibited or restricted parties for export control or economic sanctions purposes (including lists published by the U.S. Government, European Union or the United Nations).
-
-*9.11* *Export Regulation.*  Customer acknowledges that the On-Premises Software and related technical data and services (collectively "**Controlled Technology**") are subject to the import and export laws of the United States, specifically the U.S. Export Administration Regulations (EAR), and the laws of any country where Controlled Technology is imported or re-exported. The export or re-export of the On-Premises Software in violation of the foregoing laws and regulations is strictly prohibited. The On-Premises Software may be subject to import, distribution, transfer, or use restrictions for which Customer is solely responsible. The On-Premises Software is prohibited from export or re-export to Cuba, North Korea, Iran, Syria, the Crimea, Donetsk People's Republic, or Luhansk People's Republic Region of Ukraine, or to any other country or region subject to comprehensive U.S. economic sanctions or export embargo. Customer shall not, directly or indirectly, facilitate giving a country, entity or individual sanctioned under U.S. law access to the On-Premises Software. Customer may not export the On-Premises Software in connection with the use or development of missiles or chemical, biological, and nuclear weapons. Customer may not export the On-Premises Software to any military entity, or to any other entity for a military purpose, unless subject to a valid license or license exception.
-
-*9.12* *US Government Restricted Rights.*  The On-Premises Software and any other software elements of the Services is provided with "Restricted Rights", use, duplication or disclosure thereof by the U.S. Government is subject to restrictions as set forth in subparagraph (c)(1)(ii) of the Rights in Technical Data and Computer Software clause at DFARS 252.227-7013 or subparagraphs (c)(1) and (2) of the Commercial Computer Software - Restricted Rights at 48 CFR 52.227- 19, as applicable (and the successor clauses to any of the foregoing). The contractor/manufacturer is DigiCert, Inc. All On-Premises Software and other software elements of the Services provided to the U.S. Government, including its civilian and military agencies, is commercial computer software that was developed at private expense prior to its provision to any U.S. Government entity. Subject to any applicable regulations set out in the FAR or DFARS (and any superseding regulations), the On-Premises Software and other software elements of the Services is provided with the commercial license rights and restrictions described elsewhere in the Agreement. For Department of Defense agencies, the restrictions set forth in the Technical Data - Commercial Items clause at DFARS 252.227-7015 (Nov 1995) shall also apply.
-
-*9.13* *Severability.*  The invalidity or unenforceability of any provision of this Agreement, as determined by a court or administrative body of competent jurisdiction, will not affect the validity or enforceability of the remainder of this Agreement, and the provision affected will be construed so as to be enforceable to the maximum extent permissible by law.
-
-*9.14* *Rights of Third Parties.* Except as stated in the Service Specific Terms or Section 2.4, no third parties have any rights or remedies under this Agreement.
-
-*9.15* *Interpretation.* The definitive version of this Agreement is written in English. If this Agreement is translated into another language and there is a conflict between the English version and the translated version, the English language version controls.
+Copyright (C) 2025 DigiCert, Inc.
+
+DigiCert (R) TrustCore and TrustEdge are licensed under a dual-license model.
+
+1. Open Source License: GNU Affero General Public License v3.0 (AGPL v3). See full text below. 
+2. Commercial License: Available under DigiCert's Master Services Agreement. See LICENSE_COMMERCIAL.txt or https://www.digicert.com/master-services-agreement/, as updated from time to time. 
+
+*If you wish to use TrustCore or TrustEdge outside the scope of AGPL, please contact DigiCert at sales@digicert.com to obtain a commercial license.*
+
+---
+
+GNU AFFERO GENERAL PUBLIC LICENSE
+Version 3, 19 November 2007
+
+Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+
+                            Preamble
+
+  The GNU Affero General Public License is a free, copyleft license for
+software and other kinds of works, specifically designed to ensure
+cooperation with the community in the case of network server software.
+
+  The licenses for most software and other practical works are designed
+to take away your freedom to share and change the works.  By contrast,
+our General Public Licenses are intended to guarantee your freedom to
+share and change all versions of a program--to make sure it remains free
+software for all its users.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+them if you wish), that you receive source code or can get it if you
+want it, that you can change the software or use pieces of it in new
+free programs, and that you know you can do these things.
+
+  Developers that use our General Public Licenses protect your rights
+with two steps: (1) assert copyright on the software, and (2) offer
+you this License which gives you legal permission to copy, distribute
+and/or modify the software.
+
+  A secondary benefit of defending all users' freedom is that
+improvements made in alternate versions of the program, if they
+receive widespread use, become available for other developers to
+incorporate.  Many developers of free software are heartened and
+encouraged by the resulting cooperation.  However, in the case of
+software used on network servers, this result may fail to come about.
+The GNU General Public License permits making a modified version and
+letting the public access it on a server without ever releasing its
+source code to the public.
+
+  The GNU Affero General Public License is designed specifically to
+ensure that, in such cases, the modified source code becomes available
+to the community.  It requires the operator of a network server to
+provide the source code of the modified version running there to the
+users of that server.  Therefore, public use of a modified version, on
+a publicly accessible server, gives the public access to the source
+code of the modified version.
+
+  An older license, called the Affero General Public License and
+published by Affero, was designed to accomplish similar goals.  This is
+a different license, not a version of the Affero GPL, but Affero has
+released a new version of the Affero GPL which permits relicensing under
+this license.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+                       TERMS AND CONDITIONS
+
+  0. Definitions.
+
+  "This License" refers to version 3 of the GNU Affero General Public License.
+
+  "Copyright" also means copyright-like laws that apply to other kinds of
+works, such as semiconductor masks.
+
+  "The Program" refers to any copyrightable work licensed under this
+License.  Each licensee is addressed as "you".  "Licensees" and
+"recipients" may be individuals or organizations.
+
+  To "modify" a work means to copy from or adapt all or part of the work
+in a fashion requiring copyright permission, other than the making of an
+exact copy.  The resulting work is called a "modified version" of the
+earlier work or a work "based on" the earlier work.
+
+  A "covered work" means either the unmodified Program or a work based
+on the Program.
+
+  To "propagate" a work means to do anything with it that, without
+permission, would make you directly or secondarily liable for
+infringement under applicable copyright law, except executing it on a
+computer or modifying a private copy.  Propagation includes copying,
+distribution (with or without modification), making available to the
+public, and in some countries other activities as well.
+
+  To "convey" a work means any kind of propagation that enables other
+parties to make or receive copies.  Mere interaction with a user through
+a computer network, with no transfer of a copy, is not conveying.
+
+  An interactive user interface displays "Appropriate Legal Notices"
+to the extent that it includes a convenient and prominently visible
+feature that (1) displays an appropriate copyright notice, and (2)
+tells the user that there is no warranty for the work (except to the
+extent that warranties are provided), that licensees may convey the
+work under this License, and how to view a copy of this License.  If
+the interface presents a list of user commands or options, such as a
+menu, a prominent item in the list meets this criterion.
+
+  1. Source Code.
+
+  The "source code" for a work means the preferred form of the work
+for making modifications to it.  "Object code" means any non-source
+form of a work.
+
+  A "Standard Interface" means an interface that either is an official
+standard defined by a recognized standards body, or, in the case of
+interfaces specified for a particular programming language, one that
+is widely used among developers working in that language.
+
+  The "System Libraries" of an executable work include anything, other
+than the work as a whole, that (a) is included in the normal form of
+packaging a Major Component, but which is not part of that Major
+Component, and (b) serves only to enable use of the work with that
+Major Component, or to implement a Standard Interface for which an
+implementation is available to the public in source code form.  A
+"Major Component", in this context, means a major essential component
+(kernel, window system, and so on) of the specific operating system
+(if any) on which the executable work runs, or a compiler used to
+produce the work, or an object code interpreter used to run it.
+
+  The "Corresponding Source" for a work in object code form means all
+the source code needed to generate, install, and (for an executable
+work) run the object code and to modify the work, including scripts to
+control those activities.  However, it does not include the work's
+System Libraries, or general-purpose tools or generally available free
+programs which are used unmodified in performing those activities but
+which are not part of the work.  For example, Corresponding Source
+includes interface definition files associated with source files for
+the work, and the source code for shared libraries and dynamically
+linked subprograms that the work is specifically designed to require,
+such as by intimate data communication or control flow between those
+subprograms and other parts of the work.
+
+  The Corresponding Source need not include anything that users
+can regenerate automatically from other parts of the Corresponding
+Source.
+
+  The Corresponding Source for a work in source code form is that
+same work.
+
+  2. Basic Permissions.
+
+  All rights granted under this License are granted for the term of
+copyright on the Program, and are irrevocable provided the stated
+conditions are met.  This License explicitly affirms your unlimited
+permission to run the unmodified Program.  The output from running a
+covered work is covered by this License only if the output, given its
+content, constitutes a covered work.  This License acknowledges your
+rights of fair use or other equivalent, as provided by copyright law.
+
+  You may make, run and propagate covered works that you do not
+convey, without conditions so long as your license otherwise remains
+in force.  You may convey covered works to others for the sole purpose
+of having them make modifications exclusively for you, or provide you
+with facilities for running those works, provided that you comply with
+the terms of this License in conveying all material for which you do
+not control copyright.  Those thus making or running the covered works
+for you must do so exclusively on your behalf, under your direction
+and control, on terms that prohibit them from making any copies of
+your copyrighted material outside their relationship with you.
+
+  Conveying under any other circumstances is permitted solely under
+the conditions stated below.  Sublicensing is not allowed; section 10
+makes it unnecessary.
+
+  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
+
+  No covered work shall be deemed part of an effective technological
+measure under any applicable law fulfilling obligations under article
+11 of the WIPO copyright treaty adopted on 20 December 1996, or
+similar laws prohibiting or restricting circumvention of such
+measures.
+
+  When you convey a covered work, you waive any legal power to forbid
+circumvention of technological measures to the extent such circumvention
+is effected by exercising rights under this License with respect to
+the covered work, and you disclaim any intention to limit operation or
+modification of the work as a means of enforcing, against the work's
+users, your or third parties' legal rights to forbid circumvention of
+technological measures.
+
+  4. Conveying Verbatim Copies.
+
+  You may convey verbatim copies of the Program's source code as you
+receive it, in any medium, provided that you conspicuously and
+appropriately publish on each copy an appropriate copyright notice;
+keep intact all notices stating that this License and any
+non-permissive terms added in accord with section 7 apply to the code;
+keep intact all notices of the absence of any warranty; and give all
+recipients a copy of this License along with the Program.
+
+  You may charge any price or no price for each copy that you convey,
+and you may offer support or warranty protection for a fee.
+
+  5. Conveying Modified Source Versions.
+
+  You may convey a work based on the Program, or the modifications to
+produce it from the Program, in the form of source code under the
+terms of section 4, provided that you also meet all of these conditions:
+
+    a) The work must carry prominent notices stating that you modified
+    it, and giving a relevant date.
+
+    b) The work must carry prominent notices stating that it is
+    released under this License and any conditions added under section
+    7.  This requirement modifies the requirement in section 4 to
+    "keep intact all notices".
+
+    c) You must license the entire work, as a whole, under this
+    License to anyone who comes into possession of a copy.  This
+    License will therefore apply, along with any applicable section 7
+    additional terms, to the whole of the work, and all its parts,
+    regardless of how they are packaged.  This License gives no
+    permission to license the work in any other way, but it does not
+    invalidate such permission if you have separately received it.
+
+    d) If the work has interactive user interfaces, each must display
+    Appropriate Legal Notices; however, if the Program has interactive
+    interfaces that do not display Appropriate Legal Notices, your
+    work need not make them do so.
+
+  A compilation of a covered work with other separate and independent
+works, which are not by their nature extensions of the covered work,
+and which are not combined with it such as to form a larger program,
+in or on a volume of a storage or distribution medium, is called an
+"aggregate" if the compilation and its resulting copyright are not
+used to limit the access or legal rights of the compilation's users
+beyond what the individual works permit.  Inclusion of a covered work
+in an aggregate does not cause this License to apply to the other
+parts of the aggregate.
+
+  6. Conveying Non-Source Forms.
+
+  You may convey a covered work in object code form under the terms
+of sections 4 and 5, provided that you also convey the
+machine-readable Corresponding Source under the terms of this License,
+in one of these ways:
+
+    a) Convey the object code in, or embodied in, a physical product
+    (including a physical distribution medium), accompanied by the
+    Corresponding Source fixed on a durable physical medium
+    customarily used for software interchange.
+
+    b) Convey the object code in, or embodied in, a physical product
+    (including a physical distribution medium), accompanied by a
+    written offer, valid for at least three years and valid for as
+    long as you offer spare parts or customer support for that product
+    model, to give anyone who possesses the object code either (1) a
+    copy of the Corresponding Source for all the software in the
+    product that is covered by this License, on a durable physical
+    medium customarily used for software interchange, for a price no
+    more than your reasonable cost of physically performing this
+    conveying of source, or (2) access to copy the
+    Corresponding Source from a network server at no charge.
+
+    c) Convey individual copies of the object code with a copy of the
+    written offer to provide the Corresponding Source.  This
+    alternative is allowed only occasionally and noncommercially, and
+    only if you received the object code with such an offer, in accord
+    with subsection 6b.
+
+    d) Convey the object code by offering access from a designated
+    place (gratis or for a charge), and offer equivalent access to the
+    Corresponding Source in the same way through the same place at no
+    further charge.  You need not require recipients to copy the
+    Corresponding Source along with the object code.  If the place to
+    copy the object code is a network server, the Corresponding Source
+    may be on a different server (operated by you or a third party)
+    that supports equivalent copying facilities, provided you maintain
+    clear directions next to the object code saying where to find the
+    Corresponding Source.  Regardless of what server hosts the
+    Corresponding Source, you remain obligated to ensure that it is
+    available for as long as needed to satisfy these requirements.
+
+    e) Convey the object code using peer-to-peer transmission, provided
+    you inform other peers where the object code and Corresponding
+    Source of the work are being offered to the general public at no
+    charge under subsection 6d.
+
+  A separable portion of the object code, whose source code is excluded
+from the Corresponding Source as a System Library, need not be
+included in conveying the object code work.
+
+  A "User Product" is either (1) a "consumer product", which means any
+tangible personal property which is normally used for personal, family,
+or household purposes, or (2) anything designed or sold for incorporation
+into a dwelling.  In determining whether a product is a consumer product,
+doubtful cases shall be resolved in favor of coverage.  For a particular
+product received by a particular user, "normally used" refers to a
+typical or common use of that class of product, regardless of the status
+of the particular user or of the way in which the particular user
+actually uses, or expects or is expected to use, the product.  A product
+is a consumer product regardless of whether the product has substantial
+commercial, industrial or non-consumer uses, unless such uses represent
+the only significant mode of use of the product.
+
+  "Installation Information" for a User Product means any methods,
+procedures, authorization keys, or other information required to install
+and execute modified versions of a covered work in that User Product from
+a modified version of its Corresponding Source.  The information must
+suffice to ensure that the continued functioning of the modified object
+code is in no case prevented or interfered with solely because
+modification has been made.
+
+  If you convey an object code work under this section in, or with, or
+specifically for use in, a User Product, and the conveying occurs as
+part of a transaction in which the right of possession and use of the
+User Product is transferred to the recipient in perpetuity or for a
+fixed term (regardless of how the transaction is characterized), the
+Corresponding Source conveyed under this section must be accompanied
+by the Installation Information.  But this requirement does not apply
+if neither you nor any third party retains the ability to install
+modified object code on the User Product (for example, the work has
+been installed in ROM).
+
+  The requirement to provide Installation Information does not include a
+requirement to continue to provide support service, warranty, or updates
+for a work that has been modified or installed by the recipient, or for
+the User Product in which it has been modified or installed.  Access to a
+network may be denied when the modification itself materially and
+adversely affects the operation of the network or violates the rules and
+protocols for communication across the network.
+
+  Corresponding Source conveyed, and Installation Information provided,
+in accord with this section must be in a format that is publicly
+documented (and with an implementation available to the public in
+source code form), and must require no special password or key for
+unpacking, reading or copying.
+
+  7. Additional Terms.
+
+  "Additional permissions" are terms that supplement the terms of this
+License by making exceptions from one or more of its conditions.
+Additional permissions that are applicable to the entire Program shall
+be treated as though they were included in this License, to the extent
+that they are valid under applicable law.  If additional permissions
+apply only to part of the Program, that part may be used separately
+under those permissions, but the entire Program remains governed by
+this License without regard to the additional permissions.
+
+  When you convey a copy of a covered work, you may at your option
+remove any additional permissions from that copy, or from any part of
+it.  (Additional permissions may be written to require their own
+removal in certain cases when you modify the work.)  You may place
+additional permissions on material, added by you to a covered work,
+for which you have or can give appropriate copyright permission.
+
+  Notwithstanding any other provision of this License, for material you
+add to a covered work, you may (if authorized by the copyright holders of
+that material) supplement the terms of this License with terms:
+
+    a) Disclaiming warranty or limiting liability differently from the
+    terms of sections 15 and 16 of this License; or
+
+    b) Requiring preservation of specified reasonable legal notices or
+    author attributions in that material or in the Appropriate Legal
+    Notices displayed by works containing it; or
+
+    c) Prohibiting misrepresentation of the origin of that material, or
+    requiring that modified versions of such material be marked in
+    reasonable ways as different from the original version; or
+
+    d) Limiting the use for publicity purposes of names of licensors or
+    authors of the material; or
+
+    e) Declining to grant rights under trademark law for use of some
+    trade names, trademarks, or service marks; or
+
+    f) Requiring indemnification of licensors and authors of that
+    material by anyone who conveys the material (or modified versions of
+    it) with contractual assumptions of liability to the recipient, for
+    any liability that these contractual assumptions directly impose on
+    those licensors and authors.
+
+  All other non-permissive additional terms are considered "further
+restrictions" within the meaning of section 10.  If the Program as you
+received it, or any part of it, contains a notice stating that it is
+governed by this License along with a term that is a further
+restriction, you may remove that term.  If a license document contains
+a further restriction but permits relicensing or conveying under this
+License, you may add to a covered work material governed by the terms
+of that license document, provided that the further restriction does
+not survive such relicensing or conveying.
+
+  If you add terms to a covered work in accord with this section, you
+must place, in the relevant source files, a statement of the
+additional terms that apply to those files, or a notice indicating
+where to find the applicable terms.
+
+  Additional terms, permissive or non-permissive, may be stated in the
+form of a separately written license, or stated as exceptions;
+the above requirements apply either way.
+
+  8. Termination.
+
+  You may not propagate or modify a covered work except as expressly
+provided under this License.  Any attempt otherwise to propagate or
+modify it is void, and will automatically terminate your rights under
+this License (including any patent licenses granted under the third
+paragraph of section 11).
+
+  However, if you cease all violation of this License, then your
+license from a particular copyright holder is reinstated (a)
+provisionally, unless and until the copyright holder explicitly and
+finally terminates your license, and (b) permanently, if the copyright
+holder fails to notify you of the violation by some reasonable means
+prior to 60 days after the cessation.
+
+  Moreover, your license from a particular copyright holder is
+reinstated permanently if the copyright holder notifies you of the
+violation by some reasonable means, this is the first time you have
+received notice of violation of this License (for any work) from that
+copyright holder, and you cure the violation prior to 30 days after
+your receipt of the notice.
+
+  Termination of your rights under this section does not terminate the
+licenses of parties who have received copies or rights from you under
+this License.  If your rights have been terminated and not permanently
+reinstated, you do not qualify to receive new licenses for the same
+material under section 10.
+
+  9. Acceptance Not Required for Having Copies.
+
+  You are not required to accept this License in order to receive or
+run a copy of the Program.  Ancillary propagation of a covered work
+occurring solely as a consequence of using peer-to-peer transmission
+to receive a copy likewise does not require acceptance.  However,
+nothing other than this License grants you permission to propagate or
+modify any covered work.  These actions infringe copyright if you do
+not accept this License.  Therefore, by modifying or propagating a
+covered work, you indicate your acceptance of this License to do so.
+
+  10. Automatic Licensing of Downstream Recipients.
+
+  Each time you convey a covered work, the recipient automatically
+receives a license from the original licensors, to run, modify and
+propagate that work, subject to this License.  You are not responsible
+for enforcing compliance by third parties with this License.
+
+  An "entity transaction" is a transaction transferring control of an
+organization, or substantially all assets of one, or subdividing an
+organization, or merging organizations.  If propagation of a covered
+work results from an entity transaction, each party to that
+transaction who receives a copy of the work also receives whatever
+licenses to the work the party's predecessor in interest had or could
+give under the previous paragraph, plus a right to possession of the
+Corresponding Source of the work from the predecessor in interest, if
+the predecessor has it or can get it with reasonable efforts.
+
+  You may not impose any further restrictions on the exercise of the
+rights granted or affirmed under this License.  For example, you may
+not impose a license fee, royalty, or other charge for exercise of
+rights granted under this License, and you may not initiate litigation
+(including a cross-claim or counterclaim in a lawsuit) alleging that
+any patent claim is infringed by making, using, selling, offering for
+sale, or importing the Program or any portion of it.
+
+  11. Patents.
+
+  A "contributor" is a copyright holder who authorizes use under this
+License of the Program or a work on which the Program is based.  The
+work thus licensed is called the contributor's "contributor version".
+
+  A contributor's "essential patent claims" are all patent claims
+owned or controlled by the contributor, whether already acquired or
+hereafter acquired, that would be infringed by some manner, permitted
+by this License, of making, using, or selling its contributor version,
+but do not include claims that would be infringed only as a
+consequence of further modification of the contributor version.  For
+purposes of this definition, "control" includes the right to grant
+patent sublicenses in a manner consistent with the requirements of
+this License.
+
+  Each contributor grants you a non-exclusive, worldwide, royalty-free
+patent license under the contributor's essential patent claims, to
+make, use, sell, offer for sale, import and otherwise run, modify and
+propagate the contents of its contributor version.
+
+  In the following three paragraphs, a "patent license" is any express
+agreement or commitment, however denominated, not to enforce a patent
+(such as an express permission to practice a patent or covenant not to
+sue for patent infringement).  To "grant" such a patent license to a
+party means to make such an agreement or commitment not to enforce a
+patent against the party.
+
+  If you convey a covered work, knowingly relying on a patent license,
+and the Corresponding Source of the work is not available for anyone
+to copy, free of charge and under the terms of this License, through a
+publicly available network server or other readily accessible means,
+then you must either (1) cause the Corresponding Source to be so
+available, or (2) arrange to deprive yourself of the benefit of the
+patent license for this particular work, or (3) arrange, in a manner
+consistent with the requirements of this License, to extend the patent
+license to downstream recipients.  "Knowingly relying" means you have
+actual knowledge that, but for the patent license, your conveying the
+covered work in a country, or your recipient's use of the covered work
+in a country, would infringe one or more identifiable patents in that
+country that you have reason to believe are valid.
+
+  If, pursuant to or in connection with a single transaction or
+arrangement, you convey, or propagate by procuring conveyance of, a
+covered work, and grant a patent license to some of the parties
+receiving the covered work authorizing them to use, propagate, modify
+or convey a specific copy of the covered work, then the patent license
+you grant is automatically extended to all recipients of the covered
+work and works based on it.
+
+  A patent license is "discriminatory" if it does not include within
+the scope of its coverage, prohibits the exercise of, or is
+conditioned on the non-exercise of one or more of the rights that are
+specifically granted under this License.  You may not convey a covered
+work if you are a party to an arrangement with a third party that is
+in the business of distributing software, under which you make payment
+to the third party based on the extent of your activity of conveying
+the work, and under which the third party grants, to any of the
+parties who would receive the covered work from you, a discriminatory
+patent license (a) in connection with copies of the covered work
+conveyed by you (or copies made from those copies), or (b) primarily
+for and in connection with specific products or compilations that
+contain the covered work, unless you entered into that arrangement,
+or that patent license was granted, prior to 28 March 2007.
+
+  Nothing in this License shall be construed as excluding or limiting
+any implied license or other defenses to infringement that may
+otherwise be available to you under applicable patent law.
+
+  12. No Surrender of Others' Freedom.
+
+  If conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot convey a
+covered work so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you may
+not convey it at all.  For example, if you agree to terms that obligate you
+to collect a royalty for further conveying from those to whom you convey
+the Program, the only way you could satisfy both those terms and this
+License would be to refrain entirely from conveying the Program.
+
+  13. Remote Network Interaction; Use with the GNU General Public License.
+
+  Notwithstanding any other provision of this License, if you modify the
+Program, your modified version must prominently offer all users
+interacting with it remotely through a computer network (if your version
+supports such interaction) an opportunity to receive the Corresponding
+Source of your version by providing access to the Corresponding Source
+from a network server at no charge, through some standard or customary
+means of facilitating copying of software.  This Corresponding Source
+shall include the Corresponding Source for any work covered by version 3
+of the GNU General Public License that is incorporated pursuant to the
+following paragraph.
+
+  Notwithstanding any other provision of this License, you have
+permission to link or combine any covered work with a work licensed
+under version 3 of the GNU General Public License into a single
+combined work, and to convey the resulting work.  The terms of this
+License will continue to apply to the part which is the covered work,
+but the work with which it is combined will remain governed by version
+3 of the GNU General Public License.
+
+  14. Revised Versions of this License.
+
+  The Free Software Foundation may publish revised and/or new versions of
+the GNU Affero General Public License from time to time.  Such new versions
+will be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+  Each version is given a distinguishing version number.  If the
+Program specifies that a certain numbered version of the GNU Affero General
+Public License "or any later version" applies to it, you have the
+option of following the terms and conditions either of that numbered
+version or of any later version published by the Free Software
+Foundation.  If the Program does not specify a version number of the
+GNU Affero General Public License, you may choose any version ever published
+by the Free Software Foundation.
+
+  If the Program specifies that a proxy can decide which future
+versions of the GNU Affero General Public License can be used, that proxy's
+public statement of acceptance of a version permanently authorizes you
+to choose that version for the Program.
+
+  Later license versions may give you additional or different
+permissions.  However, no additional obligations are imposed on any
+author or copyright holder as a result of your choosing to follow a
+later version.
+
+  15. Disclaimer of Warranty.
+
+  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
+APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
+HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY
+OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
+IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
+ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+  16. Limitation of Liability.
+
+  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS
+THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
+GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
+USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF
+DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
+PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),
+EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
+
+  17. Interpretation of Sections 15 and 16.
+
+  If the disclaimer of warranty and limitation of liability provided
+above cannot be given local legal effect according to their terms,
+reviewing courts shall apply local law that most closely approximates
+an absolute waiver of all civil liability in connection with the
+Program, unless a warranty or assumption of liability accompanies a
+copy of the Program in return for a fee.
+
+                     END OF TERMS AND CONDITIONS
+
+            How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these terms.
+
+  To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+state the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Also add information on how to contact you by electronic and paper mail.
+
+  If your software can interact with users remotely through a computer
+network, you should also make sure that it provides a way for users to
+get its source.  For example, if your program is a web application, its
+interface could display a "Source" link that leads users to an archive
+of the code.  There are many ways you could offer source, and different
+solutions will be better for different programs; see section 13 for the
+specific requirements.
+
+  You should also get your employer (if you work as a programmer) or school,
+if any, to sign a "copyright disclaimer" for the program, if necessary.
+For more information on this, and how to apply and follow the GNU AGPL, see
+<https://www.gnu.org/licenses/>.
