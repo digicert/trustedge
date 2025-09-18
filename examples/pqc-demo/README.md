@@ -62,96 +62,172 @@ The demo files are packaged in [here](https://github.com/digicert/trustedge/tree
 
 ## Step 2: Clone TrustEdge repository
 
+1. Clone the TrustEdge repository for the PQC demo tools:
 
-### Step 3: Generate ML-DSA Certificates
-Follow the command instructions to generate self-signed ML-DSA certificates. CSR content samples are [given below](#notes). The CSR files `ca_csr.cnf` and `server_csr.cnf` should be stored at '/etc/digicert/keystore/conf/' for command to generate ML-DSA certificates under '/etc/digicert/keystore/certs/' 
+    ```
+    git clone https://github.com/digicert/trustedge.git
+    ```
 
-```bash
-sudo trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651 
-sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt
-```
+2. Go to the pqc-demo directory:
 
-### Step 4: Update MQTT Broker Certificate Store
-Copy the newly generated ML-DSA certificates to the MQTT Broker certificate store using:
-```bash
-sudo cp /etc/digicert/keystore/keys/server.key ./keystore/server.key
-sudo cp /etc/digicert/keystore/certs/server.crt ./keystore/server.crt
-sudo cp /etc/digicert/keystore/keys/CA.key ./keystore/CA.key
-sudo cp /etc/digicert/keystore/certs/CA.crt ./keystore/CA.crt
-```
-
-### Step 5: Verify ML-DSA Certificate
-```bash
-trustedge certificate -pc keystore/server.crt
-```
-
----
-
-## Configuration Details
-
-### MQTT Broker
-- **Binds**: `0.0.0.0`
-- **Port**: `8883 (MQTTS)`
-- **Server Name**: `mqtt-pqc-broker`
-
-Start Broker:
-```bash
-./start_broker.sh --cert ./keystore/server.crt --key ./keystore/server.key
-```
-
-### MQTT Subscriber (TrustEdge)
-Listens to topic `pqc/secure/channel`:
-```bash
-./consumer.sh --broker mqtt-pqc-broker --port 8883 --ca-cert ./keystore/CA.crt
-```
-
-### MQTT Publisher (TrustEdge)
-Publishes payloads to topic `pqc/secure/channel`:
-```bash
-./publisher.sh --broker mqtt-pqc-broker --port 8883 --ca-cert ./keystore/CA.crt
-```
-
----
-
-## Notes
-- ML-DSA certificates are significantly larger than RSA/ECC certificates due to their larger signature sizes.
-- TLS clients and servers must adhere to TLS 1.3 for PQC compatibility.
-- Sample CA CSR to be stored `/etc/digicert/keystore/conf/ca_csr.cnf`
-  ```bash
-  ##Subject
-  countryName=US
-  commonName=DigiCert Broker
-  stateOrProvinceName=California
-  localityName=Sunnyvale
-  organizationName=PM
-  organizationalUnitName=BU
-  ##Requested Extensions
-  hasBasicConstraints=true
-  isCA=true
-  certPathLen=-1
-  keyUsage=keyEncipherment, digitalSignature, keyCertSign
-  ##subjectAltNames=numSANs; value1, type1; valueN, typeN
-  subjectAltNames=1; broker.root.ca, 2
-  ```
-- Sample Server CSR to be stored `/etc/digicert/keystore/conf/server_csr.cnf`
-  ```bash
-  ##Subject
-  countryName=US
-  commonName=DigiCert Server
-  stateOrProvinceName=California
-  localityName=Sunnyvale
-  organizationName=PM
-  organizationalUnitName=BU
-  ##Requested Extensions
-  hasBasicConstraints=true
-  isCA=false
-  certPathLen=-1
-  keyUsage=keyEncipherment, digitalSignature, keyCertSign
-  ##subjectAltNames=numSANs; value1, type1; valueN, typeN
-  subjectAltNames=1; mqtt-pqc-broker, 2
-  ```
-
-For additional details, refer to the appendix or visit [TrustEdge Documentation](https://dev.digicert.com/en/trustedge.html).
+    ```
+    cd trustedge/examples/pqc-demo
+    ```
 
 
+## Step 3: Generate ML-DSA certificates
 
+1. Copy the PQC demo CSR configuration files to the ```/etc/digicert/keystore/conf``` directory:
+
+    ```
+    sudo cp ca_csr.cnf /etc/digicert/keystore/conf
+    sudo cp server_csr.cnf /etc/digicert/keystore/conf
+    ```
+> [!NOTE]
+> You can automate the next steps by running the PQC demo script ```certGeneration.sh```. If you decide to automate this process, skip to [Step 4: Configure and start the MQTT broker](#step-4-configure-and-start-the-mqtt-broker).
+
+2. Generate root CA key and certificate:
+
+    ```
+    sudo trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651
+    ```
+
+3. Generate server key and certificate signed by the root CA:
+
+    ```
+    sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt
+    ```
+
+4. Verify server and CA certificates:
+
+    ```
+    sudo trustedge certificate -pc /etc/digicert/keystore/certs/server.crt
+    sudo trustedge certificate -pc /etc/digicert/keystore/certs/CA.crt
+    ```
+
+5. Copy server certificate and key to the PQC demo ```keystore/``` directory:
+
+    ```
+    sudo cp /etc/digicert/keystore/keys/server.key ./keystore/server.key
+    sudo cp /etc/digicert/keystore/certs/server.crt ./keystore/server.crt
+    ```
+
+6. Copy CA certificate and key to the PQC demo ```keystore/``` directory:
+
+    ```
+    sudo cp /etc/digicert/keystore/keys/CA.key ./keystore/CA.key
+    sudo cp /etc/digicert/keystore/certs/CA.crt ./keystore/CA.crt
+    ```
+
+## Step 4: Configure and start the MQTT broker
+
+1. Add the following MQTT server entry to your ```/etc/hosts``` configuration file:
+
+    ```
+    127.0.0.1 mqtt-pqc-broker
+    ```
+
+2. Make ```start_broker.sh``` executable:
+
+    ```
+    chmod +x start_broker.sh
+    ```
+
+3. Launch the MQTT broker with TLS 1.3 and ML-DSA credentials:
+
+    ```
+    ./start_broker.sh --cert ./keystore/server.crt --key ./keystore/server.key
+    ```
+
+4. Confirm broker is listening on port 8883:
+
+    ```
+    ss -tlnp | grep 8883
+    ```
+
+## Step 5: Run TrustEdge subscriber
+
+1. Make ```consumer.sh``` executable:
+
+    ```
+    chmod +x consumer.sh
+    ```
+
+2. Subscribe to topic ```pqc/secure/channel```:
+
+    ```
+    ./consumer.sh --broker mqtt-pqc-broker --port 8883 --ca-cert ./keystore/CA.crt
+    ```
+
+3. You should see a “Connected” message followed by readiness to receive.
+
+## Step 6: Run TrustEdge publisher
+
+1. Make ```publisher.sh``` executable:
+
+    ```
+    chmod +x publisher.sh
+    ```
+
+2. Publish a test message to ```pqc/secure/channel```:
+    
+    ```
+    ./publisher.sh --broker mqtt-pqc-broker --port 8883 --ca-cert ./keystore/CA.crt
+    ```
+
+## Step 7: Capture and decrypt handshake in Wireshark
+
+You can capture MQTT traffic on the loopback interface using Wireshark. Configure Wireshark to use your (pre)-master-secret log, filter for TLS packets, and then inspect both the hybrid key-exchange parameters and the server’s PQC x.509 certificate.
+
+**Capture traffic on the loopback adapter**
+
+1. Open Wireshark.
+1. Select the **“lo”** (loopback) interface.
+1. Click **Start** to begin capture.
+1. Reproduce your MQTT client’s connection.
+1. Stop capture once the TLS handshake and MQTT CONNECT are complete.
+
+**Configure TLS decryption**
+
+1. In Wireshark, go to **Edit > Preferences.**
+1. Expand **Protocols**, then scroll to **TLS**.
+1. In **(Pre)-Master-Secret log filename**, browse and select ```demo-pqc/client_keys.txt```.
+1. Click **OK**.
+
+Wireshark will now use those secrets to decrypt TLSv1.3 session data, including PQC certificates.
+
+**Filter for TLS handshake packets**
+
+1. At the top of the main window, set the display filter to:
+
+    ```
+    tls
+    ```
+
+2. Press **Enter**.
+
+> [!NOTE]
+> This hides non-TLS traffic, so you can focus on the handshake.
+
+**Examine the key-exchange in ClientHello**
+
+1. Find the **ClientHello** packet in the packet list.
+1. Expand **Transport Layer Security → Extension: supported_groups**.
+1. You will see two hybrid groups announced:
+
+| Hex Value | Decimal | Name | Description |
+|----------|----------|----------|----------|
+| 0x11EC | 4588 | X25519MLKEM768 | Post-quantum hybrid ECDHE-MLKEM Key Agreement for TLS 1.3|
+| 0x11EB | 4587 | secp256r1MLKEM768 | Post-quantum hybrid ECDHE-MLKEM Key Agreement for TLS 1.3|
+
+> [!NOTE]
+> These tell the broker which PQC-hybrid key-exchange algorithms the client supports. To look up any new TLS parameter values, consult the **TLS Parameters** registry on the IANA website.
+
+**Inspect the server certificate**
+
+1. Locate the **Certificate** message sent by the broker.
+1. Expand **Transport Layer Security → Certificate** and click on the server’s X.509 entry.
+1. Note the **Algorithm ID** field: ```2.16.840.1.101.3.4.3.17```
+
+> [!NOTE]
+> This Algorithm ID is the OID dot notation for ML-DSA-44, the post-quantum signature algorithm. You can see the description and ASN.1 notation at the [OID repository for 2.16.840.1.101.3.4.3.17](https://oid-base.com/get/2.16.840.1.101.3.4.3.17).
