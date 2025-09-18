@@ -209,11 +209,11 @@ Wireshark will now use those secrets to decrypt TLSv1.3 session data, including 
 
 | Hex Value | Decimal | Name | Description |
 |----------|----------|----------|----------|
-| 0x11EC | 4588 | X25519MLKEM768 | Post-quantum hybrid ECDHE-MLKEM Key Agreement for TLS 1.3|
-| 0x11EB | 4587 | secp256r1MLKEM768 | Post-quantum hybrid ECDHE-MLKEM Key Agreement for TLS 1.3|
+| 0x11EC | 4588 | X25519MLKEM768 | Post-quantum hybrid X25519 ECDH + ML-KEM-768 Key Agreement for TLS 1.3|
+| 0x11EB | 4587 | secp256r1MLKEM768 | Post-quantum hybrid secp256r1 ECDH + ML-KEM-768 Key Agreement for TLS 1.3|
 
 > [!NOTE]
-> These tell the broker which PQC-hybrid key-exchange algorithms the client supports. To look up any new TLS parameter values, consult the **TLS Parameters** registry on the IANA website.
+> These tell the broker which PQC-hybrid key-exchange algorithms the client supports. To look up the TLS parameter values, consult the [IANA TLS Parameters registry](https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-8).
 
 ![Hybrid](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/assets/ws_hybridkeyexchange.png)
 
