@@ -1,10 +1,17 @@
-```markdown
-## Post-Quantum Cryptography (PQC) Demo Using TrustEdge and MQTT Broker secured by ML-DSA certificates 
-```
-## Overview
-This demo showcases the integration of Post-Quantum Cryptography (PQC) in action. It demonstrates a TLS 1.3 session between the TrustEdge MQTT client and the open-source Mosquitto MQTT broker. The MQTT session is secured using ML-DSA certificates (issued by Device Trust Manager) and employs ML-KEM for key exchange during the TLS 1.3 session.
+# Overview
+This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in IoT communications. It demonstrates a quantum-safe session between the TrustEdge MQTT client and the open-source Mosquitto MQTT broker. The MQTT session is secured using ML-DSA certificates to authenticate the MQTT client with the Mosquitto broker and employs hybrid key exchange (X25519 + ML-KEM-768) during the TLS 1.3 session.
 
 > **Note:** PQC is only supported in TLS 1.3 as per IETF. TLS 1.2 is feature-frozen, making it essential for all TLS clients and servers to upgrade to TLS 1.3.
+
+## Before you begin
+
+- You need a [TrustEdge compatible device.](https://dev.digicert.com/en/trustedge/system-requirements.html)
+- ```sudo``` (root) privileges on your device is needed.
+- The user running TrustEdge CLI commands must be a member of the ```trustedge``` group
+  -  Use ```groups "$(whoami)"``` to see group membership.
+  -  Use ```sudo adduser "$(whoami)" trustedge``` to add your user to the ```trustedge``` group.
+-  You have an understanding of the [TrustEdge keystore directory and permissions.](https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html)
+-  [GitHub CLI](https://docs.github.com/en/github-cli/github-cli/about-github-cli) to clone the TrustEdge repository.
 
 ## Architecture
 
@@ -13,29 +20,48 @@ This demo showcases the integration of Post-Quantum Cryptography (PQC) in action
 ## Ubuntu Package File Structure
 The demo files are packaged in [here](https://github.com/digicert/trustedge/tree/master/examples/pqc-demo), which includes all necessary components for running the PQC demo. Both x86_64 and ARM64 binaries are provided.
 
-### Key Files
-- [start_broker.sh](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/start_broker.sh): Discovers the platform using `uname -m` and starts ML-DSA Certificates Compliant MQTT BROKER.
+## Key Files
+- [start_broker.sh](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/start_broker.sh): Discovers the platform using `uname -m` and instructs the Mosquitto broker to start listening with an ML-DSA server certificate.
 - [TrustEdge PQC Capable Binary](https://github.com/digicert/trustedge/releases/tag/trustedge_24.7.2-2187): Generate ML-DSA Certificates and Negotiate PQC exclusively.
 - [TrustEdge Keystore Directory](https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html): Generates certificates and keys required for authentication. Using Default Keystore for the Demo at `/etc/digicert/keystore`
 
----
+## Step 1: Install TrustEdge
 
-## Installation Guide
+1. Download the appropriate [TrustEdge release ```.deb``` package](https://github.com/digicert/trustedge/releases) for your CPU architecture:
 
-### Step 1: Download TrustEdge Binary
-Download the latest version of TrustEdge binary from the [TrustEdge GitHub Repository](https://github.com/digicert/trustedge/releases/tag/trustedge_24.7.2-2187).
+    ```
+    # 64-bit Intel/AMD (x86_64)
+    wget https://github.com/digicert/trustedge/releases/download/trustedge_24.7.2-2187/trustedge_24.7.2-2187.x86_64.deb
+    ```
+    ```
+    # 64-bit ARM (AArch64)
+    wget https://github.com/digicert/trustedge/releases/download/trustedge_24.7.2-2187/trustedge_24.7.2-2187.aarch64.deb
+    ```
+    ```
+    # 32-bit ARM
+    wget https://github.com/digicert/trustedge/releases/download/trustedge_24.7.2-2187/trustedge_24.7.2-2187.arm.deb
+    ```
 
-Example (ARM64):
-```bash
-wget https://github.com/digicert/trustedge/releases/download/trustedge_24.7.2-2187/trustedge_24.7.2-2187.arm.deb
-```
+2. Remove any previous TrustEdge installation:
 
-### Step 2: Update TrustEdge Binary
-Ensure you use TrustEdge v24.7.2 Build 2187 or above:
-1. Uninstall the old version.
-2. Install the binary downloaded in [Step 1](#installation-guide).
+    ```
+    sudo apt remove --purge trustedge
+    ```
 
-> **Note:** Generation of ML-DSA certificate using TrustEdge and copying it to Broker in next Steps 3 to 5 are automated in [certGeneration.sh](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/keyCert.sh). Skip to Step 6 if you choose to run the script.
+3. Install the new package:
+
+   ```
+   sudo dpkg -i trustedge_24.7.2-2187.<cpu_arch>.deb
+   ```
+
+4. Verify version ≥ v24.7.2-2187:
+
+   ```
+   trustedge --version
+   ```
+
+## Step 2: Clone TrustEdge repository
+
 
 ### Step 3: Generate ML-DSA Certificates
 Follow the command instructions to generate self-signed ML-DSA certificates. CSR content samples are [given below](#notes). The CSR files `ca_csr.cnf` and `server_csr.cnf` should be stored at '/etc/digicert/keystore/conf/' for command to generate ML-DSA certificates under '/etc/digicert/keystore/certs/' 
