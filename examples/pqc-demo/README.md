@@ -223,6 +223,8 @@ Wireshark will now use those secrets to decrypt TLSv1.3 session data, including 
 > [!NOTE]
 > These tell the broker which PQC-hybrid key-exchange algorithms the client supports. To look up any new TLS parameter values, consult the **TLS Parameters** registry on the IANA website.
 
+![Hybrid](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/assets/ws_hybridkeyexchange.png)
+
 **Inspect the server certificate**
 
 1. Locate the **Certificate** message sent by the broker.
@@ -231,3 +233,9 @@ Wireshark will now use those secrets to decrypt TLSv1.3 session data, including 
 
 > [!NOTE]
 > This Algorithm ID is the OID dot notation for ML-DSA-44, the post-quantum signature algorithm. You can see the description and ASN.1 notation at the [OID repository for 2.16.840.1.101.3.4.3.17](https://oid-base.com/get/2.16.840.1.101.3.4.3.17).
+
+![Hybrid](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/assets/ws_mldsa.png)
+
+## Congratulations
+
+Congratulations on completing this tutorial! For more information on PQC visit [DigiCert Solutions for Post-Quantum](https://www.digicert.com/solutions/security-solutions-for-post-quantum-computing).
