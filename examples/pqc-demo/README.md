@@ -17,14 +17,6 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 ![Setup Architecture is as follows](https://github.com/user-attachments/assets/b2ffbc47-8925-493f-9705-ad4d3f4ac5f4)
 
-## Ubuntu Package File Structure
-The demo files are packaged in [here](https://github.com/digicert/trustedge/tree/master/examples/pqc-demo), which includes all necessary components for running the PQC demo. Both x86_64 and ARM64 binaries are provided.
-
-## Key Files
-- [start_broker.sh](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/start_broker.sh): Discovers the platform using `uname -m` and instructs the Mosquitto broker to start listening with an ML-DSA server certificate.
-- [TrustEdge PQC Capable Binary](https://github.com/digicert/trustedge/releases/tag/trustedge_24.7.2-2187): Generate ML-DSA Certificates and Negotiate PQC exclusively.
-- [TrustEdge Keystore Directory](https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html): Generates certificates and keys required for authentication. Using Default Keystore for the Demo at `/etc/digicert/keystore`
-
 ## Step 1: Install TrustEdge
 
 1. Download the appropriate [TrustEdge release ```.deb``` package](https://github.com/digicert/trustedge/releases) for your CPU architecture:
