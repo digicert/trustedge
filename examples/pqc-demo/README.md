@@ -69,11 +69,13 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 ## Step 3: Generate ML-DSA certificates
 
+### Option 1: TrustEdge self signed certificate generation
+
 1. Copy the PQC demo CSR configuration files to the ```/etc/digicert/keystore/conf``` directory:
 
     ```
-    sudo cp ca_csr.cnf /etc/digicert/keystore/conf
-    sudo cp server_csr.cnf /etc/digicert/keystore/conf
+    cp ca_csr.cnf /etc/digicert/keystore/conf
+    cp server_csr.cnf /etc/digicert/keystore/conf
     ```
 > [!NOTE]
 > You can automate the next steps by running the PQC demo script ```certGeneration.sh```. If you decide to automate this process, skip to [Step 4: Configure and start the MQTT broker](#step-4-configure-and-start-the-mqtt-broker).
@@ -81,34 +83,43 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 2. Generate root CA key and certificate:
 
     ```
-    sudo trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651
+    trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651
     ```
 
 3. Generate server key and certificate signed by the root CA:
 
     ```
-    sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt
+    trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt
     ```
 
 4. Verify server and CA certificates:
 
     ```
-    sudo trustedge certificate -pc /etc/digicert/keystore/certs/server.crt
-    sudo trustedge certificate -pc /etc/digicert/keystore/certs/CA.crt
+    trustedge certificate -pc /etc/digicert/keystore/certs/server.crt
+    trustedge certificate -pc /etc/digicert/keystore/certs/CA.crt
     ```
 
-5. Copy server certificate and key to the PQC demo ```keystore/``` directory:
+### Option 2: EST server key generation and certificate issuance
+
+> [!NOTE]
+> This requires a network connection to a backend server
+
+1. Copy the PQC demo CSR configuration files to the ```/etc/digicert/keystore/conf``` directory:
 
     ```
-    sudo cp /etc/digicert/keystore/keys/server.key ./keystore/server.key
-    sudo cp /etc/digicert/keystore/certs/server.crt ./keystore/server.crt
+    cp server_csr.cnf /etc/digicert/keystore/conf
     ```
 
-6. Copy CA certificate and key to the PQC demo ```keystore/``` directory:
+2. Generate server key and certificate signed by the root CA:
 
     ```
-    sudo cp /etc/digicert/keystore/keys/CA.key ./keystore/CA.key
-    sudo cp /etc/digicert/keystore/certs/CA.crt ./keystore/CA.crt
+    ./est_server_keygen_mldsa --est-server-dn <server-name> --est-server-url <url> --est-user <user> --est-password <password>
+    ```
+
+3. Verify server certificate:
+
+    ```
+    trustedge certificate -pc /etc/digicert/keystore/certs/mldsa_server_keygen.pem
     ```
 
 ## Step 4: Configure and start the MQTT broker
@@ -127,8 +138,11 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 3. Launch the MQTT broker with TLS 1.3 and ML-DSA credentials:
 
+> [!NOTE]
+> If the key and certificate was issued using the EST backend, use mldsa_server_keygen.pem for the key and certificate
+
     ```
-    ./start_broker.sh --cert ./keystore/server.crt --key ./keystore/server.key
+    ./start_broker.sh --cert /etc/digicert/keystore/certs/server.crt --key /etc/digicert/keystore/keys/server.key
     ```
 
 4. Confirm broker is listening on port 8883:
@@ -147,8 +161,12 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 2. Subscribe to topic ```pqc/secure/channel```:
 
+> [!NOTE]
+> If the key and certificate was issued using the EST backend, use
+the EST CA certificate stored in /etc/digicert/keystore/ca
+
     ```
-    ./consumer.sh --broker mqtt-pqc-broker --port 8883 --ca-cert ./keystore/CA.crt
+    ./consumer.sh --broker mqtt-pqc-broker --port 8883 --ca-cert /etc/digicert/keystore/certs/CA.crt
     ```
 
 3. You should see a “Connected” message followed by readiness to receive.
@@ -162,9 +180,13 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
     ```
 
 2. Publish a test message to ```pqc/secure/channel```:
-    
+
+> [!NOTE]
+> If the key and certificate was issued using the EST backend, use
+the EST CA certificate stored in /etc/digicert/keystore/ca
+
     ```
-    ./publisher.sh --broker mqtt-pqc-broker --port 8883 --ca-cert ./keystore/CA.crt
+    ./publisher.sh --broker mqtt-pqc-broker --port 8883 --ca-cert /etc/digicert/keystore/certs/CA.crt
     ```
 
 ## Step 7: Capture and decrypt handshake in Wireshark
