@@ -25,7 +25,7 @@ while [[ "$#" -gt 0 ]]; do
     case $1 in
         --estc-server-dn)
             if [ -z "$2" ]; then
-                echo "Error: --est-server-dn requires a value.";
+                echo "Error: --estc-server-dn requires a value.";
                 exit 1;
             fi
             EST_SERVER_DN="$2";
