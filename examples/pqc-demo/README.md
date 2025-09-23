@@ -113,7 +113,7 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 2. Generate server key and certificate signed by the root CA:
 
     ```
-    ./est_server_keygen_mldsa --est-server-dn <server-name> --est-server-url <url> --est-user <user> --est-password <password>
+    ./est_server_keygen_mldsa --estc-server-dn <server-name> --estc-server-url <url> --estc-user <user> --estc-password <password>
     ```
 
 3. Verify server certificate:
