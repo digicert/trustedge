@@ -15,7 +15,7 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 ## Architecture
 
-![Setup Architecture is as follows](https://github.com/user-attachments/assets/b2ffbc47-8925-493f-9705-ad4d3f4ac5f4)
+![Setup Architecture is as follows](https://github.com/digicert/trustedge/blob/demo-pqc-v2/examples/pqc-demo/assets/MQTTS-PQC-1738287869933.jpg)
 
 ## Step 1: Install TrustEdge
 
