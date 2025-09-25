@@ -9,6 +9,6 @@ trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_cs
 echo "All TrustEdge Key and Certificates Generated Successfully."
 
 
-trustedge certificate -pc keystore/server.crt
+trustedge certificate -pc /etc/digicert/keystore/certs/server.crt
 
-trustedge certificate -pc keystore/CA.crt
+trustedge certificate -pc /etc/digicert/keystore/certs/CA.crt
