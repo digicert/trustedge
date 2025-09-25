@@ -163,7 +163,7 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 > [!NOTE]
 > If the key and certificate was issued using the EST backend, use
-the EST CA certificate stored in /etc/digicert/keystore/ca
+the EST CA certificate stored in /etc/digicert/keystore/ca - {digest}.pem
 
     ```
     ./consumer.sh --broker mqtt-pqc-broker --port 8883 --ca-cert /etc/digicert/keystore/certs/CA.crt
@@ -183,7 +183,7 @@ the EST CA certificate stored in /etc/digicert/keystore/ca
 
 > [!NOTE]
 > If the key and certificate was issued using the EST backend, use
-the EST CA certificate stored in /etc/digicert/keystore/ca
+the EST CA certificate stored in /etc/digicert/keystore/ca - {digest}.pem
 
     ```
     ./publisher.sh --broker mqtt-pqc-broker --port 8883 --ca-cert /etc/digicert/keystore/certs/CA.crt
