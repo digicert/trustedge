@@ -56,7 +56,6 @@ providers = provider_sect
 # List of providers to load
 [provider_sect]
 default = default_sect
-oqsprovider = oqsprovider_sect
 # The fips section name should match the section name inside the
 # included fipsmodule.cnf.
 # fips = fips_sect
@@ -70,7 +69,7 @@ oqsprovider = oqsprovider_sect
 # OpenSSL may not work correctly which could lead to significant system
 # problems including inability to remotely access the system.
 [default_sect]
-activate = 1
+# activate = 1
 
 
 ####################################################################
@@ -343,8 +342,8 @@ path = pkix/
 
 # Server authentication
 recipient = "/C=FI/O=Insta Demo/CN=Insta Demo CA" # or set srvcert or issuer
-ignore_keyusage = 1 # potentially needed quirk
-unprotected_errors = 1 # potentially needed quirk
+ignore_keyusage = 1 # quirk needed to accept Insta CA cert not including digitalsignature
+unprotected_errors = 1 # quirk needed to accept negative responses possibly not protected
 extracertsout = insta.extracerts.pem
 
 # Client authentication
@@ -389,5 +388,3 @@ oldcert = $insta::certout # insta.cert.pem
 # Certificate revocation
 cmd = rr
 oldcert = $insta::certout # insta.cert.pem
-[oqsprovider_sect]
-activate = 1

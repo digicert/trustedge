@@ -10,5 +10,6 @@ hasBasicConstraints=true
 isCA=false
 certPathLen=-1
 keyUsage=keyEncipherment, digitalSignature, keyCertSign
+extendedKeyUsage=serverAuth
 ##subjectAltNames=numSANs; value1, type1; valueN, typeN
 subjectAltNames=1; mqtt-pqc-broker, 2
