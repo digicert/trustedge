@@ -145,7 +145,7 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
     ./start_broker.sh --cert /etc/digicert/keystore/certs/server.crt --key /etc/digicert/keystore/keys/server.key
     ```
 
-To start the MQTT broker using a locally built mosquitto (build instructions provided in Appendix), use the following steps
+To start the MQTT broker using a locally built mosquitto (build instructions provided in Appendix), use the following steps:
 
     cd mosquitto-2.0.22/build/src
 
