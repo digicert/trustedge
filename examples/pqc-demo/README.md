@@ -145,6 +145,28 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
     ./start_broker.sh --cert /etc/digicert/keystore/certs/server.crt --key /etc/digicert/keystore/keys/server.key
     ```
 
+To start the MQTT broker using a locally built mosquitto (build instructions provided in Appendix), use the following steps
+
+    cd mosquitto-2.0.22/build/src
+
+Create a `mosq.conf` file with the following contents
+
+    per_listener_settings true
+
+    listener 1883 0.0.0.0
+    allow_anonymous true
+
+    listener 8883 0.0.0.0
+    allow_anonymous true
+    protocol mqtt
+    cafile /etc/digicert/keystore/certs/server.crt
+    certfile /etc/digicert/keystore/certs/server.crt
+    keyfile /etc/digicert/keystore/keys/server.key
+
+Start the broker
+
+    ./mosquitto -c mosq.conf
+
 4. Confirm broker is listening on port 8883:
 
     ```
@@ -249,6 +271,45 @@ Wireshark will now use those secrets to decrypt TLSv1.3 session data, including 
 > This Algorithm ID is the OID dot notation for ML-DSA-44, the post-quantum signature algorithm. You can see the description and ASN.1 notation at the [OID repository for 2.16.840.1.101.3.4.3.17](https://oid-base.com/get/2.16.840.1.101.3.4.3.17).
 
 ![Hybrid](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/assets/ws_mldsa.png)
+
+## Appendix
+
+### Building Mosquitto with OpenSSL 3.5.1
+
+Configuration parameters - export the following environment variables so they can be picked up for subsequent operations
+
+    export OPENSSL_INSTALL_PATH=<path>
+    export OPENSSL_LIB_PATH=$( [ "$(uname -m)" = "x86_64" ] && echo lib64 || echo lib )
+
+Download and install OpenSSL 3.5.1
+
+
+    wget https://github.com/openssl/openssl/releases/download/openssl-3.5.1/openssl-3.5.1.tar.gz
+    tar xf openssl-3.5.1.tar.gz
+    cd openssl-3.5.1
+    rm -rf $OPENSSL_INSTALL_PATH
+    mkdir -p $OPENSSL_INSTALL_PATH
+    ./config --prefix=$OPENSSL_INSTALL_PATH --openssldir=$OPENSSL_INSTALL_PATH shared
+    make clean all
+    make install
+
+Download and build Mosquitto
+
+    wget https://mosquitto.org/files/source/mosquitto-2.0.22.tar.gz
+    tar xf mosquitto-2.0.22.tar.gz
+    cd mosquitto-2.0.22
+    mkdir build
+    cd build
+    cmake .. \
+      -DWITH_TLS=ON \
+      -DCMAKE_PREFIX_PATH=$OPENSSL_INSTALL_PATH/$OPENSSL_LIB_PATH/cmake/OpenSSL \
+      -DCMAKE_FIND_ROOT_PATH=$OPENSSL_INSTALL_PATH \
+      -DOPENSSL_INCLUDE_DIR=$OPENSSL_INSTALL_PATH/include \
+      -DOPENSSL_LIBRARIES="$OPENSSL_INSTALL_PATH/$OPENSSL_LIB_PATH/libssl.so;$OPENSSL_INSTALL_PATH/$OPENSSL_LIB_PATH/libcrypto.so" \
+      -DOPENSSL_SSL_LIBRARY=$OPENSSL_INSTALL_PATH/$OPENSSL_LIB_PATH/libssl.so \
+      -DOPENSSL_CRYPTO_LIBRARY=$OPENSSL_INSTALL_PATH/$OPENSSL_LIB_PATH/libcrypto.so \
+      -DCMAKE_BUILD_TYPE=Release
+    make clean all
 
 ## Congratulations
 
