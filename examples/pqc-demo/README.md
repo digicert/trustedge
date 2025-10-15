@@ -1,5 +1,5 @@
 # Overview
-This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in IoT communications. It demonstrates a quantum-safe session between the TrustEdge MQTT client and the open-source Mosquitto MQTT broker. The MQTT session is secured using ML-DSA certificates to authenticate the MQTT client with the Mosquitto broker and employs hybrid key exchange (X25519 + ML-KEM-768) during the TLS 1.3 session.
+This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in IoT communications. It demonstrates a quantum-safe session between the open-source [DigiCert TrustEdge MQTT client](https://github.com/digicert/trustedge) and the open-source [Eclipse Mosquitto MQTT broker](https://mosquitto.org/). The MQTT session is secured using ML-DSA certificates to authenticate the MQTT client with the Mosquitto broker and employs hybrid key exchange (X25519 + ML-KEM-768) during the TLS 1.3 session.
 
 > **Note:** PQC is only supported in TLS 1.3 as per IETF. TLS 1.2 is feature-frozen, making it essential for all TLS clients and servers to upgrade to TLS 1.3.
 
@@ -7,11 +7,8 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 - You need a [TrustEdge compatible device.](https://dev.digicert.com/en/trustedge/system-requirements.html)
 - ```sudo``` (root) privileges on your device is needed.
-- The user running TrustEdge CLI commands must be a member of the ```trustedge``` group
-  -  Use ```groups "$(whoami)"``` to see group membership.
-  -  Use ```sudo adduser "$(whoami)" trustedge``` to add your user to the ```trustedge``` group.
--  You have an understanding of the [TrustEdge keystore directory and permissions.](https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html)
--  [GitHub CLI](https://docs.github.com/en/github-cli/github-cli/about-github-cli) to clone the TrustEdge repository.
+- You have an understanding of the [TrustEdge keystore directory and permissions.](https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html)
+- [GitHub CLI](https://docs.github.com/en/github-cli/github-cli/about-github-cli) to clone the TrustEdge repository.
 
 ## Architecture
 
@@ -86,19 +83,19 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 > [!NOTE]
 > You can automate the next steps by running the PQC demo script ```certGeneration.sh```. If you decide to automate this process, skip to [Step 4: Configure and start the MQTT broker](#step-4-configure-and-start-the-mqtt-broker).
 
-2. Generate root CA key and certificate:
+2. Generate root CA keypair and certificate:
 
     ```
     trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651
     ```
 
-3. Generate server key and certificate signed by the root CA:
+3. Generate Mosquitto MQTT broker server keypair and certificate, signed by the root CA:
 
     ```
     trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt
     ```
 
-4. Verify server and CA certificates:
+4. Verify the Mosquitto MQTT broker server certificate and the root CA certificate:
 
     ```
     trustedge certificate -pc /etc/digicert/keystore/certs/server.crt
@@ -108,7 +105,7 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 ### Option 2: EST server key generation and certificate issuance
 
 > [!NOTE]
-> This requires a network connection to a backend server
+> This requires a network connection to DigiCert [Device Trust Manager's](https://docs.digicert.com/en/device-trust-manager.html) EST endpoint with an ML-DSA PKI heirarchy configured. Any EST client, including ```curl```, can be used to request and receive an ML-DSA certificate over EST. See the [Configure and use EST tutorial](https://docs.digicert.com/en/device-trust-manager/tutorials/configure-and-use-est.html) for more information.
 
 1. Copy the PQC demo CSR configuration files to the ```/etc/digicert/keystore/conf``` directory:
 
@@ -144,19 +141,22 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 3. Launch the MQTT broker with TLS 1.3 and ML-DSA credentials:
 
-> [!NOTE]
-> If the key and certificate was issued using the EST backend, use mldsa_server_keygen.pem for the key and certificate
+    > [!NOTE]
+    > If the key and certificate was issued using the EST backend, use mldsa_server_keygen.pem for the key and certificate
+
+   ```
+   ./start_broker.sh --cert /etc/digicert/keystore/certs/server.crt --key /etc/digicert/keystore/keys/server.key
+   ```
+
+    To start the MQTT broker using a locally built Mosquitto (build instructions provided in Appendix), use the following steps:
+
+     ```
+     cd mosquitto-2.0.22/build/src
+     ```
+
+    Create a `mosq.conf` file with the following contents
 
     ```
-    ./start_broker.sh --cert /etc/digicert/keystore/certs/server.crt --key /etc/digicert/keystore/keys/server.key
-    ```
-
-To start the MQTT broker using a locally built mosquitto (build instructions provided in Appendix), use the following steps:
-
-    cd mosquitto-2.0.22/build/src
-
-Create a `mosq.conf` file with the following contents
-
     per_listener_settings true
 
     listener 1883 0.0.0.0
@@ -168,10 +168,13 @@ Create a `mosq.conf` file with the following contents
     cafile /etc/digicert/keystore/certs/server.crt
     certfile /etc/digicert/keystore/certs/server.crt
     keyfile /etc/digicert/keystore/keys/server.key
+    ```
 
-Start the broker
-
-    ./mosquitto -c mosq.conf
+    Start the broker
+  
+    ```
+    ./mosquitto -c mosq.conf 
+    ```
 
 4. Confirm broker is listening on port 8883:
 
@@ -189,9 +192,9 @@ Start the broker
 
 2. Subscribe to topic ```pqc/secure/channel```:
 
-> [!NOTE]
-> If the key and certificate was issued using the EST backend, use
-the EST CA certificate stored in /etc/digicert/keystore/ca - {digest}.pem
+    > [!NOTE]
+    > If the key and certificate was issued using the EST backend, use
+    the EST CA certificate stored in /etc/digicert/keystore/ca - {digest}.pem
 
     ```
     ./consumer.sh --broker mqtt-pqc-broker --port 8883 --ca-cert /etc/digicert/keystore/certs/CA.crt
@@ -209,9 +212,9 @@ the EST CA certificate stored in /etc/digicert/keystore/ca - {digest}.pem
 
 2. Publish a test message to ```pqc/secure/channel```:
 
-> [!NOTE]
-> If the key and certificate was issued using the EST backend, use
-the EST CA certificate stored in /etc/digicert/keystore/ca - {digest}.pem
+    > [!NOTE]
+    > If the key and certificate was issued using the EST backend, use
+    the EST CA certificate stored in /etc/digicert/keystore/ca - {digest}.pem
 
     ```
     ./publisher.sh --broker mqtt-pqc-broker --port 8883 --ca-cert /etc/digicert/keystore/certs/CA.crt
