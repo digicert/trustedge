@@ -52,6 +52,12 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
    trustedge --version
    ```
 
+5. Add your user to the ```trustedge``` user group:
+
+```
+sudo adduser "$(whoami)" trustedge
+```
+
 ## Step 2: Clone TrustEdge repository
 
 1. Clone the TrustEdge repository for the PQC demo tools:
