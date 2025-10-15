@@ -226,7 +226,10 @@ You can capture MQTT traffic on the loopback interface using Wireshark. Configur
 
 **Capture traffic on the loopback adapter**
 
-1. Open Wireshark.
+1. Open Wireshark with sudo or as a root user to capture traffic on the loopback interface.
+   ```
+   sudo wireshark
+   ```
 1. Select the **“lo”** (loopback) interface.
 1. Click **Start** to begin capture.
 1. Reproduce your MQTT client’s connection.
