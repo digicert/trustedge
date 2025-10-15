@@ -105,7 +105,7 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 ### Option 2: EST server key generation and certificate issuance
 
 > [!NOTE]
-> This requires a network connection to DigiCert [Device Trust Manager's](https://docs.digicert.com/en/device-trust-manager.html) EST endpoint with an ML-DSA PKI heirarchy configured. Any EST client, including ```curl```, can be used to request and receive an ML-DSA certificate over EST. See the [Configure and use EST tutorial](https://docs.digicert.com/en/device-trust-manager/tutorials/configure-and-use-est.html) for more information.
+> This requires a network connection to [DigiCert Device Trust Manager's](https://docs.digicert.com/en/device-trust-manager.html) EST endpoint with an ML-DSA PKI heirarchy configured. Any EST client, including ```curl```, can be used to request and receive an ML-DSA certificate over EST. See the [Configure and use EST tutorial](https://docs.digicert.com/en/device-trust-manager/tutorials/configure-and-use-est.html) for more information.
 
 1. Copy the PQC demo CSR configuration files to the ```/etc/digicert/keystore/conf``` directory:
 
