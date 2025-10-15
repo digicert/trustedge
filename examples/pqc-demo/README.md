@@ -54,9 +54,9 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 5. Add your user to the ```trustedge``` user group:
 
-  ```
-  sudo adduser "$(whoami)" trustedge
-  ```
+   ```
+   sudo adduser "$(whoami)" trustedge
+   ```
 
 ## Step 2: Clone TrustEdge repository
 
