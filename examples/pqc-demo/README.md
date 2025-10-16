@@ -86,20 +86,20 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 2. Generate root CA keypair and certificate:
 
     ```
-    trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651
+    trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651
     ```
 
 3. Generate Mosquitto MQTT broker server keypair and certificate, signed by the root CA:
 
     ```
-    trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt
+    trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem
     ```
 
 4. Verify the Mosquitto MQTT broker server certificate and the root CA certificate:
 
     ```
-    trustedge certificate -pc /etc/digicert/keystore/certs/server.crt
-    trustedge certificate -pc /etc/digicert/keystore/certs/CA.crt
+    trustedge certificate -pc /etc/digicert/keystore/certs/server.pem
+    trustedge certificate -pc /etc/digicert/keystore/certs/CA.pem
     ```
 
 ### Option 2: EST server key generation and certificate issuance
@@ -116,13 +116,14 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 2. Generate server key and certificate signed by the root CA:
 
     ```
-    ./est_server_keygen_mldsa --estc-server-dn <server-name> --estc-server-url <url> --estc-user <user> --estc-password <password>
+    ./est_server_keygen_mldsa.sh --estc-server-dn <server-name> --estc-server-url <url> --estc-user <user> --estc-password <password>
     ```
 
 3. Verify server certificate:
 
     ```
-    trustedge certificate -pc /etc/digicert/keystore/certs/mldsa_server_keygen.pem
+    trustedge certificate -pc /etc/digicert/keystore/certs/server.pem
+    trustedge certificate -pc /etc/digicert/keystore/certs/CA.pem
     ```
 
 ## Step 4: Configure and start the MQTT broker
@@ -141,11 +142,8 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 3. Launch the MQTT broker with TLS 1.3 and ML-DSA credentials:
 
-    > [!NOTE]
-    > If the key and certificate was issued using the EST backend, use mldsa_server_keygen.pem for the key and certificate
-
    ```
-   ./start_broker.sh --cert /etc/digicert/keystore/certs/server.crt --key /etc/digicert/keystore/keys/server.key
+   ./start_broker.sh --keystore /etc/digicert/keystore
    ```
 
     To start the MQTT broker using a locally built Mosquitto (build instructions provided in Appendix), use the following steps:
@@ -165,9 +163,9 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
     listener 8883 0.0.0.0
     allow_anonymous true
     protocol mqtt
-    cafile /etc/digicert/keystore/certs/server.crt
-    certfile /etc/digicert/keystore/certs/server.crt
-    keyfile /etc/digicert/keystore/keys/server.key
+    cafile /etc/digicert/keystore/certs/server.pem
+    certfile /etc/digicert/keystore/certs/server.pem
+    keyfile /etc/digicert/keystore/keys/server.pem
     ```
 
     Start the broker
@@ -192,12 +190,8 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 2. Subscribe to topic ```pqc/secure/channel```:
 
-    > [!NOTE]
-    > If the key and certificate was issued using the EST backend, use
-    the EST CA certificate stored in /etc/digicert/keystore/ca - {digest}.pem
-
     ```
-    ./consumer.sh --broker mqtt-pqc-broker --port 8883 --ca-cert /etc/digicert/keystore/certs/CA.crt
+    ./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore
     ```
 
 3. You should see a “Connected” message followed by readiness to receive.
@@ -212,12 +206,8 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 2. Publish a test message to ```pqc/secure/channel```:
 
-    > [!NOTE]
-    > If the key and certificate was issued using the EST backend, use
-    the EST CA certificate stored in /etc/digicert/keystore/ca - {digest}.pem
-
     ```
-    ./publisher.sh --broker mqtt-pqc-broker --port 8883 --ca-cert /etc/digicert/keystore/certs/CA.crt
+    ./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore
     ```
 
 ## Step 7: Capture and decrypt handshake in Wireshark

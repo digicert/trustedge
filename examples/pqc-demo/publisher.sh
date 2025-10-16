@@ -5,6 +5,8 @@ set -e
 # Set script directory
 SCRIPT_DIR=$( cd $(dirname $0) ; pwd -P )
 
+DEFAULT_CA_FILE="certs/CA.pem"
+
 # Show usage
 function show_usage
 {
@@ -13,7 +15,7 @@ function show_usage
     echo "  --help                 - Show help options"
     echo "  --broker <hostname>    - Broker to connect to"
     echo "  --port <port>          - Broker port"
-    echo "  --ca-cert <path>       - Path to trusted certificate"
+    echo "  --keystore <path>      - Path to keystore (picks up $DEFAULT_CA_FILE by default)"
     echo ""
     if [ -n "$1" ]; then
         echo "$1"
@@ -26,7 +28,7 @@ function show_usage
 
 BROKER=
 BROKER_PORT=
-CA_CERT_FILE=
+KEYSTORE_PATH=
 
 # Parse command line arguments
 while test $# -gt 0
@@ -49,11 +51,11 @@ do
             BROKER_PORT=$2
             shift
             ;;
-        --ca-cert)
+        --keystore)
             if [ -z "$2" ]; then
-                show_usage "Missing --ca-cert argument"
+                show_usage "Missing --keystore argument"
             fi
-            CA_CERT_FILE=$2
+            KEYSTORE_PATH=$2
             shift
             ;;
         *)
@@ -71,9 +73,11 @@ if [ -z "$BROKER_PORT" ]; then
     show_usage "Missing --port argument"
 fi
 
-if [ -z "$CA_CERT_FILE" ]; then
-    show_usage "Missing --ca-cert argument"
+if [ -z "$KEYSTORE_PATH" ]; then
+    show_usage "Missing --keystore argument"
 fi
+
+export ENABLE_SSL_KEYLOG=1
 
 trustedge mqtt \
     --mqtt_servername $BROKER \
@@ -82,7 +86,7 @@ trustedge mqtt \
     --mqtt_pub_topic pqc/secure/channel \
     --mqtt_pub_message "Signature Algorithm > MLDSA" \
     --mqtt_pub_message "Key Exchange > X25519MLKEM768" \
-    --ssl_ca_file $CA_CERT_FILE \
+    --ssl_ca_file $KEYSTORE_PATH/$DEFAULT_CA_FILE \
     --mqtt_transport SSL
 
 sleep 2
@@ -93,5 +97,5 @@ trustedge mqtt \
     --mqtt_client_id trustedge_pub_client \
     --mqtt_pub_topic pqc/secure/channel \
     --mqtt_pub_message "Hello from DigiCert TrustEdge PQC over TLS1.3!!" \
-    --ssl_ca_file $CA_CERT_FILE \
+    --ssl_ca_file $KEYSTORE_PATH/$DEFAULT_CA_FILE \
     --mqtt_transport SSL
