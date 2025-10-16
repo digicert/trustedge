@@ -77,6 +77,8 @@ if [ -z "$KEYSTORE_PATH" ]; then
     show_usage "Missing --keystore argument"
 fi
 
+# Enable SSL key logging for debugging purposes.
+# WARNING: This should only be used in development environments, as it writes sensitive key material to disk.
 export ENABLE_SSL_KEYLOG=1
 
 trustedge mqtt \
