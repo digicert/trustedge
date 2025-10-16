@@ -5,14 +5,16 @@ set -e
 # Set script directory
 SCRIPT_DIR=$( cd $(dirname $0) ; pwd -P )
 
+DEFAULT_KEY_FILE="keys/server.pem"
+DEFAULT_CERT_FILE="certs/server.pem"
+
 # Show usage
 function show_usage
 {
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  --help                 - Show help options"
-    echo "  --cert <path>          - Path to server certificate"
-    echo "  --key <path>           - Path to server key"
+    echo "  --keystore <path>      - Path to keystore (picks up $DEFAULT_CERT_FILE and $DEFAULT_KEY_FILE by default)"
     echo ""
     if [ -n "$1" ]; then
         echo "$1"
@@ -23,8 +25,7 @@ function show_usage
     fi
 }
 
-CERT_PATH=
-KEY_PATH=
+KEYSTORE_PATH=
 
 # Parse command line arguments
 while test $# -gt 0
@@ -33,18 +34,11 @@ do
         --help)
             show_usage
             ;;
-        --cert)
+        --keystore)
             if [ -z "$2" ]; then
-                show_usage "Missing --cert argument"
+                show_usage "Missing --keystore argument"
             fi
-            CERT_PATH=$2
-            shift
-            ;;
-        --key)
-            if [ -z "$2" ]; then
-                show_usage "Missing --key argument"
-            fi
-            KEY_PATH=$2
+            KEYSTORE_PATH=$2
             shift
             ;;
         *)
@@ -54,12 +48,8 @@ do
     shift
 done
 
-if [ -z "$CERT_PATH" ]; then
-    show_usage "Missing --cert argument"
-fi
-
-if [ -z "$KEY_PATH" ]; then
-    show_usage "Missing --key argument"
+if [ -z "$KEYSTORE_PATH" ]; then
+    show_usage "Missing --keystore argument"
 fi
 
 if [[ "$(uname -m)" == "x86_64" ]]; then
@@ -70,6 +60,9 @@ else
     echo "ERROR: Unable to detect platform"
     exit -1
 fi
+
+CERT_PATH=$KEYSTORE_PATH/$DEFAULT_CERT_FILE
+KEY_PATH=$KEYSTORE_PATH/$DEFAULT_KEY_FILE
 
 export OPENSSL_CONF=$SCRIPT_DIR/mosquitto/openssl.cnf
 export OPENSSL_MODULES=$SCRIPT_DIR/mosquitto/$PLATFORM_DIR

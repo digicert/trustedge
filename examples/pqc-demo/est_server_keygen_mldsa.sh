@@ -79,8 +79,8 @@ if [ -n "$ESTC_PASSWORD" ]; then
 fi
 
 # Clean up any existing keys/certs
-rm -f /etc/digicert/keystore/keys/mldsa_server_keygen.*
-rm -f /etc/digicert/keystore/certs/mldsa_server_keygen.*
+rm -f /etc/digicert/keystore/keys/server.*
+rm -f /etc/digicert/keystore/certs/server.*
 
 wget -P /etc/digicert/keystore/ca http://cacerts.digicert.com/DigiCertGlobalRootG2.crt > /dev/null 2>&1
 wget -P /etc/digicert/keystore/ca http://cacerts.digicert.com/DigiCertGlobalRootCA.crt > /dev/null 2>&1
@@ -97,7 +97,18 @@ trustedge certificate est \
     --estc-authentication-mode BASIC \
     --algorithm QS \
     --pq-alg MLDSA_44 \
-    --key-alias mldsa_server_keygen \
+    --key-alias server \
     --csr-conf server_csr.cnf \
     --log-level INFO \
     $ESTC_CRED_ARG
+
+# Loop through CA directory and find parent CA cert
+for file in /etc/digicert/keystore/ca/*; do
+    if ./openssl.sh verify -partial_chain -CAfile "$file" /etc/digicert/keystore/certs/server.pem > /dev/null 2>&1; then
+        cp "$file" /etc/digicert/keystore/certs/CA.pem
+        echo "Parent CA cert: /etc/digicert/keystore/certs/CA.pem"
+        break
+    fi
+done
+
+echo "Generated server certificate: /etc/digicert/keystore/certs/server.pem"
