@@ -77,6 +77,10 @@ if [ -z "$KEYSTORE_PATH" ]; then
     show_usage "Missing --keystore argument"
 fi
 
+# Enable SSL key logging for debugging purposes.
+# This environment variable causes the client to log SSL/TLS session keys,
+# which can be used with tools like Wireshark to decrypt traffic for troubleshooting.
+# WARNING: Do not enable this in production environments, as it exposes sensitive key material.
 export ENABLE_SSL_KEYLOG=1
 
 trustedge mqtt \
