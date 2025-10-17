@@ -9,6 +9,10 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 - ```sudo``` (root) privileges on your device is needed.
 - You have an understanding of the [TrustEdge keystore directory and permissions.](https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html)
 - [GitHub CLI](https://docs.github.com/en/github-cli/github-cli/about-github-cli) to clone the TrustEdge repository.
+- Install the prerequisites using
+  ```
+  sudo apt install wget unzip
+  ``` 
 
 ## Architecture
 
@@ -16,40 +20,44 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
 ## Step 1: Install TrustEdge
 
-1. Download the appropriate [TrustEdge release ```.deb``` package](https://github.com/digicert/trustedge/releases) for your CPU architecture:
-
-    ```
-    # 64-bit Intel/AMD (x86_64)
-    wget https://github.com/digicert/trustedge/releases/download/trustedge_24.7.2-2187/trustedge_24.7.2-2187.x86_64.deb
-    ```
-    ```
-    # 64-bit ARM (AArch64)
-    wget https://github.com/digicert/trustedge/releases/download/trustedge_24.7.2-2187/trustedge_24.7.2-2187.aarch64.deb
-    ```
-    ```
-    # 32-bit ARM
-    wget https://github.com/digicert/trustedge/releases/download/trustedge_24.7.2-2187/trustedge_24.7.2-2187.arm.deb
-    ```
-
-2. Remove any previous TrustEdge installation:
+1. Remove any previous TrustEdge installation:
 
     ```
     sudo apt remove --purge trustedge
     ```
+2. Download the latest [TrustEdge release ```.deb``` package](https://github.com/digicert/trustedge/releases) appropriate for your CPU architecture:
 
-3. Install the new package:
+    ```
+    # 64-bit Intel/AMD (x86_64)
+    wget https://github.com/digicert/trustedge/releases/latest/download/trustedge-x64-deb.zip
+    ```
+    ```
+    # 64-bit ARM (AArch64)
+    wget https://github.com/digicert/trustedge/releases/latest/download/trustedge-aarch64-deb.zip
+    ```
+    ```
+    # 32-bit ARM
+    wget https://github.com/digicert/trustedge/releases/latest/download/trustedge-arm-deb.zip
+    ```
+
+3. Extract the TrustEdge installer
+    ```
+    unzip trustedge-<cpu_arch>-deb.zip
+    ```   
+
+4. Install the new package:
 
    ```
-   sudo dpkg -i trustedge_24.7.2-2187.<cpu_arch>.deb
+   sudo dpkg -i trustedge_<version>.<cpu_arch>.deb
    ```
 
-4. Verify version ≥ v24.7.2-2187:
+5. Verify version ≥ v24.7.2-2187:
 
    ```
    trustedge --version
    ```
 
-5. Add your user to the ```trustedge``` user group:
+6. Add your user to the ```trustedge``` user group (logout and login to ensure this takes effect) :
 
    ```
    sudo adduser "$(whoami)" trustedge
