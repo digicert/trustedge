@@ -282,6 +282,10 @@ Wireshark will now use those secrets to decrypt TLSv1.3 session data, including 
 
 ![Hybrid](https://github.com/digicert/trustedge/blob/master/examples/pqc-demo/assets/ws_mldsa.png)
 
+## Congratulations
+
+Congratulations on completing this tutorial! For more information on PQC visit [DigiCert Solutions for Post-Quantum](https://www.digicert.com/solutions/security-solutions-for-post-quantum-computing).
+
 ## Appendix
 
 ### Building Mosquitto with OpenSSL 3.5.1
@@ -321,6 +325,3 @@ Download and build Mosquitto
       -DCMAKE_BUILD_TYPE=Release
     make clean all
 
-## Congratulations
-
-Congratulations on completing this tutorial! For more information on PQC visit [DigiCert Solutions for Post-Quantum](https://www.digicert.com/solutions/security-solutions-for-post-quantum-computing).
