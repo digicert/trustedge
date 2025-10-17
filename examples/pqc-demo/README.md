@@ -237,7 +237,7 @@ You can capture MQTT traffic on the loopback interface using Wireshark. Configur
 
 1. In Wireshark, go to **Edit > Preferences.**
 1. Expand **Protocols**, then scroll to **TLS**.
-1. In **(Pre)-Master-Secret log filename**, browse and select ```demo-pqc/client_keys.txt```.
+1. In **(Pre)-Master-Secret log filename**, browse and select ```pqc-demo/client_keys.txt```.
 1. Click **OK**.
 
 Wireshark will now use those secrets to decrypt TLSv1.3 session data, including PQC certificates.
