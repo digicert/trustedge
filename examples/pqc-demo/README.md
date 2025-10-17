@@ -258,7 +258,7 @@ Wireshark will now use those secrets to decrypt TLSv1.3 session data, including 
 **Examine the key-exchange in ClientHello**
 
 1. Find the **ClientHello** packet in the packet list.
-1. Expand **Transport Layer Security → Extension: supported_groups**.
+1. Expand **Transport Layer Security → TLSv1.3 Record Layer → Handshake Protocol → Extension: supported_groups → Supported Groups**.
 1. You will see two hybrid groups announced:
 
 | Hex Value | Decimal | Name | Description |
@@ -274,7 +274,7 @@ Wireshark will now use those secrets to decrypt TLSv1.3 session data, including 
 **Inspect the server certificate**
 
 1. Locate the **Certificate** message sent by the broker.
-1. Expand **Transport Layer Security → Certificate** and click on the server’s X.509 entry.
+1. Expand **Transport Layer Security → TLSv1.3 Record Layer → Handshake Protocol → Certificates → Certificate** and click on the server’s X.509 entry.
 1. Note the **Algorithm ID** field: ```2.16.840.1.101.3.4.3.17```
 
 > [!NOTE]
