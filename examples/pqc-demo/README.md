@@ -71,6 +71,8 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
     git clone https://github.com/digicert/trustedge.git
     ```
 
+    Note: The download may take several minutes. 
+
 2. Go to the pqc-demo directory:
 
     ```
@@ -107,6 +109,9 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
 
     ```
     trustedge certificate -pc /etc/digicert/keystore/certs/server.pem
+    ```
+
+    ```
     trustedge certificate -pc /etc/digicert/keystore/certs/CA.pem
     ```
 
