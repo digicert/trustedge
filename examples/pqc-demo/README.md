@@ -159,11 +159,13 @@ This tutorial showcases the integration of Post-Quantum Cryptography (PQC) in Io
    ./start_broker.sh --keystore /etc/digicert/keystore
    ```
 
+   Note: If an error appears stating mosquitto is already running, you can kill mosquitto using ```sudo pkill mosquitto```
+
     To start the MQTT broker using a locally built Mosquitto (build instructions provided in Appendix), use the following steps:
 
-     ```
-     cd mosquitto-2.0.22/build/src
-     ```
+    ```
+    cd mosquitto-2.0.22/build/src
+    ```
 
     Create a `mosq.conf` file with the following contents
 
