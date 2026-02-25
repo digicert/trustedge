@@ -55,7 +55,7 @@ do
             if [ -z "$2" ]; then
                 show_usage "Missing --keystore argument"
             fi
-            KEYSTORE_PATH=$2
+            KEYSTORE_PATH=${2%/}
             shift
             ;;
         *)
