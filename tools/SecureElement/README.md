@@ -1,4 +1,4 @@
-# TPM2 Tools for TrustEdge
+# DigiCert TPM2 Tools
 
 ## Introduction
 The **TrustEdge** includes a set of utilities under `tpm2_tools` that enable developers and integrators to take ownership, provision, and configure Trusted Platform Modules (TPMs) across different platforms. These tools simplify secure element management and provide a consistent workflow for TPM initialization, certificate provisioning, and device identity management.
