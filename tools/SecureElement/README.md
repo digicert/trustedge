@@ -3,7 +3,7 @@
 ## Introduction
 The **TrustEdge** includes a set of utilities under `tpm2_tools` that enable developers and integrators to take ownership, provision, and configure Trusted Platform Modules (TPMs) across different platforms. These tools simplify secure element management and provide a consistent workflow for TPM initialization, certificate provisioning, and device identity management.
 
-TrustEdge integrates with **Device Trust Manager (DTM)** — a platform that establishes device identity and enables visualization of certificates issued throughout a device’s lifecycle, from **birth certificates** to **operational certificates**. This ensures secure communication and data exchange backed by certificate-based trust.
+TrustEdge integrates with **Device Trust Manager** — a platform that establishes device identity and enables visualization of certificates issued throughout a device’s lifecycle, from **birth certificates** to **operational certificates**. This ensures secure communication and data exchange backed by certificate-based trust.
 
 TrustEdge is fully **TLS 1.3 compliant**, providing modern, standards-based security for sending and receiving data. It also supports **Post-Quantum Cryptography (PQC) algorithms**, ensuring long-term resilience against emerging cryptographic threats.
 
