@@ -32,6 +32,12 @@ TrustEdge command line can:
 
 Rather than learning and using multiple OSS tools to accomplish the above tasks, TrustEdge command line brings all these capabilties into one easy-to-use tool.
 
+## Secure Key Generation and Storage with TPM Hardware
+
+If you need to generate, store, or manage private keys using a secure hardware element (such as a Trusted Platform Module), TrustEdge provides dedicated TPM tools to help. These tools enable secure key provisioning, ownership management, and lifecycle operations on TPM devices.
+
+For detailed information on TPM tools and workflows, see [tools/SecureElement/README.md](./tools/SecureElement/README.md).
+
 ## Documentation
 
 TrustEdge documentation is available at https://dev.digicert.com/en/trustedge.html.
