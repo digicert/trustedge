@@ -177,33 +177,51 @@ sudo ./bin/smp_tpm2_getidstr_bin --w
 
 ## Certificate Lifecycle and Data Flow
 
-The following diagram illustrates how TPM provisioning integrates with **Device Trust Manager (DTM)** and downstream IoT telemetry platforms:
+The following diagram illustrates how TPM provisioning integrates with **Device Trust Manager (DTM)** and the **IoT Telemetry Platform**:
 
 ```
-+-------------------+        +-------------------+        +---------------------------+
-|   TPM2 Device     |        | Device Trust      |        |   IoT Telemetry Platform  |
-|                   |        | Manager (DTM)     |        | (MQTT, HTTPS, etc.)       |
-| - Reset TPM       |        |                   |        |                           |
-| - Take Ownership  | -----> | - Birth Identity  | -----> | - Operational Certificates|
-| - Provision Certs |        | - Cert Lifecycle  |        | - Secure TLS 1.3 + PQC    |
-+-------------------+        | - Integrated CA/ICA|       | - Data Exchange           |
-                             | - External CA/ICA  |       |                           |
-                             +-------------------+        +---------------------------+
++---------------------------+
+|   Device Trust Manager    |
+|        (DTM)              |
+|                           |
+| - Birth Identity Cert     |
+| - Operational Cert Mgmt   |
+| - Key Lifecycle           |
+| - TLS Exchange Mgmt       |
++-----|--------------|------+
+      |              |
+      |              |
+      v              v
++---------------------------+    +---------------------------+
+|   TPM2 Device             |    |   IoT Telemetry Platform  |
+|                           |    |   (MQTT, HTTPS, etc.)     |
+| - Operational Key Pair    |--->| - Secure TLS 1.3 + PQC    |
+| - Operational Certificate |    | - Data Exchange           |
+| - Reset TPM               |<---|                           |
+| - Take Ownership          |    | (TLS managed by DTM)      |
+| - Provision Certs         |    |                           |
++---------------------------+    +---------------------------+
 ```
 
 ### Flow Description
-1. **TPM2 Device Initialization**  
-   - Reset TPM (`reset_tpm2.sh`)  
-   - Take ownership and provision (`provision_tpm2.sh` or `digicert_tpm2_takeownership`)  
 
-2. **Device Trust Manager (DTM)**  
-   - Issues a **Birth Identity Certificate** at device onboarding  
-   - Manages lifecycle of certificates (renewal, revocation, operational certs)  
+1. **Register Device – Central Authority**  
+   - Issues **Birth Identity Certificate** at device onboarding  
+   - Manages identity and key lifecycle for devices
+   - Generates and manages **Operational Certificates** 
+   - Configures TLS exchange policies and security requirements
    - Supports integration with internal CA/ICA or external third-party CA/ICA  
 
-3. **IoT Telemetry Platform**  
-   - Uses **Operational Certificates** issued via DTM  
-   - Ensures secure communication over **TLS 1.3**  
-   - Supports **Post-Quantum Cryptography (PQC)** algorithms for long-term resilience  
-   - Enables secure telemetry data exchange (e.g., MQTT, HTTPS, WSS)  
+2. **Register Operational Certificate - TPM2 Device**  
+   - Stores **Operational Key Pair** securely in TPM hardware  
+   - Stores **Operational Certificate** issued by DTM
+   - Uses operational credentials to authenticate with IoT Telemetry Platform
+   - Lifecycle: Reset TPM → Take Ownership → Provision Certificates (all managed via DTM)
+
+3. **IoT Telemetry Platform – Data Exchange**  
+   - Receives secure communications from the device using **Operational Certificates**
+   - Validates device identity via TLS 1.3 handshake  
+   - Supports **Post-Quantum Cryptography (PQC)** algorithms for long-term resilience
+   - Enables secure telemetry data exchange (e.g., MQTT over TLS, HTTPS, WSS)
+   - TLS exchange credentials and policies managed by Device Trust Manager  
 
