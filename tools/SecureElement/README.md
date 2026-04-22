@@ -216,8 +216,7 @@ The following diagram illustrates how TPM provisioning integrates with **Device 
    - Stores **Operational Key Pair** securely in TPM hardware  
    - Stores **Operational Certificate** issued by DTM
    - Uses operational credentials to authenticate with IoT Telemetry Platform
-   - Lifecycle: Reset TPM → Take Ownership → Provision Certificates (all managed via DTM)
-
+   
 3. **IoT Telemetry Platform – Data Exchange**  
    - Receives secure communications from the device using **Operational Certificates**
    - Validates device identity via TLS 1.3 handshake  
