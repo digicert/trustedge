@@ -83,6 +83,43 @@ This creates the following directory structure:
 
 ## TPM2 Device Operations
 
+### Understanding Credential Files
+
+A **credential file** is a security configuration file used to manage access control and authentication for TPM devices. It stores:
+
+- **Passwords/Secrets**: Hierarchical passwords for TPM ownership and authorization (Lockout Hierarchy Password, Endorsement Hierarchy Password, Storage Hierarchy Password)
+- **Authorization Policies**: Access control rules that define who can use specific TPM keys and functions
+- **Metadata**: Information about the TPM's security policies and authentication requirements
+
+**Purpose of Credential Files:**
+- **Security**: Enables password-protected and policy-based access to TPM resources
+- **Audit & Control**: Ensures only authorized processes can perform TPM operations (key generation, signing, decryption)
+- **Compliance**: Supports security requirements by restricting TPM access to authenticated users/applications
+- **Persistence**: Stores authorization state so TPM security policies persist across device reboots
+
+When you provision a TPM with a credential file (e.g., `/etc/digicert/creds.tpm2`), you're establishing it as the security policy for that device. Subsequent operations that use this credential file verify authorization before allowing access.
+
+---
+
+### Generate or Initialize a Credential File
+
+Before you can use credential files with TPM operations, you need to obtain or generate a credential file. The credential file can be:
+
+1. **Pre-provided by DigiCert**: If you have received a credential file from DigiCert as part of your TrustEdge deployment package, you can use it directly.
+
+2. **Generated from Configuration Templates**: DigiCert provides configuration templates in the `conf/tap/tpm2/` directory:
+   - `tpm2_prov.conf.tmpl` – Template configuration file for TPM provisioning
+   
+   You can use these templates as a basis to generate your credential file. Customize the template according to your security requirements (passwords, policies, hierarchy settings) and use the provisioning tools to initialize the TPM with these credentials.
+
+3. **Created Interactively**: Some deployments may use provisioning scripts that prompt you to set passwords and policies, which are then compiled into a credential file.
+
+**Important**: Guard credential files carefully as they contain sensitive authentication and authorization information. Store them securely (e.g., in `/etc/digicert/` with restricted permissions) and limit access to authorized users and processes only.
+
+Once you have a credential file in place, you can reference it in all TPM operations (see below).
+
+---
+
 ### Clear the TPM2 Device
 You can clear the TPM2 device using the reset script:
 ```bash
