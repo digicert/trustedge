@@ -171,8 +171,7 @@ sudo ./bin/smp_tpm2_getidstr_bin --w
 ### Notes
 - **TPM Device Path Verification**: The commands in this guide assume the TPM device is at `/dev/tpm0`. Verify your actual TPM device path with `ls -la /dev/tpm*` and adjust commands accordingly if needed.  
 - If resetting or taking ownership of the TPM2 device fails, ensure that no processes are actively using the TPM2 device. Identify and terminate such processes before retrying.  
-- Always verify configuration files under `conf/` before provisioning.  
-- Integrate with **Device Trust Manager** to visualize certificate lifecycle and enable secure TLS 1.3 + PQC-backed communication.  
+- Always verify configuration files under `conf/` before provisioning.    
 
 ---
 
