@@ -186,41 +186,18 @@ The following diagram illustrates how TPM provisioning integrates with **Device 
 |                           |
 | - Birth Identity Cert     |
 | - Operational Cert Mgmt   |
-| - Key Lifecycle           |
-| - TLS Exchange Mgmt       |
+| - Device Management       |
 +-----|--------------|------+
       |              |
       |              |
       v              v
 +---------------------------+    +---------------------------+
-|   TPM2 Device             |    |   IoT Telemetry Platform  |
+|   TPM2 Device             |    |   IoT Platform            |
 |                           |    |   (MQTT, HTTPS, etc.)     |
-| - Operational Key Pair    |--->| - Secure TLS 1.3 + PQC    |
-| - Operational Certificate |    | - Data Exchange           |
+| - Operational Key Pair    |--->|                           |
+| - Operational Certificate |    | - Secure Data Exchange    |
 | - Reset TPM               |<---|                           |
-| - Take Ownership          |    | (TLS managed by DTM)      |
+| - Take Ownership          |    |                           |
 | - Provision Certs         |    |                           |
 +---------------------------+    +---------------------------+
 ```
-
-### Flow Description
-
-1. **Register Device – Central Authority**  
-   - Issues **Birth Identity Certificate** at device onboarding  
-   - Manages identity and key lifecycle for devices
-   - Generates and manages **Operational Certificates** 
-   - Configures TLS exchange policies and security requirements
-   - Supports integration with internal CA/ICA or external third-party CA/ICA  
-
-2. **Register Operational Certificate - TPM2 Device**  
-   - Stores **Operational Key Pair** securely in TPM hardware  
-   - Stores **Operational Certificate** issued by DTM
-   - Uses operational credentials to authenticate with IoT Telemetry Platform
-   
-3. **IoT Telemetry Platform – Data Exchange**  
-   - Receives secure communications from the device using **Operational Certificates**
-   - Validates device identity via TLS 1.3 handshake  
-   - Supports **Post-Quantum Cryptography (PQC)** algorithms for long-term resilience
-   - Enables secure telemetry data exchange (e.g., MQTT over TLS, HTTPS, WSS)
-   - TLS exchange credentials and policies managed by Device Trust Manager  
-
