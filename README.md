@@ -3,7 +3,7 @@
 TrustEdge is a standalone executable that can run as both an **agent** for devices managed through [DigiCert<sup>®</sup> Device Trust Manager](https://www.digicert.com/device-trust-manager) or as a standalone **command line** tool for performing common security tasks on a device, such as generating keys and submitting a certificate signing request (CSR) to a certificate authority (CA). TrustEdge is built using the open source [DigiCert<sup>®</sup> TrustCore SDK](https://www.digicert.com/iot/trustcore-sdk). TrustEdge includes the latest post quantum cryptographic (PQC) algorithms such as ML-DSA, SLH-DSA and ML-KEM, plus TLS 1.3 support.
 
 > [!NOTE]
-> DigiCert is in the process of completely open-sourcing the code under the AGPL v3 license to support transparency, collaboration, and developer accessibility, while maintaining commercial licensing for commercial and proprietary use.
+> Built for IoT, AI-enabled edge systems, and post-quantum-ready deployments. [TrustCore SDK](https://github.com/digicert/trustcore) provides the security building blocks, while [TrustEdge](https://dev.digicert.com/trustedge.html) delivers an automated, ready-to-run runtime for secure connectivity, machine identity, and automated certificate lifecycle management through [Device Trust Manager](https://docs.digicert.com/en/device-trust-manager.html).
 
 ## Agent mode
 
