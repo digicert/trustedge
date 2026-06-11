@@ -44,6 +44,10 @@ TrustEdge documentation is available at https://dev.digicert.com/en/trustedge.ht
 
 ## How to Build TrustEdge ?
 
+TrustEdge source code is available along with the TrustCore SDK source code at [TrustCore](https://github.com/digicert/trustcore) 
+
+The build instructions are at -
+
 - [Linux](https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md)
 - [Zephyr RTOS](https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html)
 
