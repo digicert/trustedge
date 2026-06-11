@@ -42,6 +42,11 @@ For detailed information on TPM tools and workflows, see [tools/SecureElement/RE
 
 TrustEdge documentation is available at https://dev.digicert.com/en/trustedge.html.
 
+## How to Build TrustEdge ?
+
+- [Linux](https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md)
+- [Zephyr RTOS](https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html)
+
 ## License
 
 This project is available under a **dual-license model**:
