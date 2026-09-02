@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustEdge — Platform Compatibility & Setup Guide</title>
+<style>
+  :root {
+    --brand: #0060CC;
+    --brand-dark: #004A9F;
+    --brand-light: #E8F0FB;
+    --accent: #00A3E0;
+    --success: #1A7F37;
+    --success-bg: #DCFCE7;
+    --warn: #9A6700;
+    --warn-bg: #FEF3C7;
+    --danger: #C0392B;
+    --surface: #FFFFFF;
+    --surface2: #F8FAFC;
+    --surface3: #F1F5F9;
+    --border: #E2E8F0;
+    --text: #1E293B;
+    --text-muted: #64748B;
+    --text-light: #94A3B8;
+    --code-bg: #0F172A;
+    --code-text: #E2E8F0;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface: #1E293B;
+      --surface2: #0F172A;
+      --surface3: #273549;
+      --border: #334155;
+      --text: #F1F5F9;
+      --text-muted: #94A3B8;
+      --text-light: #64748B;
+      --brand-light: #1E3A5F;
+      --shadow: 0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface: #1E293B;
+    --surface2: #0F172A;
+    --surface3: #273549;
+    --border: #334155;
+    --text: #F1F5F9;
+    --text-muted: #94A3B8;
+    --text-light: #64748B;
+    --brand-light: #1E3A5F;
+    --shadow: 0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--surface2);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #003785 0%, var(--brand) 60%, var(--accent) 100%);
+    color: white;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  .header-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
+  .header-logo svg { width: 36px; height: 36px; }
+  .header-badge { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; opacity: .7; margin-bottom: 8px; }
+  .header h1 { font-size: clamp(22px, 4vw, 36px); font-weight: 700; margin-bottom: 10px; }
+  .header p { font-size: 16px; opacity: .85; max-width: 600px; margin: 0 auto; }
+  .header-pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px; }
+  .pill { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); border-radius: 100px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+
+  /* ── Progress bar ── */
+  .progress-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  }
+  .progress-steps { display: flex; gap: 0; max-width: 700px; width: 100%; }
+  .step-tab {
+    flex: 1;
+    padding: 14px 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all .2s;
+    user-select: none;
+  }
+  .step-tab .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%; background: var(--surface3);
+    font-size: 11px; margin-right: 6px; transition: all .2s;
+  }
+  .step-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+  .step-tab.active .step-num { background: var(--brand); color: white; }
+  .step-tab.done { color: var(--success); }
+  .step-tab.done .step-num { background: var(--success); color: white; }
+
+  /* ── Main content ── */
+  .main { max-width: 960px; margin: 0 auto; padding: 32px 16px 80px; }
+
+  /* ── Step panels ── */
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  .step-header { margin-bottom: 24px; }
+  .step-header h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .step-header p { color: var(--text-muted); }
+
+  /* ── Category tabs ── */
+  .cat-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+  .cat-tab {
+    padding: 8px 16px; border-radius: 100px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: 2px solid var(--border); background: var(--surface);
+    color: var(--text-muted); transition: all .15s;
+  }
+  .cat-tab:hover { border-color: var(--brand); color: var(--brand); }
+  .cat-tab.active { background: var(--brand); border-color: var(--brand); color: white; }
+
+  /* ── Board grid ── */
+  .board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .board-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    cursor: pointer;
+    transition: all .15s;
+    position: relative;
+  }
+  .board-card:hover { border-color: var(--brand); box-shadow: var(--shadow); transform: translateY(-1px); }
+  .board-card.selected { border-color: var(--brand); background: var(--brand-light); box-shadow: 0 0 0 3px rgba(0,96,204,.15); }
+  .board-card .check {
+    position: absolute; top: 10px; right: 10px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--brand); color: white;
+    display: none; align-items: center; justify-content: center; font-size: 11px;
+  }
+  .board-card.selected .check { display: flex; }
+  .board-icon { width: 100%; height: 90px; margin-bottom: 12px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--surface3); }
+  .board-icon svg { width: 80px; height: 70px; }
+  .board-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .board-cpu { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+  .board-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag {
+    font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+    background: var(--surface3); color: var(--text-muted);
+  }
+  .tag.arch { background: var(--brand-light); color: var(--brand); }
+  .tag.tpm { background: #DCFCE7; color: #166534; }
+  .tag.pqc { background: #EDE9FE; color: #5B21B6; }
+  .tag.sim { background: #FEF3C7; color: #92400E; }
+  .tag.rtos { background: #FEE2E2; color: #991B1B; }
+
+  /* ── OS selector ── */
+  .os-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .os-card {
+    background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius-sm);
+    padding: 14px 16px; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 12px;
+  }
+  .os-card:hover { border-color: var(--brand); }
+  .os-card.selected { border-color: var(--brand); background: var(--brand-light); }
+  .os-icon { width: 32px; height: 32px; flex-shrink: 0; }
+  .os-name { font-size: 14px; font-weight: 600; }
+  .os-ver { font-size: 11px; color: var(--text-muted); }
+
+  /* ── Options ── */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
+  .option-group label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+  .option-cards { display: flex; flex-direction: column; gap: 8px; }
+  .option-card {
+    background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius-sm);
+    padding: 12px 14px; cursor: pointer; transition: all .15s;
+  }
+  .option-card:hover { border-color: var(--brand); }
+  .option-card.selected { border-color: var(--brand); background: var(--brand-light); }
+  .option-card-title { font-size: 13px; font-weight: 700; }
+  .option-card-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── Instruction output ── */
+  .instr-header {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--accent) 100%);
+    color: white; padding: 20px 24px; border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .instr-header h3 { font-size: 16px; font-weight: 700; }
+  .instr-header p { font-size: 13px; opacity: .8; margin-top: 4px; }
+  .instr-body { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); }
+  .instr-section { border-bottom: 1px solid var(--border); }
+  .instr-section:last-child { border-bottom: none; }
+  .instr-section-header {
+    padding: 14px 20px; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+    user-select: none; background: var(--surface2);
+  }
+  .instr-section-header:hover { background: var(--surface3); }
+  .step-badge {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--brand);
+    color: white; font-size: 11px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .instr-section-content { padding: 0 20px 16px; display: none; }
+  .instr-section-content.open { display: block; }
+  .instr-p { font-size: 14px; margin-bottom: 10px; color: var(--text-muted); }
+  .note {
+    background: var(--warn-bg); border-left: 3px solid #F59E0B;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 10px 14px; font-size: 13px; margin-bottom: 12px; color: var(--warn);
+  }
+  .success-note {
+    background: var(--success-bg); border-left: 3px solid #16A34A;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 10px 14px; font-size: 13px; margin-bottom: 12px; color: var(--success);
+  }
+
+  /* ── Code blocks ── */
+  .code-block { position: relative; margin: 10px 0; }
+  .code-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-light); padding: 6px 12px 0 12px; background: var(--code-bg); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    padding: 12px 14px; border-radius: var(--radius-sm);
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 13px; line-height: 1.65; overflow-x: auto; white-space: pre;
+  }
+  .code-label + pre { border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+    color: #94A3B8; font-size: 11px; font-weight: 600; padding: 4px 10px;
+    border-radius: 6px; cursor: pointer; transition: all .15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,.2); color: white; }
+  .copy-btn.copied { background: rgba(22,163,74,.3); color: #86EFAC; border-color: rgba(22,163,74,.4); }
+
+  /* ── Nav buttons ── */
+  .nav-row { display: flex; gap: 12px; margin-top: 32px; }
+  .btn {
+    padding: 12px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700;
+    cursor: pointer; border: none; transition: all .15s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary { background: var(--brand); color: white; }
+  .btn-primary:hover { background: var(--brand-dark); }
+  .btn-secondary { background: var(--surface); color: var(--text); border: 2px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--brand); color: var(--brand); }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: none; padding: 12px 16px; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ── Info boxes ── */
+  .info-box {
+    background: var(--brand-light); border: 1px solid rgba(0,96,204,.2);
+    border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 20px;
+    font-size: 13px; color: var(--brand-dark);
+  }
+  .info-box strong { font-weight: 700; }
+
+  /* ── Summary bar ── */
+  .summary-bar {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 24px;
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+  }
+  .summary-item { font-size: 13px; display: flex; align-items: center; gap: 6px; }
+  .summary-item .lbl { color: var(--text-muted); }
+  .summary-item .val { font-weight: 700; color: var(--brand); }
+
+  /* ── Accordion arrow ── */
+  .acc-arrow { margin-left: auto; transition: transform .2s; font-size: 16px; color: var(--text-muted); }
+  .instr-section-header.open .acc-arrow { transform: rotate(180deg); }
+
+  /* ── Theme toggle ── */
+  .theme-toggle {
+    position: fixed; bottom: 20px; right: 20px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 100px; padding: 8px 14px; cursor: pointer;
+    font-size: 13px; box-shadow: var(--shadow); z-index: 200;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .board-grid { grid-template-columns: 1fr 1fr; }
+    .step-tab span.step-label { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <svg viewBox="0 0 36 36" fill="none">
+      <rect width="36" height="36" rx="8" fill="rgba(255,255,255,.15)"/>
+      <path d="M18 6L28 11V18C28 23.5 23.5 28.5 18 30C12.5 28.5 8 23.5 8 18V11L18 6Z" fill="white" opacity=".9"/>
+      <path d="M14 18L17 21L22 15" stroke="#0060CC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span style="font-size:20px; font-weight:800; letter-spacing:-0.5px;">DigiCert TrustEdge</span>
+  </div>
+  <div class="header-badge">Platform Setup Guide</div>
+  <h1>Get TrustEdge Running on Your Device</h1>
+  <p>Select your hardware and OS to get exact, step-by-step instructions tailored to your platform.</p>
+  <div class="header-pills">
+    <span class="pill">✦ Post-Quantum Ready</span>
+    <span class="pill">✦ TPM 2.0 Support</span>
+    <span class="pill">✦ TLS 1.3</span>
+    <span class="pill">✦ x86 · ARM64 · ARM32</span>
+    <span class="pill">✦ Zephyr RTOS</span>
+  </div>
+</div>
+
+<div class="progress-bar">
+  <div class="progress-steps">
+    <div class="step-tab active" id="tab-1" onclick="goToStep(1)">
+      <span class="step-num">1</span><span class="step-label">Hardware</span>
+    </div>
+    <div class="step-tab" id="tab-2" onclick="goToStep(2)">
+      <span class="step-num">2</span><span class="step-label">OS</span>
+    </div>
+    <div class="step-tab" id="tab-3" onclick="goToStep(3)">
+      <span class="step-num">3</span><span class="step-label">Options</span>
+    </div>
+    <div class="step-tab" id="tab-4" onclick="goToStep(4)">
+      <span class="step-num">4</span><span class="step-label">Instructions</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══════════════════════════════════ STEP 1 ══════════════════════════════════ -->
+  <div class="step-panel active" id="panel-1">
+    <div class="step-header">
+      <h2>Choose Your Hardware</h2>
+      <p>Select your board or CPU. Don't have hardware yet? Use the Simulation option.</p>
+    </div>
+    <div class="cat-tabs" id="cat-tabs">
+      <div class="cat-tab active" onclick="filterCat('all')">All Platforms</div>
+      <div class="cat-tab" onclick="filterCat('aarch64')">ARM 64-bit</div>
+      <div class="cat-tab" onclick="filterCat('x86_64')">x86-64</div>
+      <div class="cat-tab" onclick="filterCat('arm32')">ARM 32-bit</div>
+      <div class="cat-tab" onclick="filterCat('zephyr')">Zephyr RTOS</div>
+      <div class="cat-tab" onclick="filterCat('simulation')">Simulation</div>
+    </div>
+    <div class="board-grid" id="board-grid"></div>
+    <div class="nav-row">
+      <button class="btn btn-primary" onclick="goToStep(2)" id="btn-next-1" disabled>Next: Choose OS →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ STEP 2 ══════════════════════════════════ -->
+  <div class="step-panel" id="panel-2">
+    <div class="step-header">
+      <h2>Choose Your Operating System</h2>
+      <p>Compatible OS options for your selected hardware.</p>
+    </div>
+    <div class="info-box" id="board-info-box"></div>
+    <div class="os-grid" id="os-grid"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(3)" id="btn-next-2" disabled>Next: Options →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ STEP 3 ══════════════════════════════════ -->
+  <div class="step-panel" id="panel-3">
+    <div class="step-header">
+      <h2>Configure Your Setup</h2>
+      <p>Choose your deployment mode and optional features.</p>
+    </div>
+    <div class="options-grid">
+      <div class="option-group">
+        <label>Deployment Mode</label>
+        <div class="option-cards" id="mode-cards"></div>
+      </div>
+      <div class="option-group">
+        <label>Security Hardware</label>
+        <div class="option-cards" id="tpm-cards"></div>
+      </div>
+    </div>
+    <div class="options-grid">
+      <div class="option-group">
+        <label>Post-Quantum Demo</label>
+        <div class="option-cards" id="pqc-cards"></div>
+      </div>
+      <div class="option-group">
+        <label>Certificate Source</label>
+        <div class="option-cards" id="cert-cards"></div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="generateAndShow()">Generate Instructions →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ STEP 4 ══════════════════════════════════ -->
+  <div class="step-panel" id="panel-4">
+    <div class="step-header">
+      <h2>Your TrustEdge Setup Instructions</h2>
+      <p>Follow these steps to get TrustEdge running on your device.</p>
+    </div>
+    <div class="summary-bar" id="summary-bar"></div>
+    <div id="instructions-output"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goToStep(3)">← Modify Options</button>
+      <button class="btn btn-ghost" onclick="goToStep(1)">↺ Start Over</button>
+    </div>
+  </div>
+
+</div>
+
+<button class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+
+<script>
+// ═══════════════════════ DATA ═══════════════════════
+
+const BOARDS = [
+  // ── ARM 64-bit ──
+  {
+    id: 'rpi4', name: 'Raspberry Pi 4B', cat: 'aarch64',
+    cpu: 'Broadcom BCM2711, 4× Cortex-A72 @ 1.8GHz',
+    arch: 'aarch64', archLabel: 'ARM 64-bit',
+    ram: '2GB / 4GB / 8GB', tpm: false, tpmOptional: true,
+    tpmNote: 'Optional via TPM HAT (Infineon SLB 9670, JLLS TPM-PiHAT)',
+    debPkg: 'trustedge-aarch64-deb.zip', debFile: 'trustedge_*.aarch64.deb',
+    tpmPkg: 'tpm2_tools-aarch64-24.7.2-3262.zip',
+    desc: 'Most popular IoT SBC — ideal for edge & PoC deployments',
+    os: ['rpi-os-64', 'ubuntu-2204', 'ubuntu-2404'],
+    tags: ['ARM64', 'Popular'],
+    icon: 'rpi',
+  },
+  {
+    id: 'rpi5', name: 'Raspberry Pi 5', cat: 'aarch64',
+    cpu: 'Broadcom BCM2712, 4× Cortex-A76 @ 2.4GHz',
+    arch: 'aarch64', archLabel: 'ARM 64-bit',
+    ram: '4GB / 8GB', tpm: false, tpmOptional: true,
+    tpmNote: 'Optional via RP1 TPM HAT or third-party SPI TPM module',
+    debPkg: 'trustedge-aarch64-deb.zip', debFile: 'trustedge_*.aarch64.deb',
+    tpmPkg: 'tpm2_tools-aarch64-24.7.2-3262.zip',
+    desc: 'Latest Raspberry Pi — 2-3× faster than Pi 4, PCIe support',
+    os: ['rpi-os-64', 'ubuntu-2404', 'ubuntu-2204'],
+    tags: ['ARM64', 'Latest'],
+    icon: 'rpi',
+  },
+  {
+    id: 'jetson-nano', name: 'NVIDIA Jetson Nano', cat: 'aarch64',
+    cpu: 'NVIDIA Maxwell GPU + 4× Cortex-A57 @ 1.43GHz',
+    arch: 'aarch64', archLabel: 'ARM 64-bit',
+    ram: '4GB LPDDR4', tpm: false, tpmOptional: false,
+    tpmNote: 'No built-in TPM; software keystore used',
+    debPkg: 'trustedge-aarch64-deb.zip', debFile: 'trustedge_*.aarch64.deb',
+    tpmPkg: 'tpm2_tools-aarch64-24.7.2-3262.zip',
+    desc: 'AI/ML edge computing platform with GPU acceleration',
+    os: ['ubuntu-2004-jetpack', 'ubuntu-2204'],
+    tags: ['ARM64', 'AI Edge'],
+    icon: 'nvidia',
+  },
+  {
+    id: 'jetson-orin', name: 'NVIDIA Jetson Orin NX', cat: 'aarch64',
+    cpu: 'NVIDIA Ampere GPU + 8× Cortex-A78AE @ 2.0GHz',
+    arch: 'aarch64', archLabel: 'ARM 64-bit',
+    ram: '8GB / 16GB LPDDR5', tpm: true, tpmOptional: false,
+    tpmNote: 'TPM 2.0 built-in (Infineon SLB 9672) on Orin NX carrier boards',
+    debPkg: 'trustedge-aarch64-deb.zip', debFile: 'trustedge_*.aarch64.deb',
+    tpmPkg: 'tpm2_tools-aarch64-24.7.2-3262.zip',
+    desc: 'High-performance AI SoM — production AI edge deployments',
+    os: ['ubuntu-2204-jetpack6', 'ubuntu-2204'],
+    tags: ['ARM64', 'AI Edge', 'TPM 2.0'],
+    icon: 'nvidia',
+  },
+  {
+    id: 'imx8mp', name: 'NXP i.MX8M Plus EVK', cat: 'aarch64',
+    cpu: 'NXP i.MX8M Plus, 4× Cortex-A53 @ 1.8GHz + NPU',
+    arch: 'aarch64', archLabel: 'ARM 64-bit',
+    ram: '6GB LPDDR4', tpm: false, tpmOptional: true,
+    tpmNote: 'Optional SPI TPM 2.0 module (Infineon SLB 9670)',
+    debPkg: 'trustedge-aarch64-deb.zip', debFile: 'trustedge_*.aarch64.deb',
+    tpmPkg: 'tpm2_tools-aarch64-24.7.2-3262.zip',
+    desc: 'NXP industrial-grade SoC with built-in NPU for edge AI',
+    os: ['yocto-kirkstone', 'ubuntu-2204'],
+    tags: ['ARM64', 'Industrial'],
+    icon: 'nxp',
+  },
+  {
+    id: 'beagleai64', name: 'BeagleBone AI-64', cat: 'aarch64',
+    cpu: 'TDA4VM, 2× Cortex-A72 @ 2.0GHz + C7x DSP + MMA',
+    arch: 'aarch64', archLabel: 'ARM 64-bit',
+    ram: '4GB LPDDR4', tpm: false, tpmOptional: false,
+    tpmNote: 'No built-in TPM; software keystore used',
+    debPkg: 'trustedge-aarch64-deb.zip', debFile: 'trustedge_*.aarch64.deb',
+    tpmPkg: 'tpm2_tools-aarch64-24.7.2-3262.zip',
+    desc: 'Open-source AI SBC with TI TDA4VM vision processor',
+    os: ['debian-bookworm'],
+    tags: ['ARM64', 'Open Source'],
+    icon: 'beagle',
+  },
+  {
+    id: 'rockpi4', name: 'ROCK Pi 4C+', cat: 'aarch64',
+    cpu: 'Rockchip RK3399-T, 2× Cortex-A72 + 4× A53',
+    arch: 'aarch64', archLabel: 'ARM 64-bit',
+    ram: '4GB LPDDR4', tpm: false, tpmOptional: true,
+    tpmNote: 'Optional SPI TPM via GPIO (Infineon SLB 9670)',
+    debPkg: 'trustedge-aarch64-deb.zip', debFile: 'trustedge_*.aarch64.deb',
+    tpmPkg: 'tpm2_tools-aarch64-24.7.2-3262.zip',
+    desc: 'Radxa credit-card SBC, Raspberry Pi-compatible pinout',
+    os: ['armbian-jammy', 'ubuntu-2204'],
+    tags: ['ARM64'],
+    icon: 'sbc',
+  },
+  // ── x86-64 ──
+  {
+    id: 'linux-x64', name: 'Linux PC / Server', cat: 'x86_64',
+    cpu: 'Intel / AMD x86-64 (any generation)',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '2GB+ recommended', tpm: true, tpmOptional: false,
+    tpmNote: 'Most modern PCs/servers have TPM 2.0 built in (fTPM or discrete)',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: 'tpm2_tools-x86_64-24.7.2-3262.zip',
+    desc: 'Any Intel/AMD 64-bit machine — VM, server, or workstation',
+    os: ['ubuntu-2404', 'ubuntu-2204', 'ubuntu-2004', 'debian-12', 'debian-11'],
+    tags: ['x86-64', 'TPM 2.0'],
+    icon: 'server',
+  },
+  {
+    id: 'nuc', name: 'Intel NUC 12/13 Pro', cat: 'x86_64',
+    cpu: 'Intel Core i3/i5/i7 12th/13th Gen (Alder/Raptor Lake)',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '8GB–64GB DDR4/5', tpm: true, tpmOptional: false,
+    tpmNote: 'Intel PTT (Platform Trust Technology) fTPM 2.0 built-in',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: 'tpm2_tools-x86_64-24.7.2-3262.zip',
+    desc: 'Compact Intel mini-PC, great for edge server deployments',
+    os: ['ubuntu-2404', 'ubuntu-2204', 'debian-12'],
+    tags: ['x86-64', 'TPM 2.0', 'Compact'],
+    icon: 'nuc',
+  },
+  {
+    id: 'upboard', name: 'UP Board 2+', cat: 'x86_64',
+    cpu: 'Intel Celeron N4200 / Pentium N4200 (Apollo Lake)',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '4GB / 8GB LPDDR4', tpm: true, tpmOptional: false,
+    tpmNote: 'Intel PTT fTPM 2.0 via BIOS; optional discrete TPM header',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: 'tpm2_tools-x86_64-24.7.2-3262.zip',
+    desc: 'Industrial x86 SBC, Arduino-compatible GPIO, ideal for IIoT',
+    os: ['ubuntu-2204', 'ubuntu-2004', 'debian-12'],
+    tags: ['x86-64', 'Industrial', 'TPM 2.0'],
+    icon: 'upboard',
+  },
+  {
+    id: 'lattepanda', name: 'LattePanda 3 Delta', cat: 'x86_64',
+    cpu: 'Intel Celeron N5105 (Jasper Lake) @ 2.9GHz',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '8GB LPDDR4X', tpm: true, tpmOptional: false,
+    tpmNote: 'Intel PTT fTPM 2.0; optional M.2 TPM module slot',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: 'tpm2_tools-x86_64-24.7.2-3262.zip',
+    desc: 'Single-board PC with Windows & Linux support, rich I/O',
+    os: ['ubuntu-2204', 'ubuntu-2404', 'debian-12'],
+    tags: ['x86-64', 'TPM 2.0'],
+    icon: 'server',
+  },
+  // ── ARM 32-bit ──
+  {
+    id: 'rpizero2', name: 'Raspberry Pi Zero 2 W', cat: 'arm32',
+    cpu: 'RP3A0-AU, 4× Cortex-A53 @ 1.0GHz (ARMv8 in 32-bit mode)',
+    arch: 'arm32', archLabel: 'ARM 32-bit',
+    ram: '512MB SDRAM', tpm: false, tpmOptional: false,
+    tpmNote: 'No TPM; software keystore recommended',
+    debPkg: 'trustedge-arm-deb.zip', debFile: 'trustedge_*.armhf.deb',
+    tpmPkg: 'tpm2_tools-arm32-24.7.2-3262.zip',
+    desc: 'Tiny wireless SBC for constrained IoT nodes',
+    os: ['rpi-os-32', 'debian-11-armhf'],
+    tags: ['ARM32', 'Tiny'],
+    icon: 'rpizero',
+  },
+  {
+    id: 'bbb', name: 'BeagleBone Black', cat: 'arm32',
+    cpu: 'TI AM3358, Cortex-A8 @ 1.0GHz',
+    arch: 'arm32', archLabel: 'ARM 32-bit',
+    ram: '512MB DDR3', tpm: false, tpmOptional: false,
+    tpmNote: 'No built-in TPM; use software keystore',
+    debPkg: 'trustedge-arm-deb.zip', debFile: 'trustedge_*.armhf.deb',
+    tpmPkg: 'tpm2_tools-arm32-24.7.2-3262.zip',
+    desc: 'Classic open-hardware SBC for industrial IoT',
+    os: ['debian-11-armhf', 'debian-10-armhf'],
+    tags: ['ARM32', 'Industrial'],
+    icon: 'beagle',
+  },
+  {
+    id: 'stm32mp1', name: 'STM32MP157C Discovery Kit', cat: 'arm32',
+    cpu: 'STM32MP157C, 2× Cortex-A7 @ 800MHz + M4 co-processor',
+    arch: 'arm32', archLabel: 'ARM 32-bit',
+    ram: '512MB DDR3', tpm: false, tpmOptional: false,
+    tpmNote: 'No built-in TPM; use software keystore or STSAFE-A',
+    debPkg: 'trustedge-arm-deb.zip', debFile: 'trustedge_*.armhf.deb',
+    tpmPkg: 'tpm2_tools-arm32-24.7.2-3262.zip',
+    desc: 'STMicro dual-core A7+M4 dev kit for industrial control',
+    os: ['openst-linux', 'debian-11-armhf'],
+    tags: ['ARM32', 'Industrial', 'RTOS Capable'],
+    icon: 'stm32',
+  },
+  // ── Zephyr RTOS ──
+  {
+    id: 'nrf9160', name: 'Nordic nRF9160 DK', cat: 'zephyr',
+    cpu: 'Nordic nRF9160, Cortex-M33 @ 64MHz + LTE-M/NB-IoT modem',
+    arch: 'arm-cm33', archLabel: 'ARM Cortex-M33',
+    ram: '256KB SRAM', tpm: false, tpmOptional: false,
+    tpmNote: 'No TPM; Secure Element via ARM TrustZone',
+    debPkg: null, debFile: null,
+    tpmPkg: null,
+    desc: 'Cellular IoT SiP with built-in LTE/GPS — cloud-direct connectivity',
+    os: ['zephyr-rtos'],
+    tags: ['Zephyr RTOS', 'Cellular IoT'],
+    icon: 'nordic',
+  },
+  {
+    id: 'nrf52840', name: 'Nordic nRF52840 DK', cat: 'zephyr',
+    cpu: 'Nordic nRF52840, Cortex-M4F @ 64MHz + BLE 5.3',
+    arch: 'arm-cm4', archLabel: 'ARM Cortex-M4F',
+    ram: '256KB SRAM', tpm: false, tpmOptional: false,
+    tpmNote: 'No TPM; use ARM TrustZone or CC310 crypto accelerator',
+    debPkg: null, debFile: null,
+    tpmPkg: null,
+    desc: 'BLE/Thread/Zigbee dev kit — ideal for wireless sensor nodes',
+    os: ['zephyr-rtos'],
+    tags: ['Zephyr RTOS', 'BLE'],
+    icon: 'nordic',
+  },
+  {
+    id: 'nucleo767', name: 'STM32 Nucleo-F767ZI', cat: 'zephyr',
+    cpu: 'STM32F767ZI, Cortex-M7 @ 216MHz + FPU',
+    arch: 'arm-cm7', archLabel: 'ARM Cortex-M7',
+    ram: '512KB SRAM', tpm: false, tpmOptional: false,
+    tpmNote: 'No built-in TPM; use STSAFE-A100 SE via I2C',
+    debPkg: null, debFile: null,
+    tpmPkg: null,
+    desc: 'High-performance STM32 dev board with Ethernet',
+    os: ['zephyr-rtos'],
+    tags: ['Zephyr RTOS', 'Ethernet'],
+    icon: 'stm32',
+  },
+  // ── Simulation ──
+  {
+    id: 'docker-x64', name: 'Docker Container (x86-64)', cat: 'simulation',
+    cpu: 'Host CPU (Intel/AMD x86-64)',
+    arch: 'x86_64', archLabel: 'x86-64 (simulated)',
+    ram: 'Shared with host', tpm: false, tpmOptional: false,
+    tpmNote: 'No physical TPM — software keystore used',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: null,
+    desc: 'Run TrustEdge in Docker — no hardware needed',
+    os: ['docker-ubuntu'],
+    tags: ['Simulation', 'No Hardware'],
+    icon: 'docker',
+  },
+  {
+    id: 'docker-arm64', name: 'Docker Container (ARM64)', cat: 'simulation',
+    cpu: 'Host CPU via QEMU emulation (ARM64)',
+    arch: 'aarch64', archLabel: 'ARM 64-bit (emulated)',
+    ram: 'Shared with host', tpm: false, tpmOptional: false,
+    tpmNote: 'No physical TPM — software keystore used',
+    debPkg: 'trustedge-aarch64-deb.zip', debFile: 'trustedge_*.aarch64.deb',
+    tpmPkg: null,
+    desc: 'Test ARM64 TrustEdge build on any host via Docker QEMU',
+    os: ['docker-ubuntu'],
+    tags: ['Simulation', 'ARM64 Emulated'],
+    icon: 'docker',
+  },
+  {
+    id: 'codespaces', name: 'GitHub Codespaces', cat: 'simulation',
+    cpu: 'Azure VM (Intel/AMD x86-64)',
+    arch: 'x86_64', archLabel: 'x86-64 (cloud)',
+    ram: '4–16GB (tier-dependent)', tpm: false, tpmOptional: false,
+    tpmNote: 'No physical TPM; software keystore used',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: null,
+    desc: 'Zero-install cloud dev environment — open in browser',
+    os: ['ubuntu-codespaces'],
+    tags: ['Simulation', 'Cloud', 'Zero Install'],
+    icon: 'github',
+  },
+];
+
+const OS_OPTIONS = {
+  'rpi-os-64':        { name: 'Raspberry Pi OS', ver: '(64-bit, Bookworm)', icon: 'rpi' },
+  'rpi-os-32':        { name: 'Raspberry Pi OS', ver: '(32-bit, Bookworm)', icon: 'rpi' },
+  'ubuntu-2404':      { name: 'Ubuntu 24.04 LTS', ver: 'Noble Numbat', icon: 'ubuntu' },
+  'ubuntu-2204':      { name: 'Ubuntu 22.04 LTS', ver: 'Jammy Jellyfish', icon: 'ubuntu' },
+  'ubuntu-2004':      { name: 'Ubuntu 20.04 LTS', ver: 'Focal Fossa', icon: 'ubuntu' },
+  'ubuntu-2004-jetpack': { name: 'JetPack 5.x', ver: 'Ubuntu 20.04 base', icon: 'ubuntu' },
+  'ubuntu-2204-jetpack6': { name: 'JetPack 6.x', ver: 'Ubuntu 22.04 base', icon: 'ubuntu' },
+  'debian-12':        { name: 'Debian 12', ver: 'Bookworm', icon: 'debian' },
+  'debian-11':        { name: 'Debian 11', ver: 'Bullseye', icon: 'debian' },
+  'debian-11-armhf':  { name: 'Debian 11', ver: 'Bullseye (armhf)', icon: 'debian' },
+  'debian-10-armhf':  { name: 'Debian 10', ver: 'Buster (armhf)', icon: 'debian' },
+  'debian-bookworm':  { name: 'Debian 12', ver: 'Bookworm (BeagleBone)', icon: 'debian' },
+  'armbian-jammy':    { name: 'Armbian', ver: 'Ubuntu 22.04 base', icon: 'armbian' },
+  'yocto-kirkstone':  { name: 'Yocto Linux', ver: 'Kirkstone (NXP BSP)', icon: 'linux' },
+  'openst-linux':     { name: 'OpenSTLinux', ver: 'STM32 BSP (Dunfell)', icon: 'linux' },
+  'zephyr-rtos':      { name: 'Zephyr RTOS', ver: '3.5+', icon: 'zephyr' },
+  'docker-ubuntu':    { name: 'Ubuntu 22.04 (Docker)', ver: 'Container image', icon: 'docker' },
+  'ubuntu-codespaces':{ name: 'Ubuntu (Codespaces)', ver: 'Cloud VM', icon: 'ubuntu' },
+};
+
+// ═══════════════════════ STATE ═══════════════════════
+let state = {
+  board: null,
+  os: null,
+  mode: 'cli',          // cli | agent
+  tpm: 'none',          // none | hardware | software
+  pqc: 'skip',          // skip | demo
+  cert: 'selfsigned',   // selfsigned | est
+};
+
+// ═══════════════════════ ICONS (SVG) ═══════════════════════
+function boardIcon(type) {
+  const icons = {
+    rpi: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="5" y="5" width="70" height="60" rx="6" fill="#C51A4A" stroke="#8B1030" stroke-width="1"/>
+      <rect x="10" y="10" width="25" height="25" rx="3" fill="#1a1a2e"/>
+      <rect x="14" y="13" width="17" height="19" rx="2" fill="#252540"/>
+      <circle cx="60" cy="15" r="6" fill="#888" stroke="#666" stroke-width="1"/>
+      <circle cx="60" cy="32" r="6" fill="#888" stroke="#666" stroke-width="1"/>
+      <rect x="10" y="42" width="60" height="4" rx="1" fill="#FFD700" opacity=".7"/>
+      <rect x="10" y="50" width="10" height="8" rx="1" fill="#2a2a2a"/>
+      <rect x="24" y="50" width="10" height="8" rx="1" fill="#2a2a2a"/>
+      <rect x="38" y="50" width="10" height="8" rx="1" fill="#2a2a2a"/>
+      <rect x="52" y="50" width="10" height="8" rx="1" fill="#2a2a2a"/>
+    </svg>`,
+    nvidia: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="3" y="3" width="74" height="64" rx="6" fill="#1a1a1a" stroke="#333" stroke-width="1.5"/>
+      <rect x="10" y="8" width="35" height="30" rx="3" fill="#76B900" opacity=".9"/>
+      <text x="27" y="28" text-anchor="middle" fill="white" font-size="10" font-weight="bold">GPU</text>
+      <rect x="50" y="8" width="22" height="14" rx="2" fill="#333"/>
+      <rect x="50" y="26" width="22" height="12" rx="2" fill="#333"/>
+      <rect x="8" y="44" width="64" height="6" rx="1" fill="#333" stroke="#444" stroke-width=".5"/>
+      <rect x="8" y="55" width="14" height="8" rx="1" fill="#222" stroke="#444" stroke-width=".5"/>
+      <rect x="26" y="55" width="14" height="8" rx="1" fill="#222" stroke="#444" stroke-width=".5"/>
+    </svg>`,
+    beagle: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="5" y="5" width="70" height="60" rx="4" fill="#F5F5DC" stroke="#CCC" stroke-width="1.5"/>
+      <rect x="12" y="10" width="30" height="25" rx="3" fill="#4CAF50" opacity=".9"/>
+      <text x="27" y="26" text-anchor="middle" fill="white" font-size="8" font-weight="bold">TDA4VM</text>
+      <rect x="48" y="10" width="24" height="12" rx="2" fill="#666" opacity=".8"/>
+      <rect x="12" y="40" width="56" height="4" rx="1" fill="#FFD700"/>
+      <rect x="12" y="50" width="8" height="12" rx="1" fill="#333" opacity=".8"/>
+      <rect x="24" y="50" width="8" height="12" rx="1" fill="#333" opacity=".8"/>
+      <rect x="36" y="50" width="8" height="12" rx="1" fill="#333" opacity=".8"/>
+    </svg>`,
+    nxp: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="3" y="3" width="74" height="64" rx="6" fill="#0033A0" stroke="#002080" stroke-width="1"/>
+      <rect x="12" y="10" width="32" height="28" rx="4" fill="#F90"/>
+      <text x="28" y="27" text-anchor="middle" fill="white" font-size="9" font-weight="bold">i.MX8M+</text>
+      <rect x="50" y="10" width="22" height="28" rx="3" fill="#0055BB" stroke="#0033A0"/>
+      <text x="61" y="28" text-anchor="middle" fill="white" font-size="8">DDR4</text>
+      <rect x="10" y="44" width="60" height="5" rx="1" fill="#F90" opacity=".6"/>
+      <rect x="10" y="54" width="14" height="10" rx="1" fill="#002080"/>
+      <rect x="28" y="54" width="14" height="10" rx="1" fill="#002080"/>
+    </svg>`,
+    server: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="5" y="12" width="70" height="46" rx="4" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <rect x="10" y="18" width="30" height="12" rx="2" fill="#1E3A5F" stroke="#2D5299"/>
+      <text x="25" y="28" text-anchor="middle" fill="#60A5FA" font-size="8" font-weight="bold">CPU</text>
+      <rect x="44" y="18" width="12" height="12" rx="2" fill="#1E3A5F" stroke="#2D5299"/>
+      <text x="50" y="28" text-anchor="middle" fill="#60A5FA" font-size="7">TPM</text>
+      <rect x="10" y="36" width="55" height="3" rx="1" fill="#475569"/>
+      <rect x="10" y="43" width="55" height="3" rx="1" fill="#475569"/>
+      <circle cx="65" cy="56" r="5" fill="#22C55E" opacity=".8"/>
+      <rect x="10" y="52" width="8" height="8" rx="1" fill="#1E3A5F"/>
+      <rect x="22" y="52" width="8" height="8" rx="1" fill="#1E3A5F"/>
+    </svg>`,
+    nuc: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="10" y="10" width="60" height="50" rx="8" fill="#5A5A5A" stroke="#444" stroke-width="2"/>
+      <rect x="18" y="18" width="44" height="34" rx="4" fill="#333"/>
+      <text x="40" y="38" text-anchor="middle" fill="#60A5FA" font-size="10" font-weight="bold">Intel NUC</text>
+      <circle cx="40" cy="65" r="3" fill="#22C55E" opacity=".8"/>
+    </svg>`,
+    upboard: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="4" y="4" width="72" height="62" rx="5" fill="#1a4a8a" stroke="#0d3470" stroke-width="1.5"/>
+      <rect x="10" y="9" width="28" height="22" rx="3" fill="#0060CC" opacity=".9"/>
+      <text x="24" y="23" text-anchor="middle" fill="white" font-size="8" font-weight="bold">x86-64</text>
+      <rect x="44" y="9" width="28" height="10" rx="2" fill="#003c82"/>
+      <rect x="44" y="23" width="28" height="8" rx="2" fill="#003c82"/>
+      <rect x="8" y="37" width="64" height="5" rx="1" fill="#FFD700" opacity=".6"/>
+      <rect x="8" y="47" width="10" height="12" rx="1" fill="#003c82"/>
+      <rect x="22" y="47" width="10" height="12" rx="1" fill="#003c82"/>
+      <rect x="36" y="47" width="10" height="12" rx="1" fill="#003c82"/>
+      <rect x="50" y="47" width="10" height="12" rx="1" fill="#003c82"/>
+    </svg>`,
+    rpizero: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="12" y="15" width="56" height="40" rx="4" fill="#C51A4A" stroke="#8B1030" stroke-width="1"/>
+      <rect x="18" y="20" width="20" height="15" rx="2" fill="#1a1a2e"/>
+      <circle cx="60" cy="25" r="7" fill="#888" stroke="#666" stroke-width="1"/>
+      <rect x="16" y="40" width="48" height="4" rx="1" fill="#FFD700" opacity=".7"/>
+      <text x="40" y="58" text-anchor="middle" fill="#888" font-size="9">Zero 2W</text>
+    </svg>`,
+    stm32: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="5" y="8" width="70" height="54" rx="4" fill="#0057A8" stroke="#003d7a" stroke-width="1.5"/>
+      <rect x="25" y="15" width="30" height="25" rx="3" fill="#0039B3" stroke="#0057A8"/>
+      <text x="40" y="31" text-anchor="middle" fill="white" font-size="8" font-weight="bold">STM32</text>
+      <rect x="10" y="46" width="60" height="4" rx="1" fill="#00A8E8" opacity=".7"/>
+      <rect x="10" y="55" width="8" height="6" rx="1" fill="#003d7a"/>
+      <rect x="22" y="55" width="8" height="6" rx="1" fill="#003d7a"/>
+      <rect x="34" y="55" width="8" height="6" rx="1" fill="#003d7a"/>
+    </svg>`,
+    nordic: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="8" y="5" width="64" height="60" rx="5" fill="#00A9CE" stroke="#0082A4" stroke-width="1.5"/>
+      <rect x="16" y="12" width="28" height="22" rx="3" fill="#006B8A"/>
+      <text x="30" y="26" text-anchor="middle" fill="white" font-size="8" font-weight="bold">nRF SiP</text>
+      <rect x="50" y="12" width="16" height="22" rx="2" fill="#006B8A"/>
+      <text x="58" y="26" text-anchor="middle" fill="white" font-size="7">LTE</text>
+      <rect x="14" y="40" width="52" height="4" rx="1" fill="white" opacity=".4"/>
+      <rect x="14" y="50" width="10" height="10" rx="1" fill="#006B8A"/>
+      <rect x="28" y="50" width="10" height="10" rx="1" fill="#006B8A"/>
+    </svg>`,
+    docker: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="5" y="20" width="70" height="35" rx="6" fill="#0DB7ED" opacity=".15" stroke="#0DB7ED" stroke-width="1.5"/>
+      <text x="40" y="42" text-anchor="middle" fill="#0DB7ED" font-size="28">🐳</text>
+      <rect x="5" y="58" width="70" height="7" rx="3" fill="#0DB7ED" opacity=".2"/>
+      <text x="40" y="65" text-anchor="middle" fill="#0DB7ED" font-size="8" font-weight="bold">Docker</text>
+    </svg>`,
+    github: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="5" y="5" width="70" height="60" rx="10" fill="#24292F" stroke="#30363D" stroke-width="1.5"/>
+      <text x="40" y="42" text-anchor="middle" font-size="30">🐙</text>
+      <text x="40" y="58" text-anchor="middle" fill="#8B949E" font-size="8">Codespaces</text>
+    </svg>`,
+    sbc: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="5" y="5" width="70" height="60" rx="5" fill="#4CAF50" stroke="#388E3C" stroke-width="1.5"/>
+      <rect x="12" y="10" width="28" height="22" rx="3" fill="#1B5E20"/>
+      <text x="26" y="24" text-anchor="middle" fill="white" font-size="8" font-weight="bold">RK3399</text>
+      <rect x="46" y="10" width="24" height="22" rx="3" fill="#1B5E20"/>
+      <rect x="10" y="38" width="60" height="5" rx="1" fill="#FFD700" opacity=".7"/>
+      <rect x="10" y="48" width="10" height="12" rx="1" fill="#1B5E20"/>
+      <rect x="24" y="48" width="10" height="12" rx="1" fill="#1B5E20"/>
+    </svg>`,
+  };
+  return icons[type] || icons.server;
+}
+
+function osIcon(type) {
+  const icons = {
+    ubuntu: `<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#E95420"/><circle cx="16" cy="16" r="6" fill="none" stroke="white" stroke-width="2"/><circle cx="16" cy="4" r="3" fill="white"/><circle cx="27" cy="22" r="3" fill="white"/><circle cx="5" cy="22" r="3" fill="white"/></svg>`,
+    debian: `<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#A80030"/><path d="M16 8C19.5 8 22 10.5 22 14C22 18 18 20 16 22C14 20 10 18 10 14C10 10.5 12.5 8 16 8Z" fill="white" opacity=".9"/></svg>`,
+    rpi: `<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#C51A4A"/><path d="M16 8L20 13H12L16 8ZM10 14L13 20H8L10 14ZM22 14L24 20H19L22 14Z" fill="white" opacity=".9"/></svg>`,
+    armbian: `<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#EE4000"/><text x="16" y="21" text-anchor="middle" fill="white" font-size="10" font-weight="bold">A</text></svg>`,
+    linux: `<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#2c2c2c"/><text x="16" y="22" text-anchor="middle" fill="white" font-size="16">🐧</text></svg>`,
+    zephyr: `<svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#6324B8"/><text x="16" y="22" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Z</text></svg>`,
+    docker: `<svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#0DB7ED"/><text x="16" y="22" text-anchor="middle" font-size="18">🐳</text></svg>`,
+  };
+  return icons[type] || icons.linux;
+}
+
+// ═══════════════════════ RENDER BOARDS ═══════════════════════
+
+let currentCat = 'all';
+
+function filterCat(cat) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase().includes(cat) || (cat === 'all' && t.textContent === 'All Platforms')));
+  renderBoards();
+}
+
+function renderBoards() {
+  const grid = document.getElementById('board-grid');
+  const filtered = currentCat === 'all' ? BOARDS : BOARDS.filter(b => b.cat === currentCat);
+  grid.innerHTML = filtered.map(b => `
+    <div class="board-card ${state.board === b.id ? 'selected' : ''}" onclick="selectBoard('${b.id}')">
+      <div class="check">✓</div>
+      <div class="board-icon">${boardIcon(b.icon)}</div>
+      <div class="board-name">${b.name}</div>
+      <div class="board-cpu">${b.cpu}</div>
+      <div class="board-tags">
+        <span class="tag arch">${b.archLabel}</span>
+        ${b.tpm ? '<span class="tag tpm">TPM 2.0</span>' : ''}
+        ${b.cat === 'zephyr' ? '<span class="tag rtos">RTOS</span>' : ''}
+        ${b.cat === 'simulation' ? '<span class="tag sim">Simulation</span>' : ''}
+        ${b.tags.includes('PQC') ? '<span class="tag pqc">PQC</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectBoard(id) {
+  state.board = id;
+  state.os = null;
+  document.getElementById('btn-next-1').disabled = false;
+  renderBoards();
+}
+
+// ═══════════════════════ RENDER OS ═══════════════════════
+
+function renderOS() {
+  const board = BOARDS.find(b => b.id === state.board);
+  if (!board) return;
+
+  const info = document.getElementById('board-info-box');
+  info.innerHTML = `<strong>Selected: ${board.name}</strong> — ${board.archLabel} · ${board.cpu}
+    ${board.tpm ? ' · <span style="color:var(--success)">✓ TPM 2.0 built-in</span>' : board.tpmOptional ? ' · TPM optional (via add-on)' : ''}`;
+
+  const grid = document.getElementById('os-grid');
+  grid.innerHTML = board.os.map(osId => {
+    const os = OS_OPTIONS[osId];
+    return `
+      <div class="os-card ${state.os === osId ? 'selected' : ''}" onclick="selectOS('${osId}')">
+        <div class="os-icon">${osIcon(os.icon)}</div>
+        <div>
+          <div class="os-name">${os.name}</div>
+          <div class="os-ver">${os.ver}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectOS(id) {
+  state.os = id;
+  document.getElementById('btn-next-2').disabled = false;
+  renderOS();
+}
+
+// ═══════════════════════ RENDER OPTIONS ═══════════════════════
+
+function renderOptions() {
+  const board = BOARDS.find(b => b.id === state.board);
+
+  // Mode
+  document.getElementById('mode-cards').innerHTML = [
+    { id:'cli', title:'CLI (Command Line)', desc:'Standalone tool — no Device Trust Manager needed. Best for PoC and testing.' },
+    { id:'agent', title:'Agent Mode (Daemon)', desc:'Managed by DigiCert Device Trust Manager. Full lifecycle automation.' },
+  ].map(o => `<div class="option-card ${state.mode===o.id?'selected':''}" onclick="setState('mode','${o.id}')">
+    <div class="option-card-title">${o.title}</div>
+    <div class="option-card-desc">${o.desc}</div>
+  </div>`).join('');
+
+  // TPM
+  const tpmOpts = [{ id:'none', title:'No TPM / Software Keystore', desc:'Keys stored in /etc/digicert/keystore — OK for development and PoC' }];
+  if (board && (board.tpm || board.tpmOptional)) {
+    tpmOpts.unshift({ id:'hardware', title:'Hardware TPM 2.0', desc: board.tpmNote });
+  }
+  document.getElementById('tpm-cards').innerHTML = tpmOpts.map(o => `<div class="option-card ${state.tpm===o.id?'selected':''}" onclick="setState('tpm','${o.id}')">
+    <div class="option-card-title">${o.title}</div>
+    <div class="option-card-desc">${o.desc}</div>
+  </div>`).join('');
+
+  // PQC
+  document.getElementById('pqc-cards').innerHTML = [
+    { id:'skip', title:'Skip PQC Demo', desc:'Install and verify basic TrustEdge without the ML-DSA / ML-KEM demo.' },
+    { id:'demo', title:'Run PQC Demo', desc:'Full ML-DSA + Hybrid ML-KEM-768 MQTT demo over TLS 1.3 (aarch64/x86 only).' },
+  ].map(o => `<div class="option-card ${state.pqc===o.id?'selected':''}" onclick="setState('pqc','${o.id}')">
+    <div class="option-card-title">${o.title}</div>
+    <div class="option-card-desc">${o.desc}</div>
+  </div>`).join('');
+
+  // Cert source
+  document.getElementById('cert-cards').innerHTML = [
+    { id:'selfsigned', title:'Self-Signed / Local CA', desc:'TrustEdge generates its own root CA + certs. Zero external dependencies.' },
+    { id:'est', title:'EST via Device Trust Manager', desc:'Certificate issued by DigiCert PKI via EST. Requires DTM subscription.' },
+  ].map(o => `<div class="option-card ${state.cert===o.id?'selected':''}" onclick="setState('cert','${o.id}')">
+    <div class="option-card-title">${o.title}</div>
+    <div class="option-card-desc">${o.desc}</div>
+  </div>`).join('');
+}
+
+function setState(key, val) {
+  state[key] = val;
+  renderOptions();
+}
+
+// ═══════════════════════ STEP NAVIGATION ═══════════════════════
+
+function goToStep(n) {
+  if (n > 1 && !state.board) return;
+  if (n > 2 && !state.os) return;
+  [1,2,3,4].forEach(i => {
+    document.getElementById(`panel-${i}`).classList.toggle('active', i === n);
+    const tab = document.getElementById(`tab-${i}`);
+    tab.classList.toggle('active', i === n);
+    tab.classList.toggle('done', i < n);
+  });
+  if (n === 2) renderOS();
+  if (n === 3) renderOptions();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function generateAndShow() {
+  buildInstructions();
+  goToStep(4);
+}
+
+// ═══════════════════════ INSTRUCTION BUILDER ═══════════════════════
+
+function code(label, content) {
+  const id = 'cb_' + Math.random().toString(36).substr(2,8);
+  return `<div class="code-block">
+    ${label ? `<div class="code-label">${label}</div>` : ''}
+    <pre id="${id}">${escHtml(content)}</pre>
+    <button class="copy-btn" onclick="copyCode('${id}', this)">Copy</button>
+  </div>`;
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function section(num, title, contentHtml, openByDefault) {
+  const id = 'sec_' + num + '_' + Math.random().toString(36).substr(2,5);
+  return `<div class="instr-section">
+    <div class="instr-section-header ${openByDefault ? 'open' : ''}" onclick="toggleSec('${id}', this)">
+      <span class="step-badge">${num}</span>
+      ${title}
+      <span class="acc-arrow">▾</span>
+    </div>
+    <div class="instr-section-content ${openByDefault ? 'open' : ''}" id="${id}">
+      ${contentHtml}
+    </div>
+  </div>`;
+}
+
+function toggleSec(id, header) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+  header.classList.toggle('open');
+}
+
+function copyCode(id, btn) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function buildInstructions() {
+  const board = BOARDS.find(b => b.id === state.board);
+  const os = OS_OPTIONS[state.os];
+
+  // Summary bar
+  document.getElementById('summary-bar').innerHTML = [
+    { lbl: 'Board', val: board.name },
+    { lbl: 'CPU', val: board.archLabel },
+    { lbl: 'OS', val: `${os.name} ${os.ver}` },
+    { lbl: 'Mode', val: state.mode === 'cli' ? 'CLI' : 'Agent (Daemon)' },
+    { lbl: 'TPM', val: state.tpm === 'hardware' ? 'Hardware TPM 2.0' : 'Software Keystore' },
+  ].map(i => `<div class="summary-item"><span class="lbl">${i.lbl}:</span><span class="val">${i.val}</span></div>`).join('');
+
+  // Build sections
+  let html = `<div class="instr-header">
+    <h3>${board.name} × ${os.name} — TrustEdge Setup</h3>
+    <p>${state.mode === 'agent' ? 'Agent mode (daemon) with Device Trust Manager' : 'CLI mode — standalone, no DTM required'}${state.pqc === 'demo' ? ' · Post-Quantum (PQC) Demo included' : ''}</p>
+  </div><div class="instr-body">`;
+
+  let stepNum = 1;
+
+  // ─── Docker / Codespaces special case ───
+  if (board.cat === 'simulation') {
+    if (board.id === 'codespaces') {
+      html += section(stepNum++, 'Open GitHub Codespaces', `
+        <p class="instr-p">Launch a Codespace directly from the TrustEdge repository — no local install needed.</p>
+        ${code('Browser', 'https://github.com/digicert/trustedge\n# Click  Code → Codespaces → New codespace\n# Or open the URL directly:\nhttps://codespaces.new/digicert/trustedge')}
+        <p class="instr-p">Once the Codespace shell opens, continue with the steps below. Ubuntu 22.04 and wget/unzip are pre-installed.</p>
+      `, true);
+    } else {
+      // Docker setup
+      const imgArch = board.arch === 'aarch64' ? '--platform linux/arm64' : '';
+      html += section(stepNum++, 'Prepare Docker Environment', `
+        <p class="instr-p">Install Docker Desktop (or Docker Engine) on your host machine, then start an Ubuntu container.</p>
+        ${code('Install Docker (skip if already installed)', 'curl -fsSL https://get.docker.com | sh\nsudo usermod -aG docker $USER\n# Log out and back in, then verify:\ndocker --version')}
+        ${board.id === 'docker-arm64' ? `<div class="note">ARM64 emulation requires QEMU. Install on Linux with:<br><code>sudo apt install qemu-user-static binfmt-support</code><br>On macOS with Docker Desktop, QEMU is built-in.</div>` : ''}
+        ${code('Start an Ubuntu 22.04 container', `docker run ${imgArch} -it --name trustedge-demo \\\n  ubuntu:22.04 /bin/bash`)}
+        <p class="instr-p">All remaining steps run <strong>inside this container</strong>.</p>
+      `, true);
+    }
+  }
+
+  // ─── Step: Verify system prerequisites ───
+  if (board.cat !== 'zephyr') {
+    html += section(stepNum++, 'Verify Prerequisites', `
+      <p class="instr-p">Ensure your device is running and reachable. Check architecture and install required tools.</p>
+      ${code('Verify CPU architecture', 'uname -m\n# Expected output:\n#   aarch64   → 64-bit ARM\n#   x86_64    → 64-bit Intel/AMD\n#   armv7l    → 32-bit ARM')}
+      ${code('Install required packages', 'sudo apt update && sudo apt install -y wget unzip')}
+      ${board.tpm || state.tpm === 'hardware' ? code('Verify TPM device', 'ls -la /dev/tpm*\n# Expected: /dev/tpm0 or /dev/tpmrm0\n# If nothing appears, enable TPM in BIOS/UEFI settings') : ''}
+    `, true);
+  }
+
+  // ─── Step: Install TrustEdge (Linux) ───
+  if (board.cat !== 'zephyr') {
+    const wget = `wget https://github.com/digicert/trustedge/releases/latest/download/${board.debPkg}`;
+    const unzip = `unzip ${board.debPkg}`;
+    const dpkgArch = board.arch === 'x86_64' ? 'amd64' : board.arch === 'aarch64' ? 'aarch64' : 'armhf';
+    html += section(stepNum++, 'Install TrustEdge', `
+      <p class="instr-p">Download and install the latest TrustEdge .deb package for your architecture (${board.archLabel}).</p>
+      ${code('Remove any previous installation', 'sudo apt remove --purge trustedge 2>/dev/null || true')}
+      ${code(`Download TrustEdge for ${board.archLabel}`, wget)}
+      ${code('Extract the installer', unzip)}
+      ${code('Install the package', `sudo dpkg -i trustedge_*.${dpkgArch}.deb`)}
+      ${code('Verify installation (version ≥ v24.7.2-2187)', 'trustedge --version')}
+      ${code('Add your user to the trustedge group', 'sudo adduser "$(whoami)" trustedge\n# Log out and log back in for this to take effect\n# Verify:\ngroups | grep trustedge')}
+      <div class="success-note">✓ TrustEdge is now installed. Default keystore location: <code>/etc/digicert/keystore/</code></div>
+    `, true);
+  }
+
+  // ─── Step: Zephyr build ───
+  if (board.cat === 'zephyr') {
+    html += section(stepNum++, 'Set Up Zephyr Development Environment', `
+      <p class="instr-p">TrustEdge on Zephyr is built from source using the TrustCore SDK. Follow the official Zephyr Getting Started guide first.</p>
+      ${code('Install Zephyr SDK prerequisites (Ubuntu/Debian)', `sudo apt update && sudo apt install -y \\
+  git cmake ninja-build gperf ccache dfu-util device-tree-compiler wget \\
+  python3-dev python3-pip python3-setuptools python3-tk python3-wheel \\
+  xz-utils file make gcc gcc-multilib g++-multilib libsdl2-dev libmagic1`)}
+      ${code('Install West (Zephyr meta-tool)', 'pip3 install --user -U west')}
+      ${code('Initialize Zephyr workspace', `mkdir ~/zephyrproject && cd ~/zephyrproject\nwest init -m https://github.com/zephyrproject-rtos/zephyr --mr v3.5.0\nwest update\nwest zephyr-export`)}
+      ${code('Clone TrustCore SDK (includes TrustEdge for Zephyr)', `git clone https://github.com/digicert/trustcore.git\ncd trustcore`)}
+      <div class="note">Full Zephyr build instructions are at: <strong>https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html</strong></div>
+      ${code(`Build for ${board.name}`, board.id === 'nrf9160' ? `west build -b nrf9160dk_nrf9160_ns samples/trustedge/trustedge_agent` : board.id === 'nrf52840' ? `west build -b nrf52840dk_nrf52840 samples/trustedge/trustedge_agent` : `west build -b nucleo_f767zi samples/trustedge/trustedge_agent`)}
+      ${code('Flash the firmware', board.id.startsWith('nrf') ? `west flash\n# Or via nRF Connect Programmer` : `west flash\n# Or copy .bin to Nucleo DAPLINK USB drive`)}
+    `, true);
+  }
+
+  // ─── Step: TPM Provisioning ───
+  if (state.tpm === 'hardware' && board.cat !== 'zephyr') {
+    html += section(stepNum++, 'Provision TPM 2.0', `
+      <p class="instr-p">Configure TrustEdge to use the hardware TPM for secure key storage.</p>
+      <div class="note">Verify your TPM device path first. The tools assume <code>/dev/tpm0</code>. If your device is at <code>/dev/tpmrm0</code>, replace <code>--sm=/dev/tpm0</code> accordingly.</div>
+      ${code('Check TPM device path', 'ls -la /dev/tpm*\ntpm2_getcap properties-fixed 2>/dev/null | head -20')}
+      ${code(`Extract TPM tools for ${board.archLabel}`, `cd trustedge/tools/SecureElement
+unzip ${board.tpmPkg}
+unzip tpm2_tools-${board.arch}.zip
+ls bin/`)}
+      ${code('Clear and take ownership of TPM', `sudo ./reset_tpm2.sh\n# Or manually:\nsudo ./bin/digicert_tpm2_takeownership \\
+  --sm=/dev/tpm0 \\
+  --c \\
+  --force`)}
+      ${code('Take ownership and provision', `sudo ./provision_tpm2.sh\n# Or manually:\nsudo ./bin/digicert_tpm2_takeownership \\
+  --sm=/dev/tpm0 \\
+  --lhpwd= \\
+  --ehpwd= \\
+  --shpwd= \\
+  --credfile=creds.tpm2 \\
+  --authfail=10 \\
+  --rcytime=300 \\
+  --lorcy=300\n\nsudo ./bin/digicert_tpm2_provision \\
+  --sm=/dev/tpm0 \\
+  --ekpwd= \\
+  --ekalg=rsa \\
+  --srkpwd= \\
+  --srkalg=rsa \\
+  --credfile=/etc/digicert/creds.tpm2`)}
+      ${code('Configure TPM Module Identifier', 'sudo ./bin/smp_tpm2_getidstr_bin --w')}
+      <div class="success-note">✓ TPM provisioned. TrustEdge will now use the TPM for all key operations.</div>
+    `, false);
+  }
+
+  // ─── Step: Key Generation & Certificate ───
+  if (board.cat !== 'zephyr') {
+    if (state.cert === 'selfsigned') {
+      html += section(stepNum++, 'Generate Keys and Certificate (Self-Signed)', `
+        <p class="instr-p">Use the TrustEdge CLI to generate a key pair and self-signed certificate — no external CA required.</p>
+        ${code('Generate an ECDSA P-256 key pair', 'trustedge key -g ECDSA_256 -o mydevice')}
+        ${code('Create a Certificate Signing Request (CSR)', `trustedge csr \\
+  -k mydevice \\
+  -o mydevice_csr.pem \\
+  -cn "my-iot-device-001" \\
+  -o_attr "DigiCert" \\
+  -c "US"`)}
+        ${code('Generate a self-signed certificate (valid 1 year)', `trustedge certificate \\
+  -a SS \\
+  -g ECDSA_256 \\
+  -o mydevice.pem \\
+  -x mydevice.pem \\
+  -da 365`)}
+        ${code('Verify the certificate', 'trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem')}
+        <div class="success-note">✓ Certificate stored at <code>/etc/digicert/keystore/certs/mydevice.pem</code></div>
+      `, false);
+    } else {
+      html += section(stepNum++, 'Enroll Certificate via EST (Device Trust Manager)', `
+        <p class="instr-p">Obtain a certificate from DigiCert PKI via the EST protocol. Requires a Device Trust Manager account with an EST endpoint configured.</p>
+        <div class="note">You need: your EST server URL, EST username, and password from Device Trust Manager console.</div>
+        ${code('Set EST endpoint environment variables', `export EST_URL="https://pki.digicert.com/.well-known/est/<your-profile-id>"
+export EST_USER="<your-est-username>"
+export EST_PASS="<your-est-password>"`)}
+        ${code('Enroll via EST (simple re-enrollment)', `trustedge certificate \\
+  --est-enroll \\
+  --est-url $EST_URL \\
+  --est-user $EST_USER \\
+  --est-password $EST_PASS \\
+  -g ECDSA_256 \\
+  -o mydevice.pem`)}
+        ${code('Verify the issued certificate', 'trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem')}
+      `, false);
+    }
+  }
+
+  // ─── Step: Run TrustEdge ───
+  if (board.cat !== 'zephyr') {
+    if (state.mode === 'cli') {
+      html += section(stepNum++, 'Run TrustEdge (CLI Mode)', `
+        <p class="instr-p">Verify TrustEdge is working correctly with a quick end-to-end test.</p>
+        ${code('Check version and available commands', 'trustedge --version\ntrustedge --help')}
+        ${code('List keystore contents', 'trustedge keystore --list')}
+        ${code('Test TLS connectivity to DigiCert (MQTT over TLS)', `trustedge mqtt \\
+  --broker mqtt.digicert.com \\
+  --port 8883 \\
+  --topic "test/hello" \\
+  --message "Hello from ${board.name}" \\
+  --cert /etc/digicert/keystore/certs/mydevice.pem \\
+  --key /etc/digicert/keystore/keys/mydevice.pem`)}
+        <div class="success-note">✓ TrustEdge CLI is working. You can now use it to automate certificate lifecycle management on this device.</div>
+      `, false);
+    } else {
+      html += section(stepNum++, 'Configure TrustEdge Agent Mode', `
+        <p class="instr-p">Set up TrustEdge to run as a system daemon managed by DigiCert Device Trust Manager.</p>
+        <div class="note">Agent mode requires a Device Trust Manager subscription and a bootstrap certificate ("birth certificate") provisioned by DigiCert.</div>
+        ${code('Edit TrustEdge agent configuration', `sudo nano /etc/digicert/trustedge.conf\n\n# Key settings to configure:\n# dtm_url = https://dtm.digicert.com\n# device_id = <your-device-uuid>\n# bootstrap_cert = /etc/digicert/keystore/certs/bootstrap.pem\n# bootstrap_key = /etc/digicert/keystore/keys/bootstrap.pem\n# mqtt_broker = mqtt.digicert.com\n# mqtt_port = 8883`)}
+        ${code('Enable and start TrustEdge daemon', `sudo systemctl enable trustedge\nsudo systemctl start trustedge\nsudo systemctl status trustedge`)}
+        ${code('Monitor agent logs', 'sudo journalctl -u trustedge -f')}
+        ${code('Verify device appears in Device Trust Manager', '# Visit: https://www.digicert.com/device-trust-manager\n# Navigate to: Devices → All Devices\n# Your device should appear with status "Active"')}
+        <div class="success-note">✓ TrustEdge agent is running. Device is now managed by DigiCert Device Trust Manager.</div>
+      `, false);
+    }
+  }
+
+  // ─── Step: PQC Demo ───
+  if (state.pqc === 'demo' && board.cat !== 'zephyr') {
+    html += section(stepNum++, 'Post-Quantum Cryptography (PQC) Demo', `
+      <p class="instr-p">Run the ML-DSA + Hybrid ML-KEM-768 MQTT demo over TLS 1.3. This demonstrates quantum-resistant communication between TrustEdge and an Eclipse Mosquitto broker.</p>
+      <div class="note">PQC is only supported in <strong>TLS 1.3</strong>. Ensure TrustEdge version ≥ v24.7.2-2187.</div>
+      ${code('Clone TrustEdge repository (for PQC demo scripts)', `git clone https://github.com/digicert/trustedge.git
+cd trustedge/examples/pqc-demo`)}
+      ${code('Copy CSR configuration files', `cp ca_csr.cnf /etc/digicert/keystore/conf/
+cp server_csr.cnf /etc/digicert/keystore/conf/`)}
+      ${code('Generate ML-DSA-44 root CA and server certificate', `# Generate root CA keypair and ML-DSA-44 certificate
+trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651
+
+# Generate MQTT broker server certificate signed by root CA
+trustedge certificate -a QS -g MLDSA_44 \\
+  -o server.pem -x server.pem \\
+  -i server_csr.cnf -da 3651 \\
+  -sk CA.pem -sc CA.pem
+
+# Verify both certificates (look for OID 2.16.840.1.101.3.4.3.17 = ML-DSA-44)
+trustedge certificate -pc /etc/digicert/keystore/certs/server.pem
+trustedge certificate -pc /etc/digicert/keystore/certs/CA.pem`)}
+      ${code('Add MQTT broker to /etc/hosts', `echo "127.0.0.1 mqtt-pqc-broker" | sudo tee -a /etc/hosts`)}
+      ${code('Start Mosquitto broker with TLS 1.3 + ML-DSA', `chmod +x start_broker.sh
+./start_broker.sh --keystore /etc/digicert/keystore
+
+# Verify broker is listening on 8883:
+ss -tlnp | grep 8883`)}
+      ${code('Terminal 1 — Start subscriber', `chmod +x consumer.sh
+./consumer.sh \\
+  --broker mqtt-pqc-broker \\
+  --port 8883 \\
+  --keystore /etc/digicert/keystore
+# Expected: "Connected" → waiting for messages`)}
+      ${code('Terminal 2 — Publish PQC-secured message', `chmod +x publisher.sh
+./publisher.sh \\
+  --broker mqtt-pqc-broker \\
+  --port 8883 \\
+  --keystore /etc/digicert/keystore`)}
+      <div class="success-note">✓ PQC demo complete! Messages are secured with ML-DSA-44 certificates and Hybrid X25519+ML-KEM-768 key exchange over TLS 1.3.</div>
+      <p class="instr-p"><strong>Optional — Inspect with Wireshark:</strong> Open Wireshark on the loopback (<code>lo</code>) interface. Set <em>Edit → Preferences → TLS → (Pre)-Master-Secret log</em> to <code>pqc-demo/client_keys.txt</code>. Filter: <code>tls</code>. In the ClientHello, look for groups <code>X25519MLKEM768</code> (0x11EC) and <code>secp256r1MLKEM768</code> (0x11EB).</p>
+    `, false);
+  }
+
+  // ─── Step: Verification ───
+  if (board.cat !== 'zephyr') {
+    html += section(stepNum++, 'Verify & Troubleshoot', `
+      <p class="instr-p">Run these checks to confirm everything is working correctly.</p>
+      ${code('Full verification checklist', `# 1. Check TrustEdge version
+trustedge --version
+
+# 2. Verify keystore directory
+ls -la /etc/digicert/keystore/
+ls -la /etc/digicert/keystore/certs/
+ls -la /etc/digicert/keystore/keys/
+
+# 3. Check certificate validity
+trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem
+
+${state.tpm === 'hardware' ? `# 4. Verify TPM is accessible
+ls -la /dev/tpm*
+sudo tpm2_getcap properties-fixed | grep TPMManufacturer` : ''}
+
+${state.mode === 'agent' ? `# 5. Check agent daemon
+sudo systemctl status trustedge
+sudo journalctl -u trustedge --since "10 minutes ago"` : ''}`)}
+      ${code('Common fixes', `# Permission denied on keystore → add user to trustedge group
+sudo adduser "$(whoami)" trustedge
+newgrp trustedge
+
+# TPM not found → check BIOS/UEFI TPM settings
+ls /dev/tpm* || echo "No TPM device found — check BIOS"
+
+# Package install fails → fix dependencies
+sudo apt --fix-broken install
+
+# trustedge command not found → check PATH
+which trustedge || echo "Not in PATH; try: /usr/bin/trustedge"
+export PATH=$PATH:/usr/bin`)}
+      <div class="success-note">✓ Setup complete! TrustEdge is running on <strong>${board.name}</strong> with <strong>${os.name}</strong>.
+        See full docs at <a href="https://dev.digicert.com/en/trustedge.html" target="_blank" style="color:var(--success)">dev.digicert.com/en/trustedge.html</a></div>
+    `, false);
+  }
+
+  // ─── Step: Next Steps ───
+  html += section(stepNum++, 'Next Steps & Resources', `
+    <p class="instr-p">Where to go from here:</p>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:8px;">
+      ${[
+        { title: '📖 TrustEdge Docs', url: 'https://dev.digicert.com/en/trustedge.html', desc: 'Complete reference documentation' },
+        { title: '🔐 Device Trust Manager', url: 'https://docs.digicert.com/en/device-trust-manager.html', desc: 'Managed certificate lifecycle at scale' },
+        { title: '⚛️ TrustCore SDK', url: 'https://github.com/digicert/trustcore', desc: 'Source code and build instructions' },
+        { title: '🛡️ PQC Solutions', url: 'https://www.digicert.com/solutions/security-solutions-for-post-quantum-computing', desc: 'Post-Quantum strategy and tools' },
+        { title: '🐛 GitHub Issues', url: 'https://github.com/digicert/trustedge/issues', desc: 'Report bugs or request features' },
+        { title: '💬 DigiCert Support', url: 'https://www.digicert.com/support/pki-support', desc: 'Enterprise support (DTM subscribers)' },
+      ].map(l => `<a href="${l.url}" target="_blank" style="text-decoration:none;">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:all .15s;" onmouseover="this.style.borderColor='var(--brand)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">${l.title}</div>
+          <div style="font-size:12px;color:var(--text-muted);">${l.desc}</div>
+        </div>
+      </a>`).join('')}
+    </div>
+  `, false);
+
+  html += '</div>'; // close instr-body
+  document.getElementById('instructions-output').innerHTML = html;
+
+  // Auto-open all sections
+  document.querySelectorAll('.instr-section-content').forEach(el => el.classList.add('open'));
+  document.querySelectorAll('.instr-section-header').forEach(el => el.classList.add('open'));
+}
+
+// ═══════════════════════ THEME ═══════════════════════
+function toggleTheme() {
+  const root = document.documentElement;
+  const cur = root.getAttribute('data-theme');
+  root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+}
+
+// ═══════════════════════ INIT ═══════════════════════
+renderBoards();
+</script>
+</body>
+</html>
