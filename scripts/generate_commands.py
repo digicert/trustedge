@@ -16,7 +16,8 @@ import json
 import os
 import pathlib
 import textwrap
-from openai import OpenAI
+import time
+from openai import APIConnectionError, OpenAI
 
 REPO_ROOT = pathlib.Path(__file__).parent.parent
 OUT_FILE  = REPO_ROOT / "docs" / "data" / "commands.json"
@@ -24,6 +25,7 @@ OUT_FILE  = REPO_ROOT / "docs" / "data" / "commands.json"
 MODEL   = os.environ.get("AI_MODEL", "openai/gpt-4o")
 VERSION = os.environ.get("TRUSTEDGE_VERSION", "latest")
 TOKEN   = os.environ["GITHUB_TOKEN"]   # injected by the Action or set locally
+MAX_API_ATTEMPTS = int(os.environ.get("AI_MAX_ATTEMPTS", "3"))
 
 # ── Collect documentation sources ──────────────────────────────────────────
 
@@ -84,16 +86,37 @@ client = OpenAI(
     api_key=TOKEN,
 )
 
-response = client.chat.completions.create(
-    model=MODEL,
-    messages=[
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user",   "content": USER_PROMPT},
-    ],
-    temperature=0.1,      # low temp → deterministic, faithful to docs
-    max_tokens=8192,
-    response_format={"type": "json_object"},
-)
+response = None
+for attempt in range(1, MAX_API_ATTEMPTS + 1):
+    try:
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user",   "content": USER_PROMPT},
+            ],
+            temperature=0.1,      # low temp → deterministic, faithful to docs
+            max_tokens=8192,
+            response_format={"type": "json_object"},
+        )
+        break
+    except APIConnectionError as exc:
+        if attempt == MAX_API_ATTEMPTS:
+            print(f"WARNING: GitHub Models API unreachable after {attempt} attempts: {exc}")
+            break
+        wait_seconds = min(10, attempt * 2)
+        print(
+            f"WARNING: API connection failed (attempt {attempt}/{MAX_API_ATTEMPTS}): {exc}. "
+            f"Retrying in {wait_seconds}s..."
+        )
+        time.sleep(wait_seconds)
+
+if response is None:
+    if OUT_FILE.exists():
+        print(f"Keeping existing {OUT_FILE}; skipping regeneration for this run.")
+        raise SystemExit(0)
+    print("ERROR: Unable to generate commands.json and no existing file is available.")
+    raise SystemExit(1)
 
 raw = response.choices[0].message.content
 
