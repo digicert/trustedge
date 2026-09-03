@@ -1,0 +1,53 @@
+name: AI Command Generator
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: [master, main]
+    paths:
+      - 'README.md'
+      - 'examples/**/*.md'
+      - 'tools/**/*.md'
+      - 'scripts/generate_commands.py'
+  workflow_dispatch:   # manual trigger from GitHub UI
+
+permissions:
+  contents: write      # so the action can commit commands.json back
+
+jobs:
+  generate-commands:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install openai PyYAML
+
+      - name: Generate commands.json via AI
+        env:
+          # GitHub Models API — uses your Copilot licence, no extra cost
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: override with a specific model
+          AI_MODEL: ${{ vars.AI_MODEL || 'openai/gpt-4o' }}
+          # The release tag (or "latest" on push)
+          TRUSTEDGE_VERSION: ${{ github.event.release.tag_name || 'latest' }}
+        run: python scripts/generate_commands.py
+
+      - name: Commit updated commands.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data/commands.json
+          if git diff --staged --quiet; then
+            echo "No changes to commands.json — skipping commit"
+          else
+            git commit -m "chore: AI-regenerate commands.json for ${{ github.event.release.tag_name || github.sha }}"
+            git push
+          fi

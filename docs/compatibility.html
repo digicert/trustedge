@@ -1351,8 +1351,46 @@ function toggleTheme() {
   root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
 }
 
+// ═══════════════════════ COMMANDS.JSON LOADER ═══════════════════════
+// Fetched once on load; the GitHub Action keeps this file current on every release.
+
+let COMMANDS = {};   // populated after fetch
+
+async function loadCommands() {
+  try {
+    const res = await fetch('./data/commands.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    COMMANDS = await res.json();
+    const meta = COMMANDS.meta || {};
+    if (meta.version && meta.version !== 'seed') {
+      const banner = document.getElementById('version-banner');
+      if (banner) {
+        banner.textContent = `Commands auto-generated for TrustEdge ${meta.version} on ${meta.generated_at?.slice(0,10) || '?'}`;
+        banner.hidden = false;
+      }
+    }
+  } catch (e) {
+    console.warn('commands.json not available — using built-in commands', e);
+  }
+}
+
+// Return the command array for a given arch + step, or null (falls back to built-in)
+function getCommands(arch, step) {
+  return COMMANDS?.[arch]?.[step]?.commands || null;
+}
+function getNotes(arch, step) {
+  return COMMANDS?.[arch]?.[step]?.notes || [];
+}
+
 // ═══════════════════════ INIT ═══════════════════════
 renderBoards();
+loadCommands();
 </script>
+
+<!-- Version banner (shown after commands.json loads with a real version) -->
+<div id="version-banner" hidden
+  style="position:fixed;top:0;left:0;right:0;z-index:400;background:#166534;color:white;
+    text-align:center;padding:6px;font-size:12px;font-weight:600;"></div>
+
 </body>
 </html>
