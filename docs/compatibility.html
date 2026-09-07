@@ -1337,6 +1337,10 @@ export PATH=$PATH:/usr/bin`)}
   `, false);
 
   html += '</div>'; // close instr-body
+  // Append sources-consulted panel if metadata is available
+  if (window._commandsMeta?.sources_consulted) {
+    html += renderSourcesPanel(window._commandsMeta);
+  }
   document.getElementById('instructions-output').innerHTML = html;
 
   // Auto-open all sections
@@ -1365,13 +1369,51 @@ async function loadCommands() {
     if (meta.version && meta.version !== 'seed') {
       const banner = document.getElementById('version-banner');
       if (banner) {
-        banner.textContent = `Commands auto-generated for TrustEdge ${meta.version} on ${meta.generated_at?.slice(0,10) || '?'}`;
+        const warn = meta.hallucination_warnings > 0 ? ` · ⚠ ${meta.hallucination_warnings} warning(s)` : ' · ✓ verified';
+        banner.textContent = `Commands generated for TrustEdge ${meta.version} from ${meta.sources_consulted?.length || 0} doc pages${warn}`;
         banner.hidden = false;
       }
     }
+    // Inject sources panel into Step 4 after instructions render
+    window._commandsMeta = meta;
   } catch (e) {
     console.warn('commands.json not available — using built-in commands', e);
   }
+}
+
+function renderSourcesPanel(meta) {
+  const sources = meta?.sources_consulted;
+  if (!sources?.length) return '';
+  const rows = sources.map(s => `
+    <tr>
+      <td style="padding:6px 10px;font-size:12px;border-bottom:1px solid var(--border);">
+        <a href="${s.url}" target="_blank" style="color:var(--brand);text-decoration:none;word-break:break-all;">${s.url}</a>
+      </td>
+      <td style="padding:6px 10px;font-size:12px;border-bottom:1px solid var(--border);text-align:center;color:${s.blocks_found > 0 ? 'var(--success)' : 'var(--text-muted)'};">
+        ${s.blocks_found > 0 ? `✓ ${s.blocks_found} commands` : '—'}
+      </td>
+    </tr>`).join('');
+  return `
+    <div style="margin-top:24px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+      <div style="background:var(--surface2);padding:10px 14px;font-size:12px;font-weight:700;color:var(--text-muted);
+        display:flex;justify-content:space-between;align-items:center;">
+        <span>📚 Sources consulted to generate these commands</span>
+        <span style="font-weight:400;color:var(--text-light);">Generated ${meta.generated_at?.slice(0,10)} · ${meta.model_used}</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:var(--surface3);">
+            <th style="padding:6px 10px;font-size:11px;text-align:left;color:var(--text-muted);">Documentation Page</th>
+            <th style="padding:6px 10px;font-size:11px;text-align:center;color:var(--text-muted);white-space:nowrap;">Commands Found</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      ${meta.hallucination_warnings > 0 ? `
+        <div style="padding:8px 14px;background:var(--warn-bg);color:var(--warn);font-size:12px;">
+          ⚠ ${meta.hallucination_warnings} command(s) flagged during generation — review the PR diff before trusting these.
+        </div>` : ''}
+    </div>`;
 }
 
 // Return the command array for a given arch + step, or null (falls back to built-in)
