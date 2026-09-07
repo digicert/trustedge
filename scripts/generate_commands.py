@@ -85,9 +85,11 @@ def fetch_page(url: str) -> dict | None:
     title = soup.find("title")
     title = title.get_text(strip=True) if title else url
 
-    # Extract every <code> and <pre> block — these are the real commands
+    # Extract every <pre> and (non-nested) <code> block — these are the real commands
     blocks = []
     for tag in soup.find_all(["pre", "code"]):
+        if tag.name == "code" and tag.find_parent("pre") is not None:
+            continue
         text = tag.get_text()
         # Only keep blocks that look like shell commands (contain trustedge, sudo, wget, etc.)
         if re.search(r'\btrustedge\b|sudo\s+\w|wget\s+http|dpkg\s+-i|apt\s+install|git\s+clone', text):
