@@ -1136,7 +1136,7 @@ function renderBoards() {
         ${b.tags.includes('DIN Rail') ? '<span class="tag sim">DIN Rail</span>' : ''}
         ${b.cat === 'windows' ? '<span class="tag windows">Windows</span>' : ''}
       </div>
-      ${b.specUrl ? `<a href="${b.specUrl}" target="_blank" onclick="event.stopPropagation()"
+      ${b.specUrl ? `<a href="${b.specUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"
         style="display:block;margin-top:8px;font-size:10px;color:#F47920;text-decoration:none;font-weight:600;">
         View specs ↗</a>` : ''}
     </div>
