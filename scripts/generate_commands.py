@@ -241,6 +241,10 @@ for item in all_code_blocks:
     # Also capture flags like --cert, --broker etc.
     real_command_tokens.update(re.findall(r'--[\w\-]+', item["block"]))
 
+# Include repo-doc content in the allow-list too (repo-only TPM/PQC commands)
+for text in repo_doc_text.values():
+    real_command_tokens.update(re.findall(r'trustedge\s+\w[\w\-]*', text))
+    real_command_tokens.update(re.findall(r'--[\w\-]+', text))
 def check_hallucinations(data: dict) -> list[str]:
     issues = []
     for arch, steps in data.items():
