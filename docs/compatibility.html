@@ -1335,7 +1335,7 @@ function buildInstructions() {
 
   // ─── Windows special case ───
   if (isWindows) {
-    const isIoT = state.os === 'windows-iot-ltsc';
+    // const isIoT = state.os === 'windows-iot-ltsc';
     html += section(stepNum++, 'Verify Prerequisites', `
       <p class="instr-p">Confirm you are running Windows 11 with a TPM 2.0 module (required by Windows 11) and an administrator account.</p>
       ${code('PowerShell — check Windows version and TPM', `# Run PowerShell as Administrator
