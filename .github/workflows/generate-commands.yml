@@ -14,22 +14,26 @@ on:
       - 'README.md'
       - 'examples/**/*.md'
       - 'tools/**/*.md'
-  workflow_dispatch:     # "Run workflow" button in the Actions tab
+  workflow_dispatch:
 
 permissions:
-  contents: write        # create branch + commit commands.json
-  pull-requests: write   # open the review PR
+  contents: write
+  pull-requests: write
 
 jobs:
   generate-commands:
-    runs-on: ubuntu-latest   # GitHub-hosted free VM, boots in ~10s
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        # actions/checkout v4.2.2 — pinned to immutable commit SHA
+        # To update: gh release view --repo actions/checkout --json tagName,targetCommitish
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        # actions/setup-python v5.3.0 — pinned to immutable commit SHA
+        # To update: gh release view --repo actions/setup-python --json tagName,targetCommitish
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
           python-version: '3.12'
 
@@ -39,57 +43,57 @@ jobs:
       - name: Run AI command generator
         id: generate
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # auto-injected, no setup needed
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AI_MODEL: ${{ vars.AI_MODEL || 'openai/gpt-4o' }}
           TRUSTEDGE_VERSION: ${{ github.event.release.tag_name || github.ref_name }}
         run: python scripts/generate_commands.py
 
-      # ── Create a review PR so a human checks the diff before it goes live ──
+      # ── Open a PR using the built-in gh CLI (no third-party action needed) ──
 
-      - name: Create review branch
+      - name: Create review branch and open PR
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_TAG: ${{ github.event.release.tag_name || github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          MODEL: ${{ vars.AI_MODEL || 'openai/gpt-4o' }}
         run: |
-          BRANCH="ai-commands-${{ github.event.release.tag_name || github.sha }}"
+          BRANCH="ai-commands-${VERSION_TAG:0:20}"
+
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git add docs/data/commands.json
+
           if git diff --staged --quiet; then
-            echo "NO_CHANGES=true" >> $GITHUB_ENV
-          else
-            git commit -m "chore(ai): regenerate commands.json for ${{ github.event.release.tag_name || github.sha }}"
-            git push origin "$BRANCH"
-            echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+            echo "No changes to commands.json — skipping PR"
+            exit 0
           fi
 
-      - name: Open Pull Request for review
-        if: env.NO_CHANGES != 'true'
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.BRANCH }}
-          base: master
-          title: "🤖 AI-updated commands.json for ${{ github.event.release.tag_name || github.ref_name }}"
-          body: |
-            ## AI-generated commands review
+          git commit -m "chore(ai): regenerate commands.json for ${VERSION_TAG}"
+          git push origin "$BRANCH"
 
-            This PR was opened automatically by the **AI Command Generator** Action.
+          gh pr create \
+            --base master \
+            --head "$BRANCH" \
+            --title "🤖 AI-updated commands.json for ${VERSION_TAG}" \
+            --label "ai-generated" \
+            --body "## AI-generated commands — review before merging
 
-            ### What changed
-            `docs/data/commands.json` was regenerated from the current README and example docs
-            using GitHub Models API (`${{ vars.AI_MODEL || 'openai/gpt-4o' }}`).
+This PR was opened automatically by the **AI Command Generator** Action.
 
-            ### How to review
-            1. Click the **Files changed** tab above
-            2. Read every command diff — verify flags and paths match the real docs
-            3. If anything looks wrong, edit `docs/data/commands.json` directly in this PR
-            4. When satisfied → **Merge pull request** → the compatibility page goes live
+### What to review
+1. Click the **Files changed** tab
+2. Verify every command exists on the [TrustEdge docs](https://dev.digicert.com/en/trustedge.html)
+3. Edit \`docs/data/commands.json\` directly in this PR if anything is wrong
+4. Merge when satisfied — the compatibility page goes live immediately
 
-            ### Hallucination warnings
-            Check the [Action run log](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            for any ⚠ hallucination warnings flagged by the guard.
+### Sources consulted
+The script fetched live pages from \`dev.digicert.com\` and extracted real command blocks.
+Check the [Action run log](${RUN_URL}) to see which pages were consulted and any ⚠ hallucination warnings.
 
-            ---
-            _To fix a wrong command: edit the file in this PR, or close the PR and fix
-            the source documentation so the AI generates it correctly next time._
-          labels: ai-generated, commands
-          draft: false
+### Model used
+\`${MODEL}\`
+
+---
+_Wrong command? Fix the source docs so the AI gets it right next time, or edit the JSON in this PR._"

@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # Keeps pinned GitHub Actions SHAs up to date automatically.
+  # Dependabot opens a PR whenever a new version of a used action is released,
+  # updating the commit SHA and the version comment in the workflow file.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "chore(deps)"
