@@ -75,10 +75,8 @@ jobs:
 
             This PR was opened automatically by the **AI Command Generator** Action.
 
-            ### What changed
-            `docs/data/commands.json` was regenerated from the current README and example docs
-            using GitHub Models API (`${{ vars.AI_MODEL || 'openai/gpt-4o' }}`).
-
+            `docs/data/commands.json` was regenerated from the current TrustEdge documentation on dev.digicert.com
+            (plus repo docs for TPM/PQC) using GitHub Models API (`${{ vars.AI_MODEL || 'openai/gpt-4o' }}`).
             ### How to review
             1. Click the **Files changed** tab above
             2. Read every command diff — verify flags and paths match the real docs
