@@ -257,7 +257,7 @@ def check_hallucinations(data: dict) -> list[str]:
                 # Check trustedge subcommands
                 for subcmd in re.findall(r'trustedge\s+(\w[\w\-]*)', cmd):
                     candidate = f"trustedge {subcmd}"
-                    if not any(candidate in real for real in real_command_tokens):
+                    if candidate not in real_command_tokens:
                         issues.append(
                             f"  [{arch}/{step_name}] Unverified subcommand: "
                             f"`{candidate}` — not found in any fetched doc page"
