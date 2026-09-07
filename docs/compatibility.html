@@ -1384,13 +1384,18 @@ async function loadCommands() {
 function renderSourcesPanel(meta) {
   const sources = meta?.sources_consulted;
   if (!sources?.length) return '';
+  const escAttr = (s) => String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/"/g,'&quot;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
   const rows = sources.map(s => `
     <tr>
       <td style="padding:6px 10px;font-size:12px;border-bottom:1px solid var(--border);">
-        <a href="${s.url}" target="_blank" style="color:var(--brand);text-decoration:none;word-break:break-all;">${s.url}</a>
+        <a href="${escAttr(s.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--brand);text-decoration:none;word-break:break-all;">${escHtml(String(s.url))}</a>
       </td>
       <td style="padding:6px 10px;font-size:12px;border-bottom:1px solid var(--border);text-align:center;color:${s.blocks_found > 0 ? 'var(--success)' : 'var(--text-muted)'};">
-        ${s.blocks_found > 0 ? `✓ ${s.blocks_found} commands` : '—'}
+        ${s.blocks_found > 0 ? `✓ ${Number(s.blocks_found)} commands` : '—'}
       </td>
     </tr>`).join('');
   return `
