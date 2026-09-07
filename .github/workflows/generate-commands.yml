@@ -1,5 +1,10 @@
 name: AI Command Generator
 
+# WHEN IT RUNS:
+#   Automatically → when you publish a GitHub Release (github.com → Releases → Publish)
+#   Manually      → Actions tab → "AI Command Generator" → Run workflow
+#   Also          → when README or example docs change on master
+
 on:
   release:
     types: [published]
@@ -10,44 +15,80 @@ on:
       - 'examples/**/*.md'
       - 'tools/**/*.md'
       - 'scripts/generate_commands.py'
-  workflow_dispatch:   # manual trigger from GitHub UI
+  workflow_dispatch:     # "Run workflow" button in the Actions tab
 
 permissions:
-  contents: write      # so the action can commit commands.json back
+  contents: write        # create branch + commit commands.json
+  pull-requests: write   # open the review PR
 
 jobs:
   generate-commands:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # GitHub-hosted free VM, boots in ~10s
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
-        run: pip install openai PyYAML
+      - name: Install Python dependencies
+        run: pip install openai requests beautifulsoup4
 
-      - name: Generate commands.json via AI
+      - name: Run AI command generator
+        id: generate
         env:
-          # GitHub Models API — uses your Copilot licence, no extra cost
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Optional: override with a specific model
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # auto-injected, no setup needed
           AI_MODEL: ${{ vars.AI_MODEL || 'openai/gpt-4o' }}
-          # The release tag (or "latest" on push)
-          TRUSTEDGE_VERSION: ${{ github.event.release.tag_name || 'latest' }}
+          TRUSTEDGE_VERSION: ${{ github.event.release.tag_name || github.ref_name }}
         run: python scripts/generate_commands.py
 
-      - name: Commit updated commands.json
+      # ── Create a review PR so a human checks the diff before it goes live ──
+
+      - name: Create review branch
         run: |
+          BRANCH="ai-commands-${{ github.event.release.tag_name || github.sha }}"
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
           git add docs/data/commands.json
           if git diff --staged --quiet; then
-            echo "No changes to commands.json — skipping commit"
+            echo "NO_CHANGES=true" >> $GITHUB_ENV
           else
-            git commit -m "chore: AI-regenerate commands.json for ${{ github.event.release.tag_name || github.sha }}"
-            git push
+            git commit -m "chore(ai): regenerate commands.json for ${{ github.event.release.tag_name || github.sha }}"
+            git push origin "$BRANCH"
+            echo "BRANCH=$BRANCH" >> $GITHUB_ENV
           fi
+
+      - name: Open Pull Request for review
+        if: env.NO_CHANGES != 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ env.BRANCH }}
+          base: ${{ github.event.repository.default_branch }}
+          title: "🤖 AI-updated commands.json for ${{ github.event.release.tag_name || github.ref_name }}"
+          body: |
+            ## AI-generated commands review
+
+            This PR was opened automatically by the **AI Command Generator** Action.
+
+            `docs/data/commands.json` was regenerated from the current TrustEdge documentation on dev.digicert.com
+            (plus repo docs for TPM/PQC) using GitHub Models API (`${{ vars.AI_MODEL || 'openai/gpt-4o' }}`).
+            ### How to review
+            1. Click the **Files changed** tab above
+            2. Read every command diff — verify flags and paths match the real docs
+            3. If anything looks wrong, edit `docs/data/commands.json` directly in this PR
+            4. When satisfied → **Merge pull request** → the compatibility page goes live
+
+            ### Hallucination warnings
+            Check the [Action run log](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            for any ⚠ hallucination warnings flagged by the guard.
+
+            ---
+            _To fix a wrong command: edit the file in this PR, or close the PR and fix
+            the source documentation so the AI generates it correctly next time._
+          labels: ai-generated, commands
+          draft: false
