@@ -147,8 +147,9 @@ Your ONLY job is to structure commands that already exist in the provided source
 CRITICAL RULES — any violation causes automated rejection:
 1. USE ONLY commands from the provided source pages. Do NOT invent any command,
    flag, argument, or path. If a command is not in the sources, omit it entirely.
-2. Every command entry MUST include a source_url field: the exact URL of the
-   page the command was taken from.
+2. Every step entry MUST include a source_url field identifying where the commands came from:
+   - If the source is a dev.digicert.com page, use the exact page URL.
+   - If the source is repo documentation included below, use the repo path shown in the SOURCE header.
 3. Use {{VERSION}} wherever a version number appears (e.g. in .deb filenames).
 4. Structure:
    Top-level arch keys: x86_64, aarch64, arm32, zephyr
@@ -157,7 +158,7 @@ CRITICAL RULES — any violation causes automated rejection:
    Each step: {
      "title": "string",
      "commands": ["string"],
-     "source_url": "https://...",   ← the doc page this step came from
+     "source_url": "string",
      "notes": ["string"]            ← optional, from the docs
    }
 5. Output ONLY valid JSON. No markdown fences. No explanation outside JSON.
