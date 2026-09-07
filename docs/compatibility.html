@@ -168,6 +168,39 @@
   .tag.pqc { background: #EDE9FE; color: #5B21B6; }
   .tag.sim { background: #FEF3C7; color: #92400E; }
   .tag.rtos { background: #FEE2E2; color: #991B1B; }
+  .tag.industrial { background: #FFF3E0; color: #BF360C; }
+  .tag.onlogic { background: #F47920; color: white; font-size: 9px; }
+  .tag.windows { background: #EFF6FF; color: #0078D4; }
+
+  .cat-tab.windows-tab.active { background: #0078D4; border-color: #0078D4; }
+  .cat-tab.windows-tab:hover  { border-color: #0078D4; color: #0078D4; }
+
+  .board-card.windows-card:hover { border-color: #0078D4; }
+  .board-card.windows-card.selected {
+    border-color: #0078D4;
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    box-shadow: 0 0 0 3px rgba(0,120,212,.15);
+  }
+  .board-card.windows-card.selected .check { background: #0078D4; }
+
+  /* OnLogic category tab accent */
+  .cat-tab.onlogic-tab.active { background: #F47920; border-color: #F47920; }
+  .cat-tab.onlogic-tab:hover  { border-color: #F47920; color: #F47920; }
+
+  /* OnLogic board card accent on hover */
+  .board-card.onlogic-card:hover  { border-color: #F47920; }
+  .board-card.onlogic-card.selected {
+    border-color: #F47920;
+    background: linear-gradient(135deg, #FFF8F2 0%, #FFF3E0 100%);
+    box-shadow: 0 0 0 3px rgba(244,121,32,.15);
+  }
+  :root[data-theme="dark"] .board-card.onlogic-card.selected,
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .board-card.onlogic-card.selected {
+      background: linear-gradient(135deg, #2A1A0A 0%, #1F1208 100%);
+    }
+  }
+  .board-card.onlogic-card.selected .check { background: #F47920; }
 
   /* ── OS selector ── */
   .os-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
@@ -349,10 +382,11 @@
     </div>
     <div class="cat-tabs" id="cat-tabs">
       <div class="cat-tab active" onclick="filterCat('all')">All Platforms</div>
-      <div class="cat-tab" onclick="filterCat('aarch64')">ARM 64-bit</div>
       <div class="cat-tab" onclick="filterCat('x86_64')">x86-64</div>
+      <div class="cat-tab" onclick="filterCat('aarch64')">ARM 64-bit</div>
       <div class="cat-tab" onclick="filterCat('arm32')">ARM 32-bit</div>
       <div class="cat-tab" onclick="filterCat('zephyr')">Zephyr RTOS</div>
+      <div class="cat-tab" onclick="filterCat('windows')">Windows</div>
       <div class="cat-tab" onclick="filterCat('simulation')">Simulation</div>
     </div>
     <div class="board-grid" id="board-grid"></div>
@@ -654,6 +688,119 @@ const BOARDS = [
     tags: ['Zephyr RTOS', 'Ethernet'],
     icon: 'stm32',
   },
+  // ── OnLogic Industrial ──
+  {
+    id: 'onlogic-factor201', name: 'OnLogic Factor 201', cat: 'industrial',
+    cpu: 'Intel Core 12th Gen (Alder Lake-P), up to Core i7-1265UE',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '8–32GB DDR4 SO-DIMM', tpm: true, tpmOptional: false,
+    tpmNote: 'Intel PTT fTPM 2.0 + optional discrete TPM 2.0 header (Infineon SLB 9670)',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: 'tpm2_tools-x86_64-24.7.2-3262.zip',
+    desc: 'Compact fanless PC — ultra-low power, ideal for edge IoT gateways',
+    os: ['ubuntu-2404', 'ubuntu-2204', 'debian-12'],
+    tags: ['x86-64', 'Fanless', 'TPM 2.0', 'Industrial'],
+    icon: 'onlogic_factor', vendor: 'onlogic',
+    specUrl: 'https://www.onlogic.com/factor-201/',
+  },
+  {
+    id: 'onlogic-helix500', name: 'OnLogic Helix 500', cat: 'industrial',
+    cpu: 'Intel Core i3/i5/i7 11th Gen (Tiger Lake), up to Core i7-1185G7E',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '8–64GB DDR4', tpm: true, tpmOptional: false,
+    tpmNote: 'Intel PTT fTPM 2.0 built-in; discrete TPM header on motherboard',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: 'tpm2_tools-x86_64-24.7.2-3262.zip',
+    desc: 'Modular fanless industrial PC — 4× GbE, wide-range DC input, DIN rail capable',
+    os: ['ubuntu-2404', 'ubuntu-2204', 'debian-12'],
+    tags: ['x86-64', 'Fanless', 'TPM 2.0', 'Industrial'],
+    icon: 'onlogic_helix', vendor: 'onlogic',
+    specUrl: 'https://www.onlogic.com/hx500/',
+  },
+  {
+    id: 'onlogic-karbon400', name: 'OnLogic Karbon 400', cat: 'industrial',
+    cpu: 'Intel Core i5-8365UE / i7-8665UE (Whiskey Lake-U), 8th Gen',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '8–32GB DDR4', tpm: true, tpmOptional: false,
+    tpmNote: 'Discrete TPM 2.0 (Infineon SLB 9670) standard on all configurations',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: 'tpm2_tools-x86_64-24.7.2-3262.zip',
+    desc: 'MIL-STD-810H rugged computer — -40°C to 70°C, vibration & shock rated',
+    os: ['ubuntu-2204', 'ubuntu-2404', 'debian-12'],
+    tags: ['x86-64', 'Rugged', 'TPM 2.0', 'Industrial'],
+    icon: 'onlogic_karbon', vendor: 'onlogic',
+    specUrl: 'https://www.onlogic.com/karbon-400/',
+  },
+  {
+    id: 'onlogic-ml100g40', name: 'OnLogic ML100G-40', cat: 'industrial',
+    cpu: 'NVIDIA Jetson Xavier NX, 6× Carmel ARMv8.2 @ 1.9GHz + 384-core Volta GPU',
+    arch: 'aarch64', archLabel: 'ARM 64-bit',
+    ram: '8GB LPDDR4x', tpm: false, tpmOptional: false,
+    tpmNote: 'No built-in TPM; NVIDIA Jetson security fuse-based root of trust',
+    debPkg: 'trustedge-aarch64-deb.zip', debFile: 'trustedge_*.aarch64.deb',
+    tpmPkg: 'tpm2_tools-aarch64-24.7.2-3262.zip',
+    desc: 'Fanless AI edge computer — 21 TOPS, designed for computer vision & inference',
+    os: ['ubuntu-2004-jetpack', 'ubuntu-2204'],
+    tags: ['ARM64', 'AI Edge', 'Fanless', 'Industrial'],
+    icon: 'onlogic_ml', vendor: 'onlogic',
+    specUrl: 'https://www.onlogic.com/ml100g-40/',
+  },
+  {
+    id: 'onlogic-k300', name: 'OnLogic K300', cat: 'industrial',
+    cpu: 'Intel Celeron J6412 / Atom x6413E (Elkhart Lake)',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '4–16GB LPDDR4', tpm: true, tpmOptional: false,
+    tpmNote: 'Intel PTT fTPM 2.0; optional DIN rail mounting kit',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: 'tpm2_tools-x86_64-24.7.2-3262.zip',
+    desc: 'Ultra-compact DIN rail PC — 75mm wide, 12W TDP, -40°C to 70°C',
+    os: ['ubuntu-2204', 'ubuntu-2404', 'debian-12'],
+    tags: ['x86-64', 'DIN Rail', 'Compact', 'TPM 2.0'],
+    icon: 'onlogic_din', vendor: 'onlogic',
+    specUrl: 'https://www.onlogic.com/k300/',
+  },
+  {
+    id: 'onlogic-karbon700', name: 'OnLogic Karbon 700', cat: 'industrial',
+    cpu: 'Intel Core 12th Gen (Alder Lake-P), up to Core i7-1265UE',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '8–64GB DDR4', tpm: true, tpmOptional: false,
+    tpmNote: 'Discrete TPM 2.0 standard; FIPS 140-2 compliant configurations available',
+    debPkg: 'trustedge-x64-deb.zip', debFile: 'trustedge_*.amd64.deb',
+    tpmPkg: 'tpm2_tools-x86_64-24.7.2-3262.zip',
+    desc: 'High-performance rugged PC — MIL-STD-810H, extended temp, 5G/LTE ready',
+    os: ['ubuntu-2404', 'ubuntu-2204', 'debian-12'],
+    tags: ['x86-64', 'Rugged', 'TPM 2.0', 'Industrial', '5G Ready'],
+    icon: 'onlogic_karbon', vendor: 'onlogic',
+    specUrl: 'https://www.onlogic.com/karbon-700/',
+  },
+
+  // ── Windows ──
+  {
+    id: 'windows-pc', name: 'Windows 11 PC / Workstation', cat: 'windows',
+    cpu: 'Intel / AMD x86-64 (any generation)',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '4GB+ recommended', tpm: true, tpmOptional: false,
+    tpmNote: 'Windows 11 requires TPM 2.0 — all certified PCs have it built in (fTPM or discrete)',
+    debPkg: null, debFile: null, tpmPkg: null,
+    desc: 'Any Windows 11–compatible PC — workstation, laptop, or industrial PC',
+    os: ['windows-11', 'windows-iot-ltsc'],
+    tags: ['x86-64', 'TPM 2.0', 'Windows'],
+    icon: 'winpc',
+  },
+  {
+    id: 'onlogic-windows', name: 'OnLogic Industrial PC (Windows)', cat: 'windows',
+    cpu: 'Intel Core 12th Gen (Alder Lake-P), up to Core i7-1265UE',
+    arch: 'x86_64', archLabel: 'x86-64',
+    ram: '8–32GB DDR4', tpm: true, tpmOptional: false,
+    tpmNote: 'Intel PTT fTPM 2.0 built-in + optional discrete TPM — Windows 11 IoT certified',
+    debPkg: null, debFile: null, tpmPkg: null,
+    desc: 'Fanless rugged industrial PC with Windows 11 IoT Enterprise LTSC support',
+    os: ['windows-11', 'windows-iot-ltsc'],
+    tags: ['x86-64', 'Fanless', 'TPM 2.0', 'Industrial', 'Windows'],
+    icon: 'onlogic_factor', vendor: 'onlogic',
+    specUrl: 'https://www.onlogic.com/computers/',
+  },
+
   // ── Simulation ──
   {
     id: 'docker-x64', name: 'Docker Container (x86-64)', cat: 'simulation',
@@ -715,6 +862,8 @@ const OS_OPTIONS = {
   'zephyr-rtos':      { name: 'Zephyr RTOS', ver: '3.5+', icon: 'zephyr' },
   'docker-ubuntu':    { name: 'Ubuntu 22.04 (Docker)', ver: 'Container image', icon: 'docker' },
   'ubuntu-codespaces':{ name: 'Ubuntu (Codespaces)', ver: 'Cloud VM', icon: 'ubuntu' },
+  'windows-11':       { name: 'Windows 11', ver: '22H2 or later (Home / Pro / Enterprise)', icon: 'windows' },
+  'windows-iot-ltsc': { name: 'Windows 11 IoT Enterprise', ver: 'LTSC 2024 — long-term servicing', icon: 'windows' },
 };
 
 // ═══════════════════════ STATE ═══════════════════════
@@ -839,6 +988,75 @@ function boardIcon(type) {
       <text x="40" y="42" text-anchor="middle" font-size="30">🐙</text>
       <text x="40" y="58" text-anchor="middle" fill="#8B949E" font-size="8">Codespaces</text>
     </svg>`,
+    // ── OnLogic industrial form-factor icons ──
+    onlogic_factor: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="8" y="16" width="64" height="40" rx="5" fill="#1C2127" stroke="#F47920" stroke-width="1.5"/>
+      <rect x="14" y="22" width="36" height="28" rx="2" fill="#0D1117"/>
+      <text x="32" y="40" text-anchor="middle" fill="#F47920" font-size="8" font-weight="700">Factor 201</text>
+      <rect x="54" y="24" width="12" height="5" rx="1" fill="#F47920" opacity=".7"/>
+      <rect x="54" y="32" width="12" height="5" rx="1" fill="#333"/>
+      <rect x="54" y="39" width="12" height="5" rx="1" fill="#333"/>
+      <circle cx="63" cy="50" r="3" fill="#22C55E"/>
+      <rect x="14" y="58" width="52" height="3" rx="1" fill="#F47920" opacity=".3"/>
+      <text x="40" y="67" text-anchor="middle" fill="#F47920" font-size="7" opacity=".8">OnLogic</text>
+    </svg>`,
+    onlogic_helix: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="5" y="12" width="70" height="46" rx="4" fill="#1C2127" stroke="#F47920" stroke-width="1.5"/>
+      <rect x="10" y="18" width="32" height="20" rx="2" fill="#0D1117"/>
+      <text x="26" y="31" text-anchor="middle" fill="#F47920" font-size="7" font-weight="700">Helix 500</text>
+      <rect x="46" y="18" width="24" height="9" rx="2" fill="#0D1117"/>
+      <text x="58" y="26" text-anchor="middle" fill="#94A3B8" font-size="6">Core i7</text>
+      <rect x="46" y="30" width="24" height="8" rx="2" fill="#0D1117"/>
+      <text x="58" y="37" text-anchor="middle" fill="#94A3B8" font-size="6">TPM 2.0</text>
+      <rect x="10" y="42" width="60" height="3" rx="1" fill="#F47920" opacity=".4"/>
+      <circle cx="65" cy="51" r="3" fill="#22C55E"/>
+      <rect x="10" y="48" width="8" height="6" rx="1" fill="#0D1117" stroke="#333"/>
+      <rect x="22" y="48" width="8" height="6" rx="1" fill="#0D1117" stroke="#333"/>
+      <text x="40" y="65" text-anchor="middle" fill="#F47920" font-size="7" opacity=".8">OnLogic</text>
+    </svg>`,
+    onlogic_karbon: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="6" y="8" width="68" height="50" rx="6" fill="#1C2127" stroke="#F47920" stroke-width="2"/>
+      <rect x="6" y="8" width="68" height="8" rx="6" fill="#F47920" opacity=".15"/>
+      <text x="40" y="20" text-anchor="middle" fill="#F47920" font-size="7" font-weight="800" letter-spacing="1">KARBON 400</text>
+      <rect x="14" y="22" width="28" height="20" rx="2" fill="#0D1117"/>
+      <text x="28" y="35" text-anchor="middle" fill="#64748B" font-size="7">Core i5</text>
+      <rect x="46" y="22" width="22" height="9" rx="2" fill="#0D1117"/>
+      <text x="57" y="29" text-anchor="middle" fill="#94A3B8" font-size="6">TPM 2.0</text>
+      <rect x="46" y="33" width="22" height="9" rx="2" fill="#0D1117"/>
+      <text x="57" y="40" text-anchor="middle" fill="#94A3B8" font-size="6">-40~70°C</text>
+      <rect x="12" y="46" width="56" height="3" rx="1" fill="#F47920" opacity=".5"/>
+      <circle cx="66" cy="53" r="3" fill="#22C55E"/>
+      <text x="40" y="65" text-anchor="middle" fill="#F47920" font-size="7" opacity=".8">OnLogic · Rugged</text>
+    </svg>`,
+    onlogic_ml: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="8" y="10" width="64" height="48" rx="5" fill="#1C2127" stroke="#F47920" stroke-width="1.5"/>
+      <rect x="14" y="16" width="24" height="18" rx="2" fill="#0D1117"/>
+      <text x="26" y="28" text-anchor="middle" fill="#76B900" font-size="7" font-weight="700">Jetson</text>
+      <text x="26" y="37" text-anchor="middle" fill="#76B900" font-size="6">Xavier NX</text>
+      <rect x="42" y="16" width="24" height="18" rx="2" fill="#0D1117"/>
+      <text x="54" y="24" text-anchor="middle" fill="#F47920" font-size="6">ML100G</text>
+      <text x="54" y="32" text-anchor="middle" fill="#64748B" font-size="5">AI Edge</text>
+      <rect x="12" y="38" width="56" height="3" rx="1" fill="#F47920" opacity=".4"/>
+      <rect x="12" y="44" width="10" height="8" rx="1" fill="#0D1117" stroke="#333"/>
+      <rect x="26" y="44" width="10" height="8" rx="1" fill="#0D1117" stroke="#333"/>
+      <circle cx="66" cy="49" r="3" fill="#22C55E"/>
+      <text x="40" y="65" text-anchor="middle" fill="#F47920" font-size="7" opacity=".8">OnLogic · AI Edge</text>
+    </svg>`,
+    onlogic_din: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="22" y="5" width="36" height="58" rx="4" fill="#1C2127" stroke="#F47920" stroke-width="1.5"/>
+      <rect x="22" y="5" width="36" height="10" rx="4" fill="#F47920" opacity=".2"/>
+      <text x="40" y="14" text-anchor="middle" fill="#F47920" font-size="6" font-weight="700">K300</text>
+      <rect x="27" y="18" width="26" height="18" rx="2" fill="#0D1117"/>
+      <text x="40" y="30" text-anchor="middle" fill="#64748B" font-size="7">Celeron</text>
+      <rect x="27" y="40" width="10" height="7" rx="1" fill="#0D1117" stroke="#333"/>
+      <rect x="41" y="40" width="10" height="7" rx="1" fill="#0D1117" stroke="#333"/>
+      <circle cx="40" cy="55" r="3" fill="#22C55E"/>
+      <rect x="5" y="20" width="14" height="4" rx="1" fill="#333"/>
+      <rect x="61" y="20" width="14" height="4" rx="1" fill="#333"/>
+      <rect x="5" y="28" width="14" height="4" rx="1" fill="#333"/>
+      <rect x="61" y="28" width="14" height="4" rx="1" fill="#333"/>
+      <text x="40" y="67" text-anchor="middle" fill="#F47920" font-size="6" opacity=".8">DIN Rail</text>
+    </svg>`,
     sbc: `<svg viewBox="0 0 80 70" fill="none">
       <rect x="5" y="5" width="70" height="60" rx="5" fill="#4CAF50" stroke="#388E3C" stroke-width="1.5"/>
       <rect x="12" y="10" width="28" height="22" rx="3" fill="#1B5E20"/>
@@ -847,6 +1065,18 @@ function boardIcon(type) {
       <rect x="10" y="38" width="60" height="5" rx="1" fill="#FFD700" opacity=".7"/>
       <rect x="10" y="48" width="10" height="12" rx="1" fill="#1B5E20"/>
       <rect x="24" y="48" width="10" height="12" rx="1" fill="#1B5E20"/>
+    </svg>`,
+    winpc: `<svg viewBox="0 0 80 70" fill="none">
+      <rect x="5" y="5" width="70" height="46" rx="5" fill="#0078D4" stroke="#005EA0" stroke-width="1.5"/>
+      <rect x="12" y="12" width="24" height="24" rx="2" fill="white" opacity=".9"/>
+      <rect x="42" y="12" width="24" height="24" rx="2" fill="white" opacity=".9"/>
+      <rect x="12" y="38" width="24" height="4" rx="1" fill="white" opacity=".4"/>
+      <rect x="42" y="38" width="24" height="4" rx="1" fill="white" opacity=".4"/>
+      <text x="24" y="28" text-anchor="middle" fill="#0078D4" font-size="8" font-weight="bold">Win</text>
+      <text x="54" y="28" text-anchor="middle" fill="#0078D4" font-size="8" font-weight="bold">11</text>
+      <rect x="25" y="54" width="30" height="5" rx="1" fill="#005EA0"/>
+      <rect x="20" y="59" width="40" height="4" rx="1" fill="#003d82" opacity=".6"/>
+      <circle cx="40" cy="65" r="2.5" fill="#22C55E"/>
     </svg>`,
   };
   return icons[type] || icons.server;
@@ -861,6 +1091,7 @@ function osIcon(type) {
     linux: `<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#2c2c2c"/><text x="16" y="22" text-anchor="middle" fill="white" font-size="16">🐧</text></svg>`,
     zephyr: `<svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#6324B8"/><text x="16" y="22" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Z</text></svg>`,
     docker: `<svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#0DB7ED"/><text x="16" y="22" text-anchor="middle" font-size="18">🐳</text></svg>`,
+    windows: `<svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#0078D4"/><rect x="4" y="4" width="11" height="11" rx="1" fill="white"/><rect x="17" y="4" width="11" height="11" rx="1" fill="white"/><rect x="4" y="17" width="11" height="11" rx="1" fill="white"/><rect x="17" y="17" width="11" height="11" rx="1" fill="white"/></svg>`,
   };
   return icons[type] || icons.linux;
 }
@@ -871,26 +1102,41 @@ let currentCat = 'all';
 
 function filterCat(cat) {
   currentCat = cat;
-  document.querySelectorAll('.cat-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase().includes(cat) || (cat === 'all' && t.textContent === 'All Platforms')));
+  document.querySelectorAll('.cat-tab').forEach(t => {
+    const isAll  = cat === 'all' && t.textContent.trim() === 'All Platforms';
+    const isMatch = t.textContent.toLowerCase().includes(cat);
+    t.classList.toggle('active', isAll || isMatch);
+  });
   renderBoards();
 }
 
 function renderBoards() {
   const grid = document.getElementById('board-grid');
-  const filtered = currentCat === 'all' ? BOARDS : BOARDS.filter(b => b.cat === currentCat);
+  const filtered = currentCat === 'all' ? BOARDS
+    : currentCat === 'x86_64'  ? BOARDS.filter(b => b.arch === 'x86_64'  && b.cat !== 'windows' && b.cat !== 'simulation')
+    : currentCat === 'aarch64' ? BOARDS.filter(b => b.arch === 'aarch64' && b.cat !== 'simulation')
+    : BOARDS.filter(b => b.cat === currentCat);
   grid.innerHTML = filtered.map(b => `
-    <div class="board-card ${state.board === b.id ? 'selected' : ''}" onclick="selectBoard('${b.id}')">
+    <div class="board-card ${state.board === b.id ? 'selected' : ''} ${b.vendor === 'onlogic' ? 'onlogic-card' : ''} ${b.cat === 'windows' ? 'windows-card' : ''}"
+         onclick="selectBoard('${b.id}')">
       <div class="check">✓</div>
       <div class="board-icon">${boardIcon(b.icon)}</div>
-      <div class="board-name">${b.name}</div>
+      <div class="board-name">${b.vendor === 'onlogic' ? `<span style="color:#F47920;font-size:10px;font-weight:800;letter-spacing:.5px;display:block;margin-bottom:1px;">ONLOGIC</span>` : ''}${b.name}</div>
       <div class="board-cpu">${b.cpu}</div>
       <div class="board-tags">
         <span class="tag arch">${b.archLabel}</span>
         ${b.tpm ? '<span class="tag tpm">TPM 2.0</span>' : ''}
         ${b.cat === 'zephyr' ? '<span class="tag rtos">RTOS</span>' : ''}
         ${b.cat === 'simulation' ? '<span class="tag sim">Simulation</span>' : ''}
-        ${b.tags.includes('PQC') ? '<span class="tag pqc">PQC</span>' : ''}
+        ${b.cat === 'industrial' ? '<span class="tag industrial">Industrial</span>' : ''}
+        ${b.tags.includes('Rugged') ? '<span class="tag industrial">Rugged</span>' : ''}
+        ${b.tags.includes('AI Edge') ? '<span class="tag pqc">AI Edge</span>' : ''}
+        ${b.tags.includes('DIN Rail') ? '<span class="tag sim">DIN Rail</span>' : ''}
+        ${b.cat === 'windows' ? '<span class="tag windows">Windows</span>' : ''}
       </div>
+      ${b.specUrl ? `<a href="${b.specUrl}" target="_blank" onclick="event.stopPropagation()"
+        style="display:block;margin-top:8px;font-size:10px;color:#F47920;text-decoration:none;font-weight:600;">
+        View specs ↗</a>` : ''}
     </div>
   `).join('');
 }
@@ -909,8 +1155,15 @@ function renderOS() {
   if (!board) return;
 
   const info = document.getElementById('board-info-box');
-  info.innerHTML = `<strong>Selected: ${board.name}</strong> — ${board.archLabel} · ${board.cpu}
-    ${board.tpm ? ' · <span style="color:var(--success)">✓ TPM 2.0 built-in</span>' : board.tpmOptional ? ' · TPM optional (via add-on)' : ''}`;
+  const winBadge = board.cat === 'windows'
+    ? `<span style="background:#0078D4;color:white;font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px;margin-right:8px;letter-spacing:.5px;">WINDOWS</span>`
+    : '';
+  info.innerHTML = `
+    ${board.vendor === 'onlogic' ? `<span style="background:#F47920;color:white;font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px;margin-right:8px;letter-spacing:.5px;">ONLOGIC</span>` : ''}
+    ${winBadge}
+    <strong>${board.name}</strong> — ${board.archLabel} · ${board.cpu}
+    ${board.tpm ? ' · <span style="color:var(--success)">✓ TPM 2.0 built-in</span>' : board.tpmOptional ? ' · TPM optional (via add-on)' : ''}
+    ${board.specUrl ? ` · <a href="${board.specUrl}" target="_blank" style="color:#F47920;font-weight:700;text-decoration:none;">Full specs ↗</a>` : ''}`;
 
   const grid = document.getElementById('os-grid');
   grid.innerHTML = board.os.map(osId => {
@@ -937,31 +1190,45 @@ function selectOS(id) {
 
 function renderOptions() {
   const board = BOARDS.find(b => b.id === state.board);
+  const isWindows = state.os === 'windows-11' || state.os === 'windows-iot-ltsc';
 
   // Mode
-  document.getElementById('mode-cards').innerHTML = [
-    { id:'cli', title:'CLI (Command Line)', desc:'Standalone tool — no Device Trust Manager needed. Best for PoC and testing.' },
-    { id:'agent', title:'Agent Mode (Daemon)', desc:'Managed by DigiCert Device Trust Manager. Full lifecycle automation.' },
-  ].map(o => `<div class="option-card ${state.mode===o.id?'selected':''}" onclick="setState('mode','${o.id}')">
+  const modeOpts = isWindows
+    ? [
+        { id:'cli', title:'CLI (Command Line)', desc:'Standalone tool — run trustedge.exe from Admin CMD. Best for PoC and testing.' },
+        { id:'agent', title:'Windows Service (Agent)', desc:'Run as a Windows Service managed by Device Trust Manager. Full lifecycle automation.' },
+      ]
+    : [
+        { id:'cli', title:'CLI (Command Line)', desc:'Standalone tool — no Device Trust Manager needed. Best for PoC and testing.' },
+        { id:'agent', title:'Agent Mode (Daemon)', desc:'Managed by DigiCert Device Trust Manager. Full lifecycle automation.' },
+      ];
+  document.getElementById('mode-cards').innerHTML = modeOpts.map(o => `<div class="option-card ${state.mode===o.id?'selected':''}" onclick="setState('mode','${o.id}')">
     <div class="option-card-title">${o.title}</div>
     <div class="option-card-desc">${o.desc}</div>
   </div>`).join('');
 
   // TPM
-  const tpmOpts = [{ id:'none', title:'No TPM / Software Keystore', desc:'Keys stored in /etc/digicert/keystore — OK for development and PoC' }];
-  if (board && (board.tpm || board.tpmOptional)) {
+  const tpmOpts = isWindows
+    ? [{ id:'hardware', title:'Hardware TPM 2.0 (built-in)', desc:'Windows 11 requires TPM 2.0 — TrustEdge uses it automatically for secure key storage.' }]
+    : [{ id:'none', title:'No TPM / Software Keystore', desc:'Keys stored in /etc/digicert/keystore — OK for development and PoC' }];
+  if (!isWindows && board && (board.tpm || board.tpmOptional)) {
     tpmOpts.unshift({ id:'hardware', title:'Hardware TPM 2.0', desc: board.tpmNote });
   }
+  if (isWindows && state.tpm !== 'hardware') state.tpm = 'hardware';
   document.getElementById('tpm-cards').innerHTML = tpmOpts.map(o => `<div class="option-card ${state.tpm===o.id?'selected':''}" onclick="setState('tpm','${o.id}')">
     <div class="option-card-title">${o.title}</div>
     <div class="option-card-desc">${o.desc}</div>
   </div>`).join('');
 
   // PQC
-  document.getElementById('pqc-cards').innerHTML = [
-    { id:'skip', title:'Skip PQC Demo', desc:'Install and verify basic TrustEdge without the ML-DSA / ML-KEM demo.' },
-    { id:'demo', title:'Run PQC Demo', desc:'Full ML-DSA + Hybrid ML-KEM-768 MQTT demo over TLS 1.3 (aarch64/x86 only).' },
-  ].map(o => `<div class="option-card ${state.pqc===o.id?'selected':''}" onclick="setState('pqc','${o.id}')">
+  const pqcOpts = isWindows
+    ? [{ id:'skip', title:'Skip PQC Demo', desc:'PQC demo scripts are Linux-only. Windows TrustEdge v26.6.2.1 uses TLS 1.3 — PQC coming in a future release.' }]
+    : [
+        { id:'skip', title:'Skip PQC Demo', desc:'Install and verify basic TrustEdge without the ML-DSA / ML-KEM demo.' },
+        { id:'demo', title:'Run PQC Demo', desc:'Full ML-DSA + Hybrid ML-KEM-768 MQTT demo over TLS 1.3 (aarch64/x86 only).' },
+      ];
+  if (isWindows) state.pqc = 'skip';
+  document.getElementById('pqc-cards').innerHTML = pqcOpts.map(o => `<div class="option-card ${state.pqc===o.id?'selected':''}" onclick="setState('pqc','${o.id}')">
     <div class="option-card-title">${o.title}</div>
     <div class="option-card-desc">${o.desc}</div>
   </div>`).join('');
@@ -1064,6 +1331,191 @@ function buildInstructions() {
   </div><div class="instr-body">`;
 
   let stepNum = 1;
+  const isWindows = state.os === 'windows-11' || state.os === 'windows-iot-ltsc';
+
+  // ─── Windows special case ───
+  if (isWindows) {
+    const isIoT = state.os === 'windows-iot-ltsc';
+    html += section(stepNum++, 'Verify Prerequisites', `
+      <p class="instr-p">Confirm you are running Windows 11 with a TPM 2.0 module (required by Windows 11) and an administrator account.</p>
+      ${code('PowerShell — check Windows version and TPM', `# Run PowerShell as Administrator
+# Check Windows version (must be 22H2 or later)
+winver
+
+# Verify TPM 2.0 is present and ready
+Get-Tpm
+# Expected: TpmPresent=True, TpmReady=True, TpmEnabled=True
+
+# Check architecture (must be AMD64)
+[Environment]::Is64BitOperatingSystem`)}
+      <div class="note">TrustEdge Windows v26.6.2.1 requires <strong>Windows 11 (22H2 or later)</strong> on a 64-bit (x86-64) machine with TPM 2.0 enabled in BIOS/UEFI.</div>
+    `, true);
+
+    html += section(stepNum++, 'Download TrustEdge Windows Installer', `
+      <p class="instr-p">Download the <code>.msi</code> installer from the official TrustEdge GitHub releases page.</p>
+      ${code('PowerShell — download MSI', `# Create a working directory
+New-Item -ItemType Directory -Force -Path C:\\TrustEdge-Install
+Set-Location C:\\TrustEdge-Install
+
+# Download the Windows MSI installer
+$msiUrl = "https://github.com/digicert/trustedge/releases/download/trustedge_windows_26.6.2.1/trustedge_windows_26.6.2.1.msi"
+Invoke-WebRequest -Uri $msiUrl -OutFile "trustedge_windows_26.6.2.1.msi"
+
+# Verify the download
+Get-Item "trustedge_windows_26.6.2.1.msi" | Select-Object Name, Length`)}
+      <p class="instr-p">Or download it manually from the releases page:</p>
+      ${code('Releases page URL', 'https://github.com/digicert/trustedge/releases/tag/trustedge_windows_26.6.2.1')}
+    `, true);
+
+    html += section(stepNum++, 'Install TrustEdge', `
+      <p class="instr-p">Run the MSI installer from an <strong>Administrator Command Prompt</strong> (not PowerShell, not standard CMD).</p>
+      <div class="note">Right-click <strong>Command Prompt</strong> → <em>Run as administrator</em>. Do not double-click the MSI — use msiexec for proper logging.</div>
+      ${code('Admin CMD — silent install with logging', `msiexec /i "C:\\TrustEdge-Install\\trustedge_windows_26.6.2.1.msi" ^
+  /quiet /norestart ^
+  /log "C:\\TrustEdge-Install\\install.log"
+
+REM Monitor progress in another window:
+type "C:\\TrustEdge-Install\\install.log"`)}
+      ${code('Verify installation paths', `REM Executable:
+dir "C:\\Program Files\\DigiCert\\TrustEdge\\bin\\trustedge.exe"
+
+REM Config, certs, keys, logs:
+dir "C:\\ProgramData\\DigiCert\\TrustEdge\\"
+
+REM Add to PATH for this session (or set permanently in System Properties):
+set PATH=%PATH%;C:\\Program Files\\DigiCert\\TrustEdge\\bin`)}
+      ${code('Verify TrustEdge version', `REM In Admin CMD:
+"C:\\Program Files\\DigiCert\\TrustEdge\\bin\\trustedge.exe" --version
+REM Or if PATH is set:
+trustedge --version`)}
+      <div class="success-note">✓ TrustEdge installed. Default data directory: <code>C:\\ProgramData\\DigiCert\\TrustEdge\\</code></div>
+    `, true);
+
+    if (state.cert === 'selfsigned') {
+      html += section(stepNum++, 'Generate Keys and Certificate (Self-Signed)', `
+        <p class="instr-p">Use the TrustEdge CLI from an Administrator CMD to generate a key pair and self-signed certificate.</p>
+        ${code('Admin CMD — generate key and certificate', `REM All trustedge commands require Admin CMD
+"C:\\Program Files\\DigiCert\\TrustEdge\\bin\\trustedge.exe" key -g ECDSA_256 -o mydevice
+
+"C:\\Program Files\\DigiCert\\TrustEdge\\bin\\trustedge.exe" certificate ^
+  -a SS -g ECDSA_256 ^
+  -o mydevice.pem ^
+  -x mydevice.pem ^
+  -da 365`)}
+        ${code('Verify the certificate', `"C:\\Program Files\\DigiCert\\TrustEdge\\bin\\trustedge.exe" certificate -pc ^
+  "C:\\ProgramData\\DigiCert\\TrustEdge\\certs\\mydevice.pem"`)}
+        <div class="success-note">✓ Certificate stored at <code>C:\\ProgramData\\DigiCert\\TrustEdge\\certs\\mydevice.pem</code></div>
+      `, false);
+    } else {
+      html += section(stepNum++, 'Enroll Certificate via EST (Device Trust Manager)', `
+        <p class="instr-p">Obtain a certificate from DigiCert PKI via the EST protocol.</p>
+        <div class="note">You need your EST server URL, username, and password from Device Trust Manager console.</div>
+        ${code('Admin CMD — EST enrollment', `set EST_URL=https://pki.digicert.com/.well-known/est/<your-profile-id>
+set EST_USER=<your-est-username>
+set EST_PASS=<your-est-password>
+
+"C:\\Program Files\\DigiCert\\TrustEdge\\bin\\trustedge.exe" certificate ^
+  --est-enroll ^
+  --est-url %EST_URL% ^
+  --est-user %EST_USER% ^
+  --est-password %EST_PASS% ^
+  -g ECDSA_256 ^
+  -o mydevice.pem`)}
+      `, false);
+    }
+
+    if (state.mode === 'cli') {
+      html += section(stepNum++, 'Run TrustEdge (CLI Mode)', `
+        <p class="instr-p">Verify TrustEdge is working with a connectivity test.</p>
+        ${code('Admin CMD — run CLI test', `trustedge --version
+trustedge --help
+
+REM Test MQTT over TLS 1.3
+trustedge mqtt ^
+  --broker mqtt.digicert.com ^
+  --port 8883 ^
+  --topic "test/hello" ^
+  --message "Hello from TrustEdge on Windows" ^
+  --cert "C:\\ProgramData\\DigiCert\\TrustEdge\\certs\\mydevice.pem" ^
+  --key  "C:\\ProgramData\\DigiCert\\TrustEdge\\keys\\mydevice.pem"`)}
+        <div class="success-note">✓ TrustEdge CLI is working on Windows.</div>
+      `, false);
+    } else {
+      html += section(stepNum++, 'Run TrustEdge as a Windows Service', `
+        <p class="instr-p">TrustEdge can run as a Windows Service for persistent, managed operation. Configure it for your Device Trust Manager instance first.</p>
+        ${code('Admin CMD — configure and start as service', `REM Edit the configuration file:
+notepad "C:\\ProgramData\\DigiCert\\TrustEdge\\trustedge.conf"
+
+REM Key settings:
+REM   dtm_url   = https://dtm.digicert.com
+REM   device_id = <your-device-uuid>
+REM   mqtt_broker = mqtt.digicert.com
+REM   mqtt_port   = 8883
+
+REM Register and start the service:
+sc create TrustEdgeAgent ^
+   binPath= "\"C:\\Program Files\\DigiCert\\TrustEdge\\bin\\trustedge.exe\" --service" ^
+   DisplayName= "DigiCert TrustEdge Agent" ^
+   start= auto
+
+sc start TrustEdgeAgent
+sc query TrustEdgeAgent`)}
+        ${code('Check service logs', `REM Windows Event Viewer → Applications and Services Logs → DigiCert → TrustEdge
+REM Or view the log file:
+type "C:\\ProgramData\\DigiCert\\TrustEdge\\logs\\trustedge.log"`)}
+        <div class="success-note">✓ TrustEdge Agent service is running. Check Device Trust Manager console for device status.</div>
+      `, false);
+    }
+
+    html += section(stepNum++, 'Verify & Troubleshoot', `
+      <p class="instr-p">Common Windows verification and troubleshooting steps.</p>
+      ${code('Admin CMD — full verification checklist', `REM 1. Check version
+trustedge --version
+
+REM 2. Verify keystore directory
+dir "C:\\ProgramData\\DigiCert\\TrustEdge\\certs\\"
+dir "C:\\ProgramData\\DigiCert\\TrustEdge\\keys\\"
+
+REM 3. Verify TPM
+powershell -Command "Get-Tpm | Format-List"
+
+REM 4. Check Windows 11 build (must be >= 22621 for 22H2)
+powershell -Command "(Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion').CurrentBuild"`)}
+      ${code('Common fixes', `REM "Access denied" → must run as Administrator
+REM Right-click Command Prompt → Run as administrator
+
+REM trustedge not found → add to PATH
+setx PATH "%PATH%;C:\\Program Files\\DigiCert\\TrustEdge\\bin" /M
+REM Open a new CMD after setx
+
+REM TPM not ready → enable in BIOS
+REM Settings → Windows Security → Device Security → Security processor details
+REM Or: tpm.msc`)}
+      <div class="success-note">✓ TrustEdge is running on Windows 11. See full docs: <a href="https://dev.digicert.com/en/trustedge.html" target="_blank" style="color:var(--success)">dev.digicert.com/en/trustedge.html</a></div>
+    `, false);
+
+    html += section(stepNum++, 'Next Steps & Resources', `
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:8px;">
+        ${[
+          { title: '📖 TrustEdge Docs', url: 'https://dev.digicert.com/en/trustedge.html', desc: 'Complete reference documentation' },
+          { title: '🪟 Windows Release', url: 'https://github.com/digicert/trustedge/releases/tag/trustedge_windows_26.6.2.1', desc: 'TrustEdge Windows v26.6.2.1 release notes' },
+          { title: '⚛️ TrustCore SDK', url: 'https://github.com/digicert/trustcore', desc: 'Source code — Windows build instructions' },
+          { title: '🐛 GitHub Issues', url: 'https://github.com/digicert/trustedge/issues', desc: 'Report Windows-specific bugs or questions' },
+        ].map(l => `<a href="${l.url}" target="_blank" style="text-decoration:none;">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:all .15s;" onmouseover="this.style.borderColor='#0078D4'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">${l.title}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${l.desc}</div>
+          </div>
+        </a>`).join('')}
+      </div>
+    `, false);
+
+    html += '</div>';
+    document.getElementById('instructions-output').innerHTML = html;
+    document.querySelectorAll('.instr-section-content').forEach(el => el.classList.add('open'));
+    document.querySelectorAll('.instr-section-header').forEach(el => el.classList.add('open'));
+    return;   // ← done, skip Linux path below
+  }
 
   // ─── Docker / Codespaces special case ───
   if (board.cat === 'simulation') {
