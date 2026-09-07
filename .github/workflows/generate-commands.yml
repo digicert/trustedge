@@ -29,21 +29,19 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      # actions/setup-python removed — ubuntu-latest ships Python 3.12 pre-installed
+      # (setup-python@v5 used Node 20 which is deprecated on GitHub runners)
 
       - name: Install Python dependencies
-        run: pip install openai requests beautifulsoup4
+        run: pip3 install openai requests beautifulsoup4
 
       - name: Run AI command generator
         id: generate
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # auto-injected, no setup needed
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AI_MODEL: ${{ vars.AI_MODEL || 'openai/gpt-4o' }}
           TRUSTEDGE_VERSION: ${{ github.event.release.tag_name || github.ref_name }}
-        run: python scripts/generate_commands.py
+        run: python3 scripts/generate_commands.py
 
       # ── Create a review PR so a human checks the diff before it goes live ──
 
@@ -63,32 +61,30 @@ jobs:
           fi
 
       - name: Open Pull Request for review
+        # Uses built-in gh CLI — no third-party action, no Node 20 dependency
         if: env.NO_CHANGES != 'true'
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.BRANCH }}
-          base: ${{ github.event.repository.default_branch }}
-          title: "🤖 AI-updated commands.json for ${{ github.event.release.tag_name || github.ref_name }}"
-          body: |
-            ## AI-generated commands review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          VERSION_TAG: ${{ github.event.release.tag_name || github.ref_name }}
+          MODEL: ${{ vars.AI_MODEL || 'openai/gpt-4o' }}
+        run: |
+          gh pr create \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$BRANCH" \
+            --title "🤖 AI-updated commands.json for ${VERSION_TAG}" \
+            --label "ai-generated" \
+            --body "## AI-generated commands — review before merging
 
-            This PR was opened automatically by the **AI Command Generator** Action.
+          \`docs/data/commands.json\` was regenerated from dev.digicert.com docs using GitHub Models API (\`${MODEL}\`).
 
-            `docs/data/commands.json` was regenerated from the current TrustEdge documentation on dev.digicert.com
-            (plus repo docs for TPM/PQC) using GitHub Models API (`${{ vars.AI_MODEL || 'openai/gpt-4o' }}`).
-            ### How to review
-            1. Click the **Files changed** tab above
-            2. Read every command diff — verify flags and paths match the real docs
-            3. If anything looks wrong, edit `docs/data/commands.json` directly in this PR
-            4. When satisfied → **Merge pull request** → the compatibility page goes live
+          ### How to review
+          1. Click **Files changed** — verify every command against the [TrustEdge docs](https://dev.digicert.com/en/trustedge.html)
+          2. Edit \`docs/data/commands.json\` directly in this PR if anything looks wrong
+          3. Merge when satisfied → compatibility page goes live immediately
 
-            ### Hallucination warnings
-            Check the [Action run log](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            for any ⚠ hallucination warnings flagged by the guard.
+          ### Hallucination warnings
+          Check the [Action run log](${RUN_URL}) for any ⚠ warnings flagged by the guard.
 
-            ---
-            _To fix a wrong command: edit the file in this PR, or close the PR and fix
-            the source documentation so the AI generates it correctly next time._
-          labels: ai-generated, commands
-          draft: false
+          ---
+          _Wrong command? Fix the source docs so the AI gets it right next time._"
