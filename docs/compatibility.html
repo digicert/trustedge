@@ -1621,39 +1621,28 @@ ls bin/`)}
   // ─── Step: Key Generation & Certificate ───
   if (board.cat !== 'zephyr') {
     if (state.cert === 'selfsigned') {
-      html += section(stepNum++, 'Generate Keys and Certificate (Self-Signed)', `
-        <p class="instr-p">Use the TrustEdge CLI to generate a key pair and self-signed certificate — no external CA required.</p>
-        ${code('Generate an ECDSA P-256 key pair', 'trustedge key -g ECDSA_256 -o mydevice')}
-        ${code('Create a Certificate Signing Request (CSR)', `trustedge csr \\
-  -k mydevice \\
-  -o mydevice_csr.pem \\
-  -cn "my-iot-device-001" \\
-  -o_attr "DigiCert" \\
-  -c "US"`)}
-        ${code('Generate a self-signed certificate (valid 1 year)', `trustedge certificate \\
-  -a SS \\
-  -g ECDSA_256 \\
-  -o mydevice.pem \\
-  -x mydevice.pem \\
-  -da 365`)}
-        ${code('Verify the certificate', 'trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem')}
-        <div class="success-note">✓ Certificate stored at <code>/etc/digicert/keystore/certs/mydevice.pem</code></div>
+      // Prefer AI-generated commands from commands.json; fall back to verified built-ins
+      const cmds = getCommands(board.arch, 'cert_selfsigned') || [
+        `# Generate ECC P-256 software key + self-signed certificate\ntrustedge certificate \\\n  -a ECC -c P256 \\\n  -i ca_csr.cnf \\\n  -x mydevice.pem \\\n  -da 365 \\\n  -o mydevice`,
+        `trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem`,
+      ];
+      const notes = getNotes(board.arch, 'cert_selfsigned');
+      html += section(stepNum++, 'Generate Key and Self-Signed Certificate', `
+        <p class="instr-p">Use <code>trustedge certificate</code> to generate a key pair and self-signed certificate — no external CA required.</p>
+        <div class="note">Place your CSR config file (<code>ca_csr.cnf</code>) in <code>/etc/digicert/keystore/conf/</code> before running.</div>
+        ${cmds.map((c,i) => code(i===0?`Generate key + certificate (${board.archLabel})`:'Verify certificate', c)).join('')}
+        ${notes.map(n=>`<p class="instr-p">${escHtml(n)}</p>`).join('')}
+        <div class="success-note">✓ Key: <code>/etc/digicert/keystore/keys/mydevice.pem</code> · Cert: <code>/etc/digicert/keystore/certs/mydevice.pem</code></div>
       `, false);
     } else {
+      const cmds = getCommands(board.arch, 'cert_est') || [
+        `trustedge certificate est \\\n  --uri https://pki.digicert.com/.well-known/est/<profile-id>/simpleenroll \\\n  -a ECC -c P256 \\\n  -i mycsr.cnf \\\n  -user <est-username> \\\n  -pass <est-password> \\\n  -ka mydevice`,
+        `trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem`,
+      ];
       html += section(stepNum++, 'Enroll Certificate via EST (Device Trust Manager)', `
         <p class="instr-p">Obtain a certificate from DigiCert PKI via the EST protocol. Requires a Device Trust Manager account with an EST endpoint configured.</p>
-        <div class="note">You need: your EST server URL, EST username, and password from Device Trust Manager console.</div>
-        ${code('Set EST endpoint environment variables', `export EST_URL="https://pki.digicert.com/.well-known/est/<your-profile-id>"
-export EST_USER="<your-est-username>"
-export EST_PASS="<your-est-password>"`)}
-        ${code('Enroll via EST (simple re-enrollment)', `trustedge certificate \\
-  --est-enroll \\
-  --est-url $EST_URL \\
-  --est-user $EST_USER \\
-  --est-password $EST_PASS \\
-  -g ECDSA_256 \\
-  -o mydevice.pem`)}
-        ${code('Verify the issued certificate', 'trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem')}
+        <div class="note">You need: your EST endpoint URI and credentials from the Device Trust Manager console.</div>
+        ${cmds.map((c,i) => code(i===0?'EST simple enroll':'Verify certificate', c)).join('')}
       `, false);
     }
   }
@@ -1661,26 +1650,25 @@ export EST_PASS="<your-est-password>"`)}
   // ─── Step: Run TrustEdge ───
   if (board.cat !== 'zephyr') {
     if (state.mode === 'cli') {
+      const mqttCmds = getCommands(board.arch, 'run_cli') || [
+        `trustedge --version\ntrustedge --help`,
+        `# Publish a test message over MQTT with TLS\ntrustedge mqtt \\\n  --mqtt_servername mqtt.digicert.com \\\n  --mqtt_port 8883 \\\n  --mqtt_transport SSL \\\n  --ssl_cert_file /etc/digicert/keystore/certs/mydevice.pem \\\n  --ssl_key_file /etc/digicert/keystore/keys/mydevice.pem \\\n  --mqtt_pub_topic test/hello \\\n  --mqtt_pub_message "Hello from TrustEdge"`,
+      ];
       html += section(stepNum++, 'Run TrustEdge (CLI Mode)', `
         <p class="instr-p">Verify TrustEdge is working correctly with a quick end-to-end test.</p>
-        ${code('Check version and available commands', 'trustedge --version\ntrustedge --help')}
-        ${code('List keystore contents', 'trustedge keystore --list')}
-        ${code('Test TLS connectivity to DigiCert (MQTT over TLS)', `trustedge mqtt \\
-  --broker mqtt.digicert.com \\
-  --port 8883 \\
-  --topic "test/hello" \\
-  --message "Hello from ${board.name}" \\
-  --cert /etc/digicert/keystore/certs/mydevice.pem \\
-  --key /etc/digicert/keystore/keys/mydevice.pem`)}
+        ${mqttCmds.map((c,i) => code(i===0?'Check version':'Test MQTT over TLS', c)).join('')}
         <div class="success-note">✓ TrustEdge CLI is working. You can now use it to automate certificate lifecycle management on this device.</div>
       `, false);
     } else {
+      const agentCmds = getCommands(board.arch, 'run_agent') || [
+        `# Configure agent with bootstrap zip from Device Trust Manager\nsudo trustedge agent \\\n  --configure \\\n  --trustedge-user trustedge \\\n  --trustedge-group trustedge \\\n  --bootstrap-zip ./<your-guid>.zip`,
+        `# Start as a systemd service\nsudo systemctl start trustedge.service\nsudo systemctl enable trustedge.service\nsudo systemctl status trustedge.service`,
+        `sudo journalctl -u trustedge -f`,
+      ];
       html += section(stepNum++, 'Configure TrustEdge Agent Mode', `
         <p class="instr-p">Set up TrustEdge to run as a system daemon managed by DigiCert Device Trust Manager.</p>
-        <div class="note">Agent mode requires a Device Trust Manager subscription and a bootstrap certificate ("birth certificate") provisioned by DigiCert.</div>
-        ${code('Edit TrustEdge agent configuration', `sudo nano /etc/digicert/trustedge.conf\n\n# Key settings to configure:\n# dtm_url = https://dtm.digicert.com\n# device_id = <your-device-uuid>\n# bootstrap_cert = /etc/digicert/keystore/certs/bootstrap.pem\n# bootstrap_key = /etc/digicert/keystore/keys/bootstrap.pem\n# mqtt_broker = mqtt.digicert.com\n# mqtt_port = 8883`)}
-        ${code('Enable and start TrustEdge daemon', `sudo systemctl enable trustedge\nsudo systemctl start trustedge\nsudo systemctl status trustedge`)}
-        ${code('Monitor agent logs', 'sudo journalctl -u trustedge -f')}
+        <div class="note">Agent mode requires a Device Trust Manager subscription. Download the bootstrap zip from the DTM console before running.</div>
+        ${agentCmds.map((c,i)=>code(['Configure agent','Start service','Monitor logs'][i]||'',c)).join('')}
         ${code('Verify device appears in Device Trust Manager', '# Visit: https://www.digicert.com/device-trust-manager\n# Navigate to: Devices → All Devices\n# Your device should appear with status "Active"')}
         <div class="success-note">✓ TrustEdge agent is running. Device is now managed by DigiCert Device Trust Manager.</div>
       `, false);
@@ -1820,14 +1808,6 @@ async function loadCommands() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     COMMANDS = await res.json();
     const meta = COMMANDS.meta || {};
-    if (meta.version && meta.version !== 'seed') {
-      const banner = document.getElementById('version-banner');
-      if (banner) {
-        const warn = meta.hallucination_warnings > 0 ? ` · ⚠ ${meta.hallucination_warnings} warning(s)` : ' · ✓ verified';
-        banner.textContent = `Commands generated for TrustEdge ${meta.version} from ${meta.sources_consulted?.length || 0} doc pages${warn}`;
-        banner.hidden = false;
-      }
-    }
     // Inject sources panel into Step 4 after instructions render
     window._commandsMeta = meta;
   } catch (e) {
@@ -1888,10 +1868,6 @@ renderBoards();
 loadCommands();
 </script>
 
-<!-- Version banner (shown after commands.json loads with a real version) -->
-<div id="version-banner" hidden
-  style="position:fixed;top:0;left:0;right:0;z-index:400;background:#166534;color:white;
-    text-align:center;padding:6px;font-size:12px;font-weight:600;"></div>
 
 </body>
 </html>
