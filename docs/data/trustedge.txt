@@ -1,0 +1,661 @@
+Usage: trustedge <command> [<args>]
+
+TrustEdge command line tool
+
+Options:
+  --help          Display global usage information
+  --version       Display TrustEdge version
+  --daemon        Run TrustEdge agent in daemon mode
+                  Arguments are read from trustedge configuration file
+
+Commands:
+  agent             Agent mode - connected to Device Trust Manager
+  mqtt              MQTT client for pub/sub
+  certificate       Certificate mode
+  certificate scep  SCEP mode
+  certificate est   EST mode
+
+For more information on a specific command, use:
+  trustedge <command> --help
+INFO: Trustedge version : 24.7.2-5230
+Usage: agent [Options]
+
+TrustEdge agent utility
+
+Options:
+  --help                                      Display this help menu
+  --configure                                 Run agent in configuration mode
+  --download                                  Download bootstrap configuration from endpoint
+  --reset                                     Reset agent configuration
+  --devtm-bootstrap-uri <url>                 URL for downloading bootstrap configuration
+  --bootstrap-zip <file>                      Path to bootstrap zip file
+                                              (input for --configure, output for --download)
+  --bootstrap-configuration <file>            Path to bootstrap configuration file
+  --bootstrap-key <file>                      Path to bootstrap key file
+                                              Required in --download mode (client auth)
+                                              Optional in --configure mode (updates key alias)
+  --bootstrap-cert <file>                     Path to bootstrap certificate file
+                                              Required in --download mode (client auth)
+  --trustedge-user <user>                     Extract bootstrap zip file contents as specified user
+                                              This option is to be only used with --bootstrap-zip
+  --trustedge-group <group>                   Extract bootstrap zip file contents as specified group
+                                              This option is to be only used with --bootstrap-zip
+  --creds-key <file>                          Path to credential key file
+  --creds-cert <file>                         Path to credential certificate file
+  --workspace-dir <dir>                       Path to workspace directory
+  --log-level <level>                         Verbosity level of the message logs. Possible values can be
+                                                  NONE
+                                                  ERROR
+                                                  WARNING
+                                                  DEBUG
+                                                  INFO
+                                                  VERBOSE
+  --require-pqc                               Enforce usage of PQC algorithms
+  --qs-format-oqs                             Format keys as per oqs format (non-rfc draft compatible)
+INFO: Exiting agent: status = OK (0)
+  Usage: mqtt [Options]
+  Options:
+    --help                                              Display this help menu
+    --mqtt_servername <servername>                      MQTT broker to connect to
+    --mqtt_port <port>                                  Network port used for connection
+    --mqtt_client_id <id>                               Client ID used for MQTT connection
+    --mqtt_version <version>                            Version of MQTT to negotiate
+                                                            5 (default)
+                                                            3.1.1
+    --print_hex_bytes                                   Display payload in hex bytes
+    --mqtt_sub_topic <topic>                            Subscribe to topic. Can be specified multiple times
+    --mqtt_sub_topic_no_local_option                    Pass this in to not receive messages published by this client.
+                                                        Applies to the most recently passed in --mqtt_sub_topic
+    --mqtt_sub_topic_retain_as_published                Messages on this subscription keep the retain flag they were published with.
+                                                        Applies to the most recently passed in --mqtt_sub_topic
+    --mqtt_sub_topic_retain_handling <0|1|2>            Control retained message behaviour on connection establishment.
+                                                        Applies to the most recently passed in --mqtt_sub_topic
+                                                            0: Receive retained messages on subscribe (default)
+                                                            1: Receive retained messages only if the subscription does not exist
+                                                            2: Do not receive retained messages
+    --mqtt_sub_topic_single                             Send separate subscribe messages per topic
+    --mqtt_unsub_topic <topic>                          Unsubscribe to a topic. Can be specified multiple times
+    --mqtt_unsub_topic_single                           Send separate unsubscribe messages per topic
+    --mqtt_pub_topic <topic>                            Publish topic. Can be specified multiple times
+    --mqtt_pub_message <message>                        Publish message, applies to most recently passed in --mqtt_pub_topic.
+                                                        Can be specified multiple times
+    --mqtt_pub_file <file>                              Publish file contents, applies to most recently passed in --mqtt_pub_topic.
+                                                        Can be specified multiple times
+    --mqtt_pub_qos <0|1|2>                              Set the QoS level for the most recently specified message.
+                                                        Applies to most recently passed in --mqtt_pub_message/--mqtt_pub_file.
+                                                            0: At most once  - No acknowledgement, messages may be lost. (default)
+                                                            1: At least once - Acknowledged delivery, possible duplicates.
+                                                            2: Exactly once  - Acknowledged delivery, no duplicates.
+    --mqtt_pub_retain                                   Set the retain flag when publishing a message.
+                                                        Applies to most recently passed in --mqtt_pub_message/--mqtt_pub_file.
+    --mqtt_clean_start                                  Set clean start to disable resuming from a session
+    --mqtt_session_expiry_interval <seconds>            Set the session expiry interval in seconds. Determines how long the
+                                                        session is persisted after the connection is closed.
+                                                            0: Session ends once network connection is closed (default)
+                                                            1 - 4294967294: Session is persisted for this many seconds
+                                                            4294967295: Session does not expire
+                                                        session is persisted after the connection is closed.
+    --mqtt_keep_alive <seconds>                         Keep alive time in seconds
+    --mqtt_username <username>                          Optional username sent in the connect
+    --mqtt_password <password>                          Optional password sent in the connect
+    --mqtt_will_topic <topic>                           Set the will topic
+    --mqtt_will_message <message>                       Set the will message
+    --mqtt_will_qos <0|1|2>                             Set the will QoS level
+    --mqtt_will_retain                                  Set the will retain flag
+    --mqtt_connect_properties <property> <value>        Set MQTT Connect Properties
+     Supported Connect Properties:
+        session_expiry_interval <seconds>               Session expiry interval in seconds.
+        receive_maximum <value>                         The number of QoS 1 and QoS 2 messages the client can process concurrently.
+        max_packet_size <bytes>                         Maximum packet size the client is willing to receive in bytes
+        topic_alias_max <value>                         Highest value the client is willing to accept as topic alias
+        request_response_info                           Set request_response_info to request response information in the CONNACK packet
+        request_problem_info                            Set request_problem_info to indicate whether reason strings or user properties should be sent in case of failures
+        user_property <key> <value>                     Set connect user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_publish_properties <property> <value>        Set MQTT Publish Properties
+     Supported Publish Properties:
+        payload_format_indicator <0|1>                  Set the payload format indicator
+                                                            0: Unspecified Bytes
+                                                            1: UTF-8 Encoded Character Data
+        message_expiry_interval <seconds>               Set the message expiry interval in seconds
+        topic_alias <value>                             Set the topic alias value
+        response_topic <topic>                          Set the response topic
+        correlation_data <data>                         Set the correlation data
+        content_type <type>                             Set the content type
+        user_property <key> <value>                     Set publish user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_subscribe_properties <property> <value>      Set MQTT Subscribe Properties
+     Supported Subscribe Properties:
+        user_property <key> <value>                         Set subscribe user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_unsubscribe_properties <property> <value>    Set MQTT Unsubscribe Properties
+     Supported Unsubscribe Properties:
+        user_property <key> <value>                     Set unsubscribe user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_disconnect_properties <property> <value>     Set MQTT Disconnect Properties
+     Supported Disconnect Properties:
+        session_expiry_interval <seconds>               Session expiry interval in seconds.
+        user_property <key> <value>                     Set disconnect user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_will_properties <property> <value>           Set MQTT Will Properties
+     Supported Will Properties:
+        message_expiry_interval <seconds>               Set the message expiry interval in seconds
+        content_type                                    Set the content type
+        response_topic                                  Set the response topic
+        correlation_data                                Set the correlation data
+        payload_format_indicator <0|1>                  Set the payload format indicator
+                                                            0: Unspecified Bytes
+                                                            1: UTF-8 Encoded Character Data
+        will_delay_interval <seconds>                   Set the will delay interval in seconds
+        user_property <key> <value>                     Set will user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_transport <transport>                        Choose the transport used for MQTT connection
+                                                            TCP (default)
+                                                            SSL
+    --ssl_ca_file <file>                                Only applies if transport is SSL. SSL CA certificate file
+    --ssl_allow_untrusted                               Only applies if transport is SSL. Allow untrusted certificates for SSL
+    --ssl_key_file <file>                               Only applies if transport is SSL. SSL key file for client authentication
+    --ssl_cert_file <file>                              Only applies if transport is SSL. SSL certificate file for client authentication
+    --proxy <proxy>                                     Connect using proxy. Following formats allowed
+                                                            http://[username:password@]hostname:port
+                                                            https://[username:password@]hostname:port
+    --require-pqc                                       Enforce usage of PQC algorithms
+
+     Note: MQTT v3.1.1 does not support properties
+
+[TRUSTEDGE-CERTIFICATE] VERBOSE: Certificate mode running
+[TRUSTEDGE-CERTIFICATE] VERBOSE: Processing certificate arguments
+Usage: certificate [Options]
+
+TrustEdge Certificate Mode
+
+Generic Options:
+  -h, --help            Display this help menu
+  --log-level           Verbosity level of the message logs
+                        Possible values are [NONE | ERROR | WARNING | DEBUG | INFO | VERBOSE]
+                        (Default is applied through the trustedge configuration)
+  -k, --key-store-path  Path to the keystore used for both input and output files
+                        (Default is applied through the trustedge configuration or is ".")
+
+Key Generation Options:
+  -a, --algorithm       Crypto algorithm type
+                        Possible values are [ECC | RSA | DSA | QS | HYBRID ]
+  -t, --tap                [Optional] Generate a hardware-based TPM2 TAP key
+                           If omitted, software-based key is generated
+  -tpr, --tap-provider     [Optional] Tap provider
+                           Possible values are [TPM2 | PKCS11 | TEE | nanoroot]
+                           depending on the build configuration.
+  -tm, --tap-modnum        [Optional] TAP module to use. (Default is 1)
+  -tku, --tap-key-usage    [Optional] TAP key usage
+                           Possible values are
+                           TAP_KEY_USAGE_GENERAL
+                           TAP_KEY_USAGE_SIGNING
+                           TAP_KEY_USAGE_DECRYPT
+                           (Default is TAP_KEY_USAGE_GENERAL)
+  -tss, --tap-sig-scheme   [Optional] Tap key signing scheme
+                           Possible values are
+                           TAP_SIG_SCHEME_NONE
+                           TAP_SIG_SCHEME_PKCS1_5
+                           TAP_SIG_SCHEME_PKCS1_5_SHA1
+                           TAP_SIG_SCHEME_PKCS1_5_SHA256
+                           TAP_SIG_SCHEME_PKCS1_5_SHA384
+                           TAP_SIG_SCHEME_PKCS1_5_SHA512
+                           TAP_SIG_SCHEME_PKCS1_5_DER
+                           TAP_SIG_SCHEME_PSS
+                           TAP_SIG_SCHEME_PSS_SHA1
+                           TAP_SIG_SCHEME_PSS_SHA256
+                           TAP_SIG_SCHEME_PSS_SHA384
+                           TAP_SIG_SCHEME_PSS_SHA512
+                           TAP_SIG_SCHEME_ECDSA_SHA1
+                           TAP_SIG_SCHEME_ECDSA_SHA224
+                           TAP_SIG_SCHEME_ECDSA_SHA256
+                           TAP_SIG_SCHEME_ECDSA_SHA384
+                           TAP_SIG_SCHEME_ECDSA_SHA512
+                           (Default is TAP_SIG_SCHEME_NONE)
+  -tes, --tap-enc-scheme   [Optional] Tap key encryption scheme
+                           Possible values are
+                           TAP_ENC_SCHEME_NONE
+                           TAP_ENC_SCHEME_PKCS1_5
+                           TAP_ENC_SCHEME_OAEP_SHA1
+                           TAP_ENC_SCHEME_OAEP_SHA256
+                           TAP_ENC_SCHEME_OAEP_SHA384
+                           TAP_ENC_SCHEME_OAEP_SHA512
+                           (Default is TAP_ENC_SCHEME_NONE)
+  -tpri, --tap-primary     [Optional] Generate TAP primary key. Default is non-primary key
+                           Possible values
+                           0 - Generate non-primary key
+                           1 - Generate primary key
+  -th, --tap-hierarchy     [Optional] Specify hierarchy to generate the TAP key under. Default is dependent on the underlying SMP
+                           TPM2 Default - STORAGE
+                           Possible values
+                           STORAGE
+                           ENDORSEMENT
+                           PLATFORM
+  -tkh, --tap-key-handle   [Optional] Specify handle identifier for the new key.
+                           Begin with a leading '0x' if the identifier is hex,
+                           otherwise it'll be treated as a string.
+  -tknh, --tap-key-nonce-handle   [Optional] Specify handle where key nonce is stored for primary keys
+                                  Possible values are 4 byte hexadecimal value starting with 0x
+  -tch, --tap-cert-handle  [Optional] Specify handle where issued certificate is stored
+                           Possible values are 4 byte hexadecimal value starting with 0x
+  -c, --curve           [Required for ECC] Elliptic curve type
+                        Possible values are [P192 | P224 | P256 | P384 | P521 | CURVE25519 | CURVE448]
+  -g, --pq-alg          [Required for QS or HYBRID] Post-Quantum crypto algorithm type
+                        Possible values are
+                        MLDSA_44
+                        MLDSA_65
+                        MLDSA_87
+                        SLHDSA_SHA2_128S
+                        SLHDSA_SHA2_128F
+                        SLHDSA_SHA2_192S
+                        SLHDSA_SHA2_192F
+                        SLHDSA_SHA2_256S
+                        SLHDSA_SHA2_256F
+                        SLHDSA_SHAKE_128S
+                        SLHDSA_SHAKE_128F
+                        SLHDSA_SHAKE_192S
+                        SLHDSA_SHAKE_192F
+                        SLHDSA_SHAKE_256S
+                        SLHDSA_SHAKE_256F
+                        
+  -qsf, --qs-format-oqs [Optional] Format keys as per oqs format (non-rfc draft compatible)
+  -s, --size            [Required for RSA or DSA] Key size
+                        For RSA: Possible values are in the range [2048 - 8192] and must be a multiple of 128)
+                        For DSA: Possible values are [1024 | 2048]
+  -q, --q-size          [Required for DSA] Bit size of the prime q
+                        Possible values are [160 | 224 | 256]
+                        160 is for 1024 primes
+                        224 or 256 is for 2048-bit primes
+  -pss, --pss           [Optional] RSA-PSS signing scheme
+  -kd, --key-digest     [Optional] Both hash and mgf-hash algorithms for RSA-PSS keys
+                        Possible values are [MD5 | SHA1 | SHA224 | SHA256 | SHA384 | SHA512]
+  -kslt, --key-salt     [Optional] Salt length in bytes for RSA-PSS keys
+                        (Default is the key digest output size in bytes)
+
+Certificate Generation Options:
+  -i, --csr-conf        [Required with -x/--x509-cert] CSR configuration file name
+                        File must be in "conf" folder under the keystore directory.
+                        used to generate a certificate for the newly generated key pair
+  -d, --digest          [Required with -csr/--cert-sign-req] Digest for the signing algorithm
+                        Possible values are [MD5 | SHA1 | SHA224 | SHA256 | SHA384 | SHA512]. If omitted, a default
+                        digest will be chosen based on the signing key size
+  -slt, --salt          [Optional] Salt length in bytes for RSA-PSS signing keys
+                        (Default is the digest output size in bytes)
+  -da, --days           [Optional] Number of days for which a generated certificate
+                        is valid. (Default is from today)
+  -sd, --start-date     [Optional] Starting date for a generated certificate, MMDDYYYY format
+                        (Default is today)
+  -sc, --signing-cert   [Optional] Signing certificate. If omitted, the generated certificate
+                        will be self-signed
+  -sk, --signing-key    [Required with -csr/--cert-sign-req] Signing key. If omitted, the generated
+                        certificate will be self-signed
+  -skt, --signing-key-tap [Optional] Must be provided if signing key (-sk) is a Tap key
+  -skp, --signing-key-pw  [Optional] Prompt user for the signing key's password
+  -csr, --cert-sign-req   [Optional] Create a signed CSR from a signing key, and input csr or input cert
+  -if, --input-form       [Optional] Format of the signing certificate and key
+                          Possible values are [PEM | DER]. (Default is PEM)
+
+Card Verifiable Certificate Options:
+  -cvc, --cv-cert         [Optional] Path to the CV certificate to be generated
+  -cve, --cv-eff-date     [Required with -cv/--cv-cert] CV certificate's effective date in YYMMDD format
+  -cvo, --cv-country-code [Optional] CV certificate's country code. (Default is US)
+  -cvm, --cv-mnemonic     [Required with -cv/--cv-cert] CV certificate's mnemonic
+  -cvs, --cv-seqnum       [Required with -cv/--cv-cert] CV certificate's sequence number
+  -cva, --cv-holder-auth-temp [Required with -cv/--cv-cert] CV certificate's holder auth template
+  -cvx, --cv-extensions   [Optional] CV certificate's extensions in CV serialized form
+  -pcvc, --print-cvcert   [Optional] Print certificate in readable form. Follow with it path and name of existing cert
+
+Output Options:
+  -o, --output-file     [Optional] Output file name
+  -u, --output-pub-file [Optional] Path to public key output file to be generated
+  -x, --x509-cert       [Optional] Path to the certificate to be generated using the input CSR file
+  -p12, --pkcs12          [Optional] Path to the pkcs12 PFX file to be generated containing
+                          the certificate and key pair. Options -x, -i and -da must be given
+                          Output format for this file is always DER
+  -p12e, --pkcs12-encryption-type [Optional] Encryption type for PKCS12 file
+                                  Possible values are
+                                  sha_3des
+                                  sha_rc4_40
+                                  sha_rc4_128
+                                  (Default is sha_3des)
+  -p12i, --pkcs12-integrity-pw    [Optional] Prompt user for the pkcs12 integrity password
+  -p12p, --pkcs12-privacy-pw      [Optional] Prompt user for the pkcs12 privacy password
+  -p12k, --pkcs12-key-pw          [Optional] Prompt user for the pkcs12 key password
+  -f, --output-form     [Optional] If omitted, the output file(s) will be generated in PEM format
+                        Possible values are [PEM | DER | SSH]
+                        For SSH: private key (and generated certificate) will be in PEM format and 
+                        public key will be in SSH format
+  -p, --protect         [Optional] Prompt user for PKCS8 password to protect the new TAP or software key
+ -pc, --print-cert [Optional] Print a certificate or CSR in readable form. Follow with it path and name of existing certificate or CSR
+[TRUSTEDGE-CERTIFICATE] VERBOSE: Exiting certificate mode
+[TRUSTEDGE-CERTIFICATE] VERBOSE: Certificate scep mode running
+[TRUSTEDGE-CERTIFICATE] VERBOSE: Processing certificate arguments
+Usage: scep [Options]
+
+TrustEdge Certificate SCEP Mode
+
+Generic Options:
+  -h, --help            Display this help menu
+  --log-level           Verbosity level of the message logs
+                        Possible values are [NONE | ERROR | WARNING | DEBUG | INFO | VERBOSE]
+                        (Default is applied through the trustedge configuration)
+  -k, --key-store-path  Path to the keystore used for both input and output files
+                        (Default is applied through the trustedge configuration or is ".")
+
+Key Generation Options:
+  -a, --algorithm       Crypto algorithm type
+                        Possible values are [ECC | RSA]
+  -t, --tap                [Optional] Generate a hardware-based TPM2 TAP key
+                           If omitted, software-based key is generated
+  -tpr, --tap-provider     [Optional] Tap provider
+                           Possible values are [TPM2 | PKCS11 | TEE | nanoroot]
+                           depending on the build configuration.
+  -tm, --tap-modnum        [Optional] TAP module to use. (Default is 1)
+  -tku, --tap-key-usage    [Optional] TAP key usage
+                           Possible values are
+                           TAP_KEY_USAGE_GENERAL
+                           TAP_KEY_USAGE_SIGNING
+                           TAP_KEY_USAGE_DECRYPT
+                           (Default is TAP_KEY_USAGE_GENERAL)
+  -tss, --tap-sig-scheme   [Optional] Tap key signing scheme
+                           Possible values are
+                           TAP_SIG_SCHEME_NONE
+                           TAP_SIG_SCHEME_PKCS1_5
+                           TAP_SIG_SCHEME_PKCS1_5_SHA1
+                           TAP_SIG_SCHEME_PKCS1_5_SHA256
+                           TAP_SIG_SCHEME_PKCS1_5_SHA384
+                           TAP_SIG_SCHEME_PKCS1_5_SHA512
+                           TAP_SIG_SCHEME_PKCS1_5_DER
+                           TAP_SIG_SCHEME_PSS
+                           TAP_SIG_SCHEME_PSS_SHA1
+                           TAP_SIG_SCHEME_PSS_SHA256
+                           TAP_SIG_SCHEME_PSS_SHA384
+                           TAP_SIG_SCHEME_PSS_SHA512
+                           TAP_SIG_SCHEME_ECDSA_SHA1
+                           TAP_SIG_SCHEME_ECDSA_SHA224
+                           TAP_SIG_SCHEME_ECDSA_SHA256
+                           TAP_SIG_SCHEME_ECDSA_SHA384
+                           TAP_SIG_SCHEME_ECDSA_SHA512
+                           (Default is TAP_SIG_SCHEME_NONE)
+  -tes, --tap-enc-scheme   [Optional] Tap key encryption scheme
+                           Possible values are
+                           TAP_ENC_SCHEME_NONE
+                           TAP_ENC_SCHEME_PKCS1_5
+                           TAP_ENC_SCHEME_OAEP_SHA1
+                           TAP_ENC_SCHEME_OAEP_SHA256
+                           TAP_ENC_SCHEME_OAEP_SHA384
+                           TAP_ENC_SCHEME_OAEP_SHA512
+                           (Default is TAP_ENC_SCHEME_NONE)
+  -tpri, --tap-primary     [Optional] Generate TAP primary key. Default is non-primary key
+                           Possible values
+                           0 - Generate non-primary key
+                           1 - Generate primary key
+  -th, --tap-hierarchy     [Optional] Specify hierarchy to generate the TAP key under. Default is dependent on the underlying SMP
+                           TPM2 Default - STORAGE
+                           Possible values
+                           STORAGE
+                           ENDORSEMENT
+                           PLATFORM
+  -tkh, --tap-key-handle   [Optional] Specify handle identifier for the new key.
+                           Begin with a leading '0x' if the identifier is hex,
+                           otherwise it'll be treated as a string.
+  -tknh, --tap-key-nonce-handle   [Optional] Specify handle where key nonce is stored for primary keys
+                                  Possible values are 4 byte hexadecimal value starting with 0x
+  -tch, --tap-cert-handle  [Optional] Specify handle where issued certificate is stored
+                           Possible values are 4 byte hexadecimal value starting with 0x
+  -c, --curve           [Required for ECC] Elliptic curve type
+                        Possible values are [P192 | P224 | P256 | P384 | P521 | CURVE25519 | CURVE448]
+  -s, --size            [Required for RSA] Key size
+                        Possible values are in the range [2048 - 8192] and must be a multiple of 128)
+  -pss, --pss           [Optional] RSA-PSS signing scheme
+  -kd, --key-digest     [Optional] Both hash and mgf-hash algorithms for RSA-PSS keys
+                        Possible values are [MD5 | SHA1 | SHA224 | SHA256 | SHA384 | SHA512]
+  -kslt, --key-salt     [Optional] Salt length in bytes for RSA-PSS keys
+                        (Default is the key digest output size in bytes)
+
+Certificate Generation Options:
+  -i, --csr-conf        [Required] CSR configuration file name
+                        File must be in "conf" folder under the keystore directory.
+  -d, --digest          [Optional] Digest for SCEP
+                        Possible values are [SHA224 | SHA256 | SHA384 | SHA512]. (Default is SHA256)
+  -slt, --salt          [Optional] Salt length in bytes for RSA-PSS signing keys
+                        (Default is the digest output size in bytes)
+  -da, --days           [Optional] Number of days for which a generated certificate
+                        is valid. (Default is from today)
+  -sd, --start-date     [Optional] Starting date for a generated certificate, MMDDYYYY format
+                        (Default is today)
+  -skt, --signing-key-tap [Optional] Must be provided if signing key (-sk) is a Tap key
+  -okp, --original-key-pw [Optional] Prompt user for the original key's password
+  -if, --input-form       [Optional] Format of the certificates and keys
+                          Possible values are [PEM | DER]. (Default is PEM)
+
+Card Verifiable Certificate Options:
+  -cvc, --cv-cert         [Optional] Path to the CV certificate to be generated
+  -cve, --cv-eff-date     [Required with -cv/--cv-cert] CV certificate's effective date in YYMMDD format
+  -cvo, --cv-country-code [Optional] CV certificate's country code. (Default is US)
+  -cvm, --cv-mnemonic     [Required with -cv/--cv-cert] CV certificate's mnemonic
+  -cvs, --cv-seqnum       [Required with -cv/--cv-cert] CV certificate's sequence number
+  -cva, --cv-holder-auth-temp [Required with -cv/--cv-cert] CV certificate's holder auth template
+  -cvx, --cv-extensions   [Optional] CV certificate's extensions in CV serialized form
+  -pcvc, --print-cvcert   [Optional] Print certificate in readable form. Follow with it path and name of existing cert
+
+SCEP Options:
+  -sco, --scepc-pkiOperation   [Required] Specifies the pkioperation
+                               Possible values are [PKCSReq | RenewalReq | RekeyReq | GetCACert | GetCACaps]
+                               (Default is PKCSReq)
+  -scu, --scepc-serverURL      [Required] SCEP server url
+  -sct, --scepc-serverType     [Optional] SCEP server type
+                               Possible values are [MOC | EJBCA | ECDSA | WIN2003 | WIN2008 | WIN2012 | WIN2016 | GEN_GET | GEN_POST]
+                               (Default is MOC)
+  -scp, --scepc-challengePass  [Required] SCEP challenge password
+  -sca, --scepc-encalgo        [Optional] Symmetric key encryption algorithm for SCEP
+                               Possible values are [desEDE3CBC | aes128CBC | aes192CBC | aes256CBC]
+                               (Default is desEDE3CBC)
+  -scd, --scepc-digest         [Optional] Digest Algorithm for SCEP encryption steps
+  -scoa, --scepc-oaep          [Optional] Use OAEP for RSA pkcs7 encryption. (Default is SHA256)
+  -scod, --scepc-oaepDigest    [Optional] Digest for OAEP encrption steps. (Default is SHA256)
+  -scl, --scepc-label          [Optional] Label for OAEP encryption
+  -scce, --scepc-cepcert       [Optional] CEP Cert Filename
+                               (Default is moc_CEP.<pem|der>)
+
+Output Options:
+  -ka, --key-alias      [Optional] Alias for keys, certs and files placed in the keystore
+                        (Default is GenKey)
+  -p12, --pkcs12          [Optional] Path to the pkcs12 PFX file to be generated containing
+                          the certificate and key pair. Options -x, -i and -da must be given
+                          Output format for this file is always DER
+  -p12e, --pkcs12-encryption-type [Optional] Encryption type for PKCS12 file
+                                  Possible values are
+                                  sha_3des
+                                  sha_rc4_40
+                                  sha_rc4_128
+                                  (Default is sha_3des)
+  -p12i, --pkcs12-integrity-pw    [Optional] Prompt user for the pkcs12 integrity password
+  -p12p, --pkcs12-privacy-pw      [Optional] Prompt user for the pkcs12 privacy password
+  -p12k, --pkcs12-key-pw          [Optional] Prompt user for the pkcs12 key password
+  -f, --output-form     [Optional] If omitted, output file(s) will be generated in PEM format
+                        Possible values are [PEM | DER]
+  -p, --protect         [Optional] Prompt user for PKCS8 password to protect the new TAP or software key
+ -pc, --print-cert [Optional] Print a certificate or CSR in readable form. Follow with it path and name of existing certificate or CSR
+[TRUSTEDGE-CERTIFICATE] VERBOSE: Exiting certificate mode
+[TRUSTEDGE-CERTIFICATE] VERBOSE: Certificate est mode running
+[TRUSTEDGE-CERTIFICATE] VERBOSE: Processing certificate arguments
+Usage: est [Options]
+
+TrustEdge Certificate EST Mode
+
+Generic Options:
+  -h, --help            Display this help menu
+  --log-level           Verbosity level of the message logs
+                        Possible values are [NONE | ERROR | WARNING | DEBUG | INFO | VERBOSE]
+                        (Default is applied through the trustedge configuration)
+  --require-pqc         Enforce usage of PQC algorithms
+  -k, --key-store-path  Path to the keystore used for both input and output files
+                        (Default is applied through the trustedge configuration or is ".")
+
+Key Generation Options:
+  -a, --algorithm       Crypto algorithm type
+                        Possible values are [ECC | RSA | QS | HYBRID]
+  -t, --tap                [Optional] Generate a hardware-based TPM2 TAP key
+                           If omitted, software-based key is generated
+  -tpr, --tap-provider     [Optional] Tap provider
+                           Possible values are [TPM2 | PKCS11 | TEE | nanoroot]
+                           depending on the build configuration.
+  -tm, --tap-modnum        [Optional] TAP module to use. (Default is 1)
+  -tku, --tap-key-usage    [Optional] TAP key usage
+                           Possible values are
+                           TAP_KEY_USAGE_GENERAL
+                           TAP_KEY_USAGE_SIGNING
+                           TAP_KEY_USAGE_DECRYPT
+                           (Default is TAP_KEY_USAGE_GENERAL)
+                           TAP_KEY_USAGE_ATTESTATION
+  -tss, --tap-sig-scheme   [Optional] Tap key signing scheme
+                           Possible values are
+                           TAP_SIG_SCHEME_NONE
+                           TAP_SIG_SCHEME_PKCS1_5
+                           TAP_SIG_SCHEME_PKCS1_5_SHA1
+                           TAP_SIG_SCHEME_PKCS1_5_SHA256
+                           TAP_SIG_SCHEME_PKCS1_5_DER
+                           TAP_SIG_SCHEME_PSS_SHA1
+                           TAP_SIG_SCHEME_PSS_SHA256
+                           TAP_SIG_SCHEME_ECDSA_SHA1
+                           TAP_SIG_SCHEME_ECDSA_SHA224
+                           TAP_SIG_SCHEME_ECDSA_SHA256
+                           TAP_SIG_SCHEME_ECDSA_SHA384
+                           TAP_SIG_SCHEME_ECDSA_SHA512
+                           (Default is TAP_SIG_SCHEME_NONE)
+  -tes, --tap-enc-scheme   [Optional] Tap key encryption scheme
+                           Possible values are
+                           TAP_ENC_SCHEME_NONE
+                           TAP_ENC_SCHEME_PKCS1_5
+                           TAP_ENC_SCHEME_OAEP_SHA1
+                           TAP_ENC_SCHEME_OAEP_SHA256
+                           (Default is TAP_ENC_SCHEME_NONE)
+  -tpri, --tap-primary     [Optional] Generate TAP primary key. Default is non-primary key
+                           Possible values
+                           0 - Generate non-primary key
+                           1 - Generate primary key
+  -th, --tap-hierarchy     [Optional] Specify hierarchy to generate the TAP key under. Default is dependent on the underlying SMP
+                           TPM2 Default - STORAGE
+                           Possible values
+                           STORAGE
+                           ENDORSEMENT
+                           PLATFORM
+  -tkh, --tap-key-handle   [Optional] Specify handle identifier for the new key.
+                           Begin with a leading '0x' if the identifier is hex,
+                           otherwise it'll be treated as a string.
+  -tknh, --tap-key-nonce-handle   [Optional] Specify handle where key nonce is stored for primary keys
+                                  Possible values are 4 byte hexadecimal value starting with 0x
+  -tch, --tap-cert-handle  [Optional] Specify handle where issued certificate is stored
+                           Possible values are 4 byte hexadecimal value starting with 0x
+  -tde, --tpm2-idevid-enrollment  [Optional] Perform TPM2 IDevID enrollment
+  -tae, --tpm2-iak-enrollment     [Optional] Perform TPM2 IAK enrollment
+  -c, --curve           [Required for ECC] Elliptic curve type
+                        Possible values are [P192 | P224 | P256 | P384 | P521 | CURVE25519 | CURVE448]
+  -g, --pq-alg          [Required for QS or HYBRID] Post-Quantum crypto algorithm type
+                        Possible values are
+                        MLDSA_44
+                        MLDSA_65
+                        MLDSA_87
+                        SLHDSA_SHA2_128S
+                        SLHDSA_SHA2_128F
+                        SLHDSA_SHA2_192S
+                        SLHDSA_SHA2_192F
+                        SLHDSA_SHA2_256S
+                        SLHDSA_SHA2_256F
+                        SLHDSA_SHAKE_128S
+                        SLHDSA_SHAKE_128F
+                        SLHDSA_SHAKE_192S
+                        SLHDSA_SHAKE_192F
+                        SLHDSA_SHAKE_256S
+                        SLHDSA_SHAKE_256F
+                        
+  -qsf, --qs-format-oqs [Optional] Format keys as per oqs format (non-rfc draft compatible)
+  -s, --size            [Required for RSA] Key size
+                        Possible values are in the range [2048 - 8192] and must be a multiple of 128)
+
+Certificate Generation Options:
+  -i, --csr-conf        [Required] CSR configuration file name
+                        File must be in "conf" folder under the keystore directory.
+
+Card Verifiable Certificate Options:
+  -cvc, --cv-cert         [Optional] Path to the CV certificate to be generated
+  -cve, --cv-eff-date     [Required with -cv/--cv-cert] CV certificate's effective date in YYMMDD format
+  -cvo, --cv-country-code [Optional] CV certificate's country code. (Default is US)
+  -cvm, --cv-mnemonic     [Required with -cv/--cv-cert] CV certificate's mnemonic
+  -cvs, --cv-seqnum       [Required with -cv/--cv-cert] CV certificate's sequence number
+  -cva, --cv-holder-auth-temp [Required with -cv/--cv-cert] CV certificate's holder auth template
+  -cvx, --cv-extensions   [Optional] CV certificate's extensions in CV serialized form
+  -pcvc, --print-cvcert   [Optional] Print certificate in readable form. Follow with it path and name of existing cert
+
+EST Options:
+  --uri                                     [Required] Complete EST endpoint URL
+  -host, --estc-server-dn                   [Required if --uri is not provided] The EST server's distinguished name
+  -url, --estc-server-url                   [Required if --uri is not provided] The EST operation URL path. Possible values are
+                                               /.well-known/est/<groupid/policyid>/cacerts
+                                               /.well-known/est/<groupid/policyid>/simpleenroll
+                                               /.well-known/est/<groupid/policyid>/simplereenroll
+                                               /.well-known/est/<groupid/policyid>/serverkeygen
+                                               /.well-known/est/<groupid/policyid>/fullcmc
+                                               /.well-known/est/<groupid/policyid>/csrattrs
+  -user, --estc-user                        [Optional] The HTTP authentication username
+  -pass, --estc-pass                        [Required] The HTTP authentication password
+  -ip, --estc-server-ip                     [Optional] The EST server's IP address
+                                            If provided, dns resolution of server's FQDN will be skipped
+  -port, --estc-server-port                 [Optional] The EST server's listening port
+  -authscheme, --estc-authentication-mode   [Optional] Authentication mechanism to use
+                                            Possible values are [BASIC | DIGEST]
+  -noverify, --estc-disable-ca-cert         [Optional] Flag to disable validating the issued certificate against the certificate store
+  -hash, --estc-digest-algo                 [Optional] Digest algorithm to use
+                                            Possible values are  [SHA1 | SHA224 | SHA256 | SHA384 | SHA512]
+  -mtls, --estc-tls-cert                    [Optional] Alias of mutual authentication key and certificate
+                                            Key must be in "keys" folder and certificate must be in "certs" folder
+  -caprefix, --estc-cacerts-alias           [Optional] Alias of EST CA certificates
+                                            This alias will be prepended to the truncated sha1 fingerprint of the downloaded certificates
+  -renewdays, --estc-renew-window           [Optional] Number of days to check against the certificate when performing a renew, rekey
+                                            or simplereenroll operation. If the certificate is expired or if the certificate
+                                            will expire within the number of days specified then the renew, rekey, or
+                                            simplereenroll is performed. Maximum window is 0 days
+  -cmcreq, --estc-full-cmc-req-type         [Optional] FullCMC operation type. Possible values are [enroll | renew | rekey]
+                                            Default is enroll
+  -rkalias, --estc-rekey-alias              [Optional] Alias of rekey in the cert store (used with FullCMC rekey or simplereenroll operation)
+
+
+Output Options:
+  -ka, --key-alias      [Optional] Alias for keys, certs and files placed in the keystore. (Default is GenKey)
+                        In case of FullCMC and simplereenroll, key alias to be used for CSR signing
+                        Key must be in "keys" folder and certificate must be in "certs" folder
+  -p12, --pkcs12          [Optional] Output a PKCS12 file with the issued key and certificate
+                             0 - Do not output a PKCS12 file (Default)
+                             1 - Generate PKCS12 file
+  -p12e, --pkcs12-encryption-type [Optional] Encryption type for PKCS12 file
+                                  Possible values are
+                                  sha_3des
+                                  sha_rc4_40
+                                  sha_rc4_128
+                                  (Default is sha_3des)
+  -p12i, --pkcs12-integrity-pw    [Optional] Provide integrity password for PKCS12 file. Only used when -p12/--pkcs12
+                                  is provided (must be at least 4 characters). It will generate a PKCS12 file with a mac
+  -p12p, --pkcs12-privacy-pw      [Optional] Provide privacy password for PKCS12 file. Only used when -p12/--pkcs12
+                                  is provided (must be at least 4 characters). It will protect any data output to the pkcs12 file
+  -p12k, --pkcs12-key-pw          [Optional] Provide private key password for keys stored in the PKCS12 file. Only used when
+                                  -p12/--pkcs12 is provided (must be at least 4 characters). It will protect the private key
+                                  stored in the PKCS12 file.
+  -p, --protect         [Optional] Prompts user for password to protect the key. For SW (non-TAP) keys this provides PKCS8 password
+                        Without any argument this flag prompts for the passowrd. Password can also be provided on the CLI as argument
+                        and then must be prefixed with pw: i.e., pw:secret_password
+  -p8a, --pkcs8-enc-alg PKCS8 encryption algorithm. Only used when -p/--protect is provided. This option is not
+                        valid with TAP keys
+                        Possible values are
+                        p5_v2_3des
+                        p5_v2_aes128
+                        p5_v2_aes192
+                        p5_v2_aes256
+                        (Default is p5_v2_aes256)
+ -pc, --print-cert [Optional] Print a certificate or CSR in readable form. Follow with it path and name of existing certificate or CSR
+[TRUSTEDGE-CERTIFICATE] VERBOSE: Exiting certificate mode
+Copyright (c) 2026 Digicert Inc
+  Platform: Linux
+  Version: 24.7.2-5230
+  Build: Release (TAP-Local)
+  Date: 2026-06-03 05:37
