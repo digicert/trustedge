@@ -92,6 +92,11 @@ DOC_PAGES = [
     "https://dev.digicert.com/trustedge/system-requirements.html",
 ]
 
+# ── Local CLI reference (highest priority — actual binary help output) ─────────
+# trustedge.txt is the output of running every `trustedge <cmd> --help`.
+# It is the single source of truth for valid subcommands and flags.
+CLI_REFERENCE_FILE = REPO_ROOT / "docs" / "data" / "trustedge.txt"
+
 # Also read the repo's own READMEs — useful for TPM provisioning commands
 # that may only be documented there
 REPO_DOCS = {
@@ -132,7 +137,29 @@ def fetch_page(url: str) -> dict | None:
 
     return {"url": url, "title": title, "code_blocks": blocks}
 
-print("── Step 1: Fetching authoritative docs from dev.digicert.com ──")
+# ── Load CLI reference first — used to seed the hallucination guard ───────────
+print("── Step 0: Loading CLI reference (trustedge.txt) ──")
+cli_reference_text = ""
+try:
+    cli_reference_text = CLI_REFERENCE_FILE.read_text(encoding="utf-8")
+    print(f"  ✓ Loaded {CLI_REFERENCE_FILE} ({len(cli_reference_text)} chars)")
+except FileNotFoundError:
+    print(f"  ✗ {CLI_REFERENCE_FILE} not found — hallucination guard will rely on web sources only")
+
+# Extract VALID top-level subcommands from the CLI reference.
+# The help text lists them as bare words under "Commands:", so we extract those
+# AND also match any "trustedge <word>" patterns.
+VALID_SUBCOMMANDS = set(re.findall(r'trustedge\s+(\w[\w\-]*)', cli_reference_text))
+# Also extract bare subcommand names from the "Commands:" section
+_cmd_section = re.search(r'Commands:\s*(.*?)(?:\n\n|\Z)', cli_reference_text, re.DOTALL)
+if _cmd_section:
+    VALID_SUBCOMMANDS.update(re.findall(r'^\s{2}(\w[\w\-]+)', _cmd_section.group(1), re.MULTILINE))
+# Also add bare trustedge flags
+VALID_FLAGS_CLI = set(re.findall(r'--[\w\-]+', cli_reference_text))
+print(f"  ✓ {len(VALID_SUBCOMMANDS)} valid subcommands, {len(VALID_FLAGS_CLI)} valid flags extracted")
+print(f"  Valid subcommands: {sorted(VALID_SUBCOMMANDS)}")
+
+print("\n── Step 1: Fetching authoritative docs from dev.digicert.com ──")
 fetched_pages = []
 all_code_blocks = []   # flat list of { url, block } for the hallucination guard
 
@@ -179,40 +206,93 @@ SYSTEM_PROMPT = textwrap.dedent("""
 You are a technical documentation assistant for DigiCert TrustEdge.
 Your ONLY job is to structure commands that already exist in the provided sources.
 
-CRITICAL RULES — any violation causes automated rejection:
-1. USE ONLY commands from the provided source pages. Do NOT invent any command,
-   flag, argument, or path. If a command is not in the sources, omit it entirely.
-2. Every step entry MUST include a source_url field identifying where the commands came from:
-   - If the source is a dev.digicert.com page, use the exact page URL.
-   - If the source is repo documentation included below, use the repo path shown in the SOURCE header.
-3. Use {{VERSION}} wherever a version number appears (e.g. in .deb filenames).
+═══ VALID TRUSTEDGE COMMANDS (the COMPLETE list — do not add any others) ═══
+  trustedge --version
+  trustedge --help
+  trustedge --daemon                    ← run as Linux daemon/service
+  trustedge agent [options]             ← Device Trust Manager agent mode
+  trustedge mqtt [options]              ← MQTT pub/sub client
+  trustedge certificate [options]       ← key gen + cert gen (self-signed, CSR)
+  trustedge certificate est [options]   ← EST enrollment
+  trustedge certificate scep [options]  ← SCEP enrollment
+
+═══ COMMANDS THAT DO NOT EXIST — NEVER generate these ═══
+  trustedge key     ← DOES NOT EXIST  (key gen is done via trustedge certificate -a ... -o ...)
+  trustedge csr     ← DOES NOT EXIST  (CSR is done via trustedge certificate -csr ...)
+  trustedge keystore← DOES NOT EXIST
+  trustedge cert    ← DOES NOT EXIST  (use: trustedge certificate)
+  trustedge enroll  ← DOES NOT EXIST
+  trustedge provision ← DOES NOT EXIST
+
+═══ CORRECT FLAG NAMES (copy exactly) ═══
+  Key generation flags on `trustedge certificate`:
+    -a ECC | RSA | QS | HYBRID   (algorithm)
+    -c P256 | P384 | P521         (curve, required for ECC)
+    -g MLDSA_44 | MLDSA_65 | MLDSA_87  (PQC algorithm, required for QS/HYBRID)
+    -o <name>                     (output key/cert name)
+    -x <file>                     (x509 cert output path)
+    -i <conf-file>                (CSR config file in keystore/conf/)
+    -da <days>                    (validity days)
+    -sc <signing-cert>            (signing cert for non-self-signed)
+    -sk <signing-key>             (signing key for non-self-signed)
+    -t                            (generate TPM2 hardware key)
+    -tpr TPM2                     (TAP provider)
+    -pc <cert-file>               (print/verify certificate)
+  MQTT flags:
+    --mqtt_servername <host>
+    --mqtt_port <port>
+    --mqtt_transport SSL | TCP
+    --ssl_cert_file <file>
+    --ssl_key_file <file>
+    --ssl_ca_file <file>
+    --mqtt_pub_topic <topic>
+    --mqtt_pub_message <msg>
+    --mqtt_sub_topic <topic>
+  Agent flags:
+    --configure | --download | --reset
+    --bootstrap-zip <file>
+    --devtm-bootstrap-uri <url>
+    --log-level DEBUG | INFO | ERROR
+    --require-pqc
+
+CRITICAL RULES:
+1. USE ONLY commands from the CLI reference and provided doc sources.
+2. Every step MUST include a source_url.
+3. Use {{VERSION}} wherever a version number appears in filenames.
 4. Structure:
    Top-level arch keys: x86_64, aarch64, arm32, zephyr
    Each arch has step keys: prerequisites, install, tpm_provision,
-     cert_selfsigned, cert_est, run_cli, run_agent, pqc_demo, verify
+     cert_selfsigned, cert_est, cert_scep, run_cli, run_agent, pqc_demo, verify
    Each step: {
      "title": "string",
      "commands": ["string"],
      "source_url": "string",
-     "notes": ["string"]            ← optional, from the docs
+     "notes": ["string"]
    }
 5. Output ONLY valid JSON. No markdown fences. No explanation outside JSON.
-6. If you cannot find a real command for a step from the sources, omit that step.
+6. Omit a step entirely if you cannot find real commands for it.
    An omitted step is far better than an invented command.
 """).strip()
 
 USER_PROMPT = f"""TrustEdge version: {VERSION}
 
-── AUTHORITATIVE SOURCES (dev.digicert.com) ──
-Use ONLY the commands found in these pages:
+══ PRIMARY SOURCE: CLI REFERENCE (trustedge --help output — highest authority) ══
+This is the actual output of running trustedge --help for every command.
+It defines ALL valid commands, flags and arguments. Do not use any command
+or flag not shown here.
+
+{cli_reference_text}
+
+══ SECONDARY SOURCES: dev.digicert.com documentation ══
+These pages provide usage examples and context for the CLI commands above.
 
 {format_fetched_pages(fetched_pages)}
 
-── REPO DOCS (TPM provisioning and PQC demo — repo-only content) ──
+══ REPO DOCS (TPM provisioning and PQC demo) ══
 {repo_doc_text.get('SecureElement', '')}
 {repo_doc_text.get('pqc_demo', '')}
 
-Generate commands.json now. Only include commands from the above sources.
+Generate commands.json now. Every command must appear verbatim in the CLI reference above.
 """
 
 # ── Step 4: Call GitHub Models API ───────────────────────────────────────────
@@ -267,16 +347,28 @@ except json.JSONDecodeError as exc:
 # ── Step 6: Hallucination guard using real fetched blocks ─────────────────────
 # Build a set of all real command tokens from the fetched pages
 
+# ── Build allow-list: CLI reference is primary, web sources are secondary ─────
 real_command_tokens = set()
+
+# 1. CLI reference — highest authority (flags and subcommands from actual binary)
+if cli_reference_text:
+    real_command_tokens.update(re.findall(r'trustedge\s+\w[\w\-]*', cli_reference_text))
+    real_command_tokens.update(re.findall(r'--[\w\-]+', cli_reference_text))
+    real_command_tokens.update(re.findall(r'-\w[\w\-]*', cli_reference_text))
+
+# 2. Web doc pages
 for item in all_code_blocks:
     real_command_tokens.update(re.findall(r'trustedge\s+\w[\w\-]*', item["block"]))
-    # Also capture flags like --cert, --broker etc.
     real_command_tokens.update(re.findall(r'--[\w\-]+', item["block"]))
 
-# Include repo-doc content in the allow-list too (repo-only TPM/PQC commands)
+# 3. Repo docs (TPM/PQC)
 for text in repo_doc_text.values():
     real_command_tokens.update(re.findall(r'trustedge\s+\w[\w\-]*', text))
     real_command_tokens.update(re.findall(r'--[\w\-]+', text))
+
+# Hard-block known hallucinated commands (not in binary regardless of docs)
+BLOCKED_SUBCOMMANDS = {'key', 'csr', 'keystore', 'cert', 'enroll', 'provision'}
+print(f"  Blocked subcommands: {sorted(BLOCKED_SUBCOMMANDS)}")
 def check_hallucinations(data: dict) -> list[str]:
     issues = []
     for arch, steps in data.items():
@@ -286,20 +378,24 @@ def check_hallucinations(data: dict) -> list[str]:
             if not isinstance(content, dict):
                 continue
             for cmd in content.get("commands", []):
-                # Check trustedge subcommands
+                # Hard-block known non-existent subcommands
                 for subcmd in re.findall(r'trustedge\s+(\w[\w\-]*)', cmd):
-                    candidate = f"trustedge {subcmd}"
-                    if candidate not in real_command_tokens:
+                    if subcmd in BLOCKED_SUBCOMMANDS:
+                        issues.append(
+                            f"  [{arch}/{step_name}] BLOCKED subcommand: "
+                            f"`trustedge {subcmd}` — this command does not exist in the binary"
+                        )
+                    elif f"trustedge {subcmd}" not in real_command_tokens:
                         issues.append(
                             f"  [{arch}/{step_name}] Unverified subcommand: "
-                            f"`{candidate}` — not found in any fetched doc page"
+                            f"`trustedge {subcmd}` — not found in CLI reference or docs"
                         )
-                # Check flags
+                # Check flags (only long-form -- flags; short flags are harder to verify)
                 for flag in re.findall(r'--[\w\-]+', cmd):
                     if flag not in real_command_tokens:
                         issues.append(
                             f"  [{arch}/{step_name}] Unverified flag: "
-                            f"`{flag}` — not found in any fetched doc page"
+                            f"`{flag}` — not found in CLI reference or docs"
                         )
     return issues
 
