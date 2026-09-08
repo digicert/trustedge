@@ -38,8 +38,9 @@ jobs:
       - name: Run AI command generator
         id: generate
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AI_MODEL: ${{ vars.AI_MODEL || 'openai/gpt-4o' }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}   # fallback if HF_TOKEN not set
+          AI_MODEL: ${{ vars.AI_MODEL || 'openai/gpt-oss-120b:fastest' }}
           TRUSTEDGE_VERSION: ${{ github.event.release.tag_name || github.ref_name }}
         run: python3 scripts/generate_commands.py
 
