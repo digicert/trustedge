@@ -31,32 +31,65 @@ from openai import APIConnectionError, OpenAI
 REPO_ROOT = pathlib.Path(__file__).parent.parent
 OUT_FILE  = REPO_ROOT / "docs" / "data" / "commands.json"
 
-MODEL   = os.environ.get("AI_MODEL", "openai/gpt-4o")
 VERSION = os.environ.get("TRUSTEDGE_VERSION", "latest")
-TOKEN   = os.environ["GITHUB_TOKEN"]   # injected by the Action or set locally
 MAX_API_ATTEMPTS = int(os.environ.get("AI_MAX_ATTEMPTS", "3"))
+
+# ── Provider selection ────────────────────────────────────────────────────────
+# Priority order (first key found wins):
+#   1. HF_TOKEN         → Hugging Face router (free, no credit card)
+#   2. OPENAI_API_KEY   → OpenAI direct (~$0.01/run)
+# Override provider with: AI_PROVIDER=huggingface | openai
+_provider_hint = os.environ.get("AI_PROVIDER", "").lower()
+HF_TOKEN     = os.environ.get("HF_TOKEN", "")
+OPENAI_KEY   = os.environ.get("OPENAI_API_KEY", "")
+
+if _provider_hint == "openai" or (OPENAI_KEY and not HF_TOKEN):
+    AI_PROVIDER = "openai"
+    AI_BASE_URL = "https://api.openai.com/v1"
+    AI_API_KEY  = OPENAI_KEY
+    MODEL       = os.environ.get("AI_MODEL", "gpt-4o")
+elif HF_TOKEN or _provider_hint == "huggingface":
+    AI_PROVIDER = "huggingface"
+    AI_BASE_URL = "https://router.huggingface.co/v1"
+    AI_API_KEY  = HF_TOKEN
+    MODEL       = os.environ.get("AI_MODEL", "openai/gpt-oss-120b:fastest")
+else:
+    print("ERROR: No AI provider configured.")
+    print("  Set HF_TOKEN  (Hugging Face — free at hf.co/settings/tokens)")
+    print("  or OPENAI_API_KEY  (OpenAI — platform.openai.com/api-keys)")
+    sys.exit(1)
+
+print(f"  Provider : {AI_PROVIDER}  ({AI_BASE_URL})")
+print(f"  Model    : {MODEL}")
 
 # ── Step 1: Define authoritative doc pages ────────────────────────────────────
 # These are the DigiCert docs that contain real TrustEdge CLI commands.
 # Add new pages here whenever DigiCert publishes new sections.
 
 DOC_PAGES = [
-    # Core reference — most important
-    "https://dev.digicert.com/en/trustedge/trustedge-command-reference.html",
-    # Install & configure
-    "https://dev.digicert.com/en/trustedge/install-and-configure.html",
-    "https://dev.digicert.com/en/trustedge/install-and-configure/install-trustedge-on-linux.html",
-    "https://dev.digicert.com/en/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html",
-    "https://dev.digicert.com/en/trustedge/install-and-configure/manage-the-keystore.html",
-    # Certificate operations
-    "https://dev.digicert.com/en/trustedge/trustedge-command-reference/certificate-commands.html",
-    "https://dev.digicert.com/en/trustedge/trustedge-command-reference/key-commands.html",
-    "https://dev.digicert.com/en/trustedge/trustedge-command-reference/mqtt-commands.html",
-    "https://dev.digicert.com/en/trustedge/trustedge-command-reference/est-commands.html",
-    # System requirements
-    "https://dev.digicert.com/en/trustedge/system-requirements.html",
-    # Tutorials
-    "https://dev.digicert.com/en/trustedge/tutorials.html",
+    # ── Install & configure ──
+    "https://dev.digicert.com/trustedge/install-and-configure/install-trustedge-on-linux.html",
+    "https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html",
+    "https://dev.digicert.com/trustedge/install-and-configure/configure-trustedge.html",
+    "https://dev.digicert.com/trustedge/install-and-configure/manage-the-keystore.html",
+    # ── CLI reference (authoritative command definitions) ──
+    "https://dev.digicert.com/trustedge/cli-reference/trustedge.html",
+    "https://dev.digicert.com/trustedge/cli-reference/trustedge-agent.html",
+    "https://dev.digicert.com/trustedge/cli-reference/trustedge-certificate.html",
+    "https://dev.digicert.com/trustedge/cli-reference/trustedge-certificate/trustedge-certificate-est.html",
+    "https://dev.digicert.com/trustedge/cli-reference/trustedge-certificate/trustedge-certificate-scep.html",
+    "https://dev.digicert.com/trustedge/cli-reference/trustedge-mqtt.html",
+    # ── Tutorials (real worked examples) ──
+    "https://dev.digicert.com/trustedge/tutorials/generate-software-based-private-key.html",
+    "https://dev.digicert.com/trustedge/tutorials/generate-hardware-based-private-key-tpm2.html",
+    "https://dev.digicert.com/trustedge/tutorials/generate-a-x-509-certificate.html",
+    "https://dev.digicert.com/trustedge/tutorials/create-a-certificate-signing-request-csr.html",
+    "https://dev.digicert.com/trustedge/tutorials/est-enrollment.html",
+    "https://dev.digicert.com/trustedge/tutorials/take-ownership-of-a-tpm.html",
+    "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
+    "https://dev.digicert.com/trustedge/tutorials/initialize-and-start-trustedge-trustedge-agent.html",
+    # ── System requirements ──
+    "https://dev.digicert.com/trustedge/system-requirements.html",
 ]
 
 # Also read the repo's own READMEs — useful for TPM provisioning commands
@@ -186,10 +219,7 @@ Generate commands.json now. Only include commands from the above sources.
 
 print(f"\n── Step 3: Calling GitHub Models API  model={MODEL} ──")
 
-client = OpenAI(
-    base_url="https://models.inference.ai.azure.com",
-    api_key=TOKEN,
-)
+client = OpenAI(base_url=AI_BASE_URL, api_key=AI_API_KEY)
 
 response = None
 for attempt in range(1, MAX_API_ATTEMPTS + 1):
