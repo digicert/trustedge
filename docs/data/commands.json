@@ -1,356 +1,397 @@
 {
   "x86_64": {
     "prerequisites": {
-      "title": "Install build dependencies",
+      "title": "Install build prerequisites",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y build-essential cmake rpm wget unzip"
+        "sudo apt install -y build-essential cmake rpm"
       ],
       "source_url": "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
-      "notes": []
+      "notes": [
+        "Required for building TrustEdge from source."
+      ]
     },
     "install": {
-      "title": "Download and install TrustEdge package",
+      "title": "Install TrustEdge .deb package",
       "commands": [
-        "wget https://github.com/digicert/trustedge/releases/latest/download/trustedge-x64-deb.zip",
-        "unzip trustedge-x64-deb.zip",
-        "sudo dpkg -i trustedge_{{VERSION}}.x86_64.deb",
-        "trustedge --version",
-        "sudo adduser \"$(whoami)\" trustedge"
+        "sudo DIGITCERT_EULA_ACCEPT=yes dpkg -i trustedge_<version>.deb"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-trustedge-on-linux.html",
+      "notes": [
+        "Replace <version> with the actual version string, e.g., 24.7.2-5230."
+      ]
     },
     "tpm_provision": {
-      "title": "Reset, take ownership, and provision TPM2 device",
+      "title": "Provision TPM2 device",
       "commands": [
-        "git clone https://github.com/digicert/trustedge.git",
-        "cd trustedge/tools/SecureElement",
-        "unzip tpm2_tools-x86_64-{{VERSION}}.zip",
-        "unzip tpm2_tools-x86_64.zip",
         "sudo ./reset_tpm2.sh",
-        "sudo ./provision_tpm2.sh",
         "sudo ./bin/digicert_tpm2_takeownership --sm=/dev/tpm0 --c --credfile=/etc/digicert/creds.tpm2",
+        "sudo ./provision_tpm2.sh",
         "sudo ./bin/digicert_tpm2_provision --sm=/dev/tpm0 --ekpwd= --ekalg=rsa --srkpwd= --srkalg=rsa --credfile=/etc/digicert/creds.tpm2",
         "sudo ./bin/smp_tpm2_getidstr_bin --w"
       ],
-      "source_url": "https://github.com/digicert/trustedge/tree/main/tools/SecureElement",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/tutorials/generate-hardware-based-private-key-tpm2.html",
+      "notes": [
+        "Assumes TPM device is /dev/tpm0; adjust if different."
+      ]
     },
     "cert_selfsigned": {
-      "title": "Generate self\u2011signed ML\u2011DSA certificates for PQC demo",
+      "title": "Generate self\u2011signed ML\u2011DSA certificates",
       "commands": [
-        "sudo cp ca_csr.cnf /etc/digicert/keystore/conf",
-        "sudo cp server_csr.cnf /etc/digicert/keystore/conf",
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651",
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt"
+        "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651",
+        "sudo trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "notes": [
+        "Uses the QS algorithm with MLDSA_44 post\u2011quantum signature."
+      ]
     },
     "cert_est": {
-      "title": "Enroll a certificate via EST",
+      "title": "EST enrollment example",
       "commands": [
         "trustedge certificate est --algorithm ECC --curve P256 --uri ${EST_URI} --csr-conf sample_est_csr.conf --key-alias eccTestKey --log-level INFO"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/est-enrollment.html",
-      "notes": []
+      "notes": [
+        "Replace ${EST_URI} with the actual EST endpoint."
+      ]
     },
     "cert_scep": {
-      "title": "Enroll a certificate via SCEP",
+      "title": "SCEP enrollment example",
       "commands": [
         "trustedge certificate scep --scepc-serverURL ${SCEP_ENDPOINT} --scepc-serverType GEN_POST --csr-conf sample_scep_csr.cnf --algorithm RSA --size 2048 --key-alias myGenTap --scepc-challengePass ${SCEP_PASS} --scepc-pkiOperation PKCSReq --tap"
       ],
       "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge-certificate-scep.html",
-      "notes": []
+      "notes": [
+        "Replace ${SCEP_ENDPOINT} and ${SCEP_PASS} with real values."
+      ]
     },
     "run_cli": {
-      "title": "Display TrustEdge help and version",
+      "title": "Run basic TrustEdge CLI commands",
       "commands": [
         "trustedge --help",
         "trustedge --version"
       ],
       "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge.html",
-      "notes": []
+      "notes": [
+        "Shows global usage and version."
+      ]
     },
     "run_agent": {
-      "title": "Configure TrustEdge agent with bootstrap zip",
+      "title": "Configure and start the TrustEdge agent",
       "commands": [
-        "sudo trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>"
+        "sudo trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>",
+        "sudo systemctl start trustedge.service"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge-agent.html",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/tutorials/initialize-and-start-trustedge-trustedge-agent.html",
+      "notes": [
+        "Replace <guid.zip> with the bootstrap zip file provided by Device Trust Manager."
+      ]
     },
     "pqc_demo": {
-      "title": "Run the PQC MQTT demo (broker, subscriber, publisher)",
+      "title": "Run PQC MQTT demo (subscriber and publisher)",
       "commands": [
-        "git clone https://github.com/digicert/trustedge.git",
-        "cd trustedge/examples/pqc-demo",
-        "chmod +x start_broker.sh",
-        "./start_broker.sh --keystore /etc/digicert/keystore",
         "chmod +x consumer.sh",
         "./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore",
         "chmod +x publisher.sh",
         "./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "notes": [
+        "Assumes the MQTT broker is already running with the generated certificates."
+      ]
     },
     "verify": {
       "title": "Verify generated certificates",
       "commands": [
-        "trustedge certificate -pc /etc/digicert/keystore/certs/server.crt",
-        "trustedge certificate -pc /etc/digicert/keystore/certs/CA.crt"
+        "trustedge certificate -pc /etc/digicert/keystore/certs/server.pem",
+        "trustedge certificate -pc /etc/digicert/keystore/certs/CA.pem"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "notes": [
+        "Prints certificate details in a readable form."
+      ]
     }
   },
   "aarch64": {
     "prerequisites": {
-      "title": "Install build dependencies",
+      "title": "Install build prerequisites",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y build-essential cmake rpm wget unzip"
+        "sudo apt install -y build-essential cmake rpm"
       ],
       "source_url": "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
-      "notes": []
+      "notes": [
+        "Same as x86_64; required for building TrustEdge on ARM64."
+      ]
     },
     "install": {
-      "title": "Download and install TrustEdge package for AArch64",
+      "title": "Install TrustEdge .deb package for ARM64",
       "commands": [
-        "wget https://github.com/digicert/trustedge/releases/latest/download/trustedge-aarch64-deb.zip",
-        "unzip trustedge-aarch64-deb.zip",
-        "sudo dpkg -i trustedge_{{VERSION}}.aarch64.deb",
-        "trustedge --version",
-        "sudo adduser \"$(whoami)\" trustedge"
+        "sudo DIGITCERT_EULA_ACCEPT=yes dpkg -i trustedge_<version>.aarch64.deb"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-trustedge-on-linux.html",
+      "notes": [
+        "Replace <version> with the actual version string."
+      ]
     },
     "tpm_provision": {
-      "title": "Reset, take ownership, and provision TPM2 device",
+      "title": "Provision TPM2 device (ARM64)",
       "commands": [
-        "git clone https://github.com/digicert/trustedge.git",
-        "cd trustedge/tools/SecureElement",
-        "unzip tpm2_tools-aarch64-{{VERSION}}.zip",
-        "unzip tpm2_tools-aarch64.zip",
         "sudo ./reset_tpm2.sh",
-        "sudo ./provision_tpm2.sh",
         "sudo ./bin/digicert_tpm2_takeownership --sm=/dev/tpm0 --c --credfile=/etc/digicert/creds.tpm2",
+        "sudo ./provision_tpm2.sh",
         "sudo ./bin/digicert_tpm2_provision --sm=/dev/tpm0 --ekpwd= --ekalg=rsa --srkpwd= --srkalg=rsa --credfile=/etc/digicert/creds.tpm2",
         "sudo ./bin/smp_tpm2_getidstr_bin --w"
       ],
-      "source_url": "https://github.com/digicert/trustedge/tree/main/tools/SecureElement",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/tutorials/generate-hardware-based-private-key-tpm2.html",
+      "notes": [
+        "Same commands apply to ARM64; ensure TPM device path is correct."
+      ]
     },
     "cert_selfsigned": {
-      "title": "Generate self\u2011signed ML\u2011DSA certificates for PQC demo",
+      "title": "Generate self\u2011signed ML\u2011DSA certificates (ARM64)",
       "commands": [
-        "sudo cp ca_csr.cnf /etc/digicert/keystore/conf",
-        "sudo cp server_csr.cnf /etc/digicert/keystore/conf",
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651",
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt"
+        "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651",
+        "sudo trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "notes": [
+        "Uses the same QS command line; works on any architecture."
+      ]
     },
     "cert_est": {
-      "title": "Enroll a certificate via EST",
+      "title": "EST enrollment example (ARM64)",
       "commands": [
         "trustedge certificate est --algorithm ECC --curve P256 --uri ${EST_URI} --csr-conf sample_est_csr.conf --key-alias eccTestKey --log-level INFO"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/est-enrollment.html",
-      "notes": []
+      "notes": [
+        "Replace ${EST_URI} with the actual EST endpoint."
+      ]
     },
     "cert_scep": {
-      "title": "Enroll a certificate via SCEP",
+      "title": "SCEP enrollment example (ARM64)",
       "commands": [
         "trustedge certificate scep --scepc-serverURL ${SCEP_ENDPOINT} --scepc-serverType GEN_POST --csr-conf sample_scep_csr.cnf --algorithm RSA --size 2048 --key-alias myGenTap --scepc-challengePass ${SCEP_PASS} --scepc-pkiOperation PKCSReq --tap"
       ],
       "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge-certificate-scep.html",
-      "notes": []
+      "notes": [
+        "Replace placeholders with real values."
+      ]
     },
     "run_cli": {
-      "title": "Display TrustEdge help and version",
+      "title": "Run basic TrustEdge CLI commands (ARM64)",
       "commands": [
         "trustedge --help",
         "trustedge --version"
       ],
       "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge.html",
-      "notes": []
+      "notes": [
+        "Verifies the binary works on ARM64."
+      ]
     },
     "run_agent": {
-      "title": "Configure TrustEdge agent with bootstrap zip",
+      "title": "Configure and start the TrustEdge agent (ARM64)",
       "commands": [
-        "sudo trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>"
+        "sudo trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>",
+        "sudo systemctl start trustedge.service"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge-agent.html",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/tutorials/initialize-and-start-trustedge-trustedge-agent.html",
+      "notes": [
+        "Same as x86_64; works on ARM64."
+      ]
     },
     "pqc_demo": {
-      "title": "Run the PQC MQTT demo (broker, subscriber, publisher)",
+      "title": "Run PQC MQTT demo (ARM64)",
       "commands": [
-        "chmod +x start_broker.sh",
-        "./start_broker.sh --keystore /etc/digicert/keystore",
         "chmod +x consumer.sh",
         "./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore",
         "chmod +x publisher.sh",
         "./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "notes": [
+        "Demonstrates PQC\u2011secured MQTT on ARM64."
+      ]
     },
     "verify": {
-      "title": "Verify generated certificates",
+      "title": "Verify generated certificates (ARM64)",
       "commands": [
-        "trustedge certificate -pc /etc/digicert/keystore/certs/server.crt",
-        "trustedge certificate -pc /etc/digicert/keystore/certs/CA.crt"
+        "trustedge certificate -pc /etc/digicert/keystore/certs/server.pem",
+        "trustedge certificate -pc /etc/digicert/keystore/certs/CA.pem"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "notes": [
+        "Prints certificate details."
+      ]
     }
   },
   "arm32": {
     "prerequisites": {
-      "title": "Install build dependencies",
+      "title": "Install build prerequisites",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y build-essential cmake rpm wget unzip"
+        "sudo apt install -y build-essential cmake rpm"
       ],
       "source_url": "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
-      "notes": []
+      "notes": [
+        "Required for building TrustEdge on 32\u2011bit ARM."
+      ]
     },
     "install": {
-      "title": "Download and install TrustEdge package for ARM32",
+      "title": "Install TrustEdge .deb package for 32\u2011bit ARM",
       "commands": [
-        "wget https://github.com/digicert/trustedge/releases/latest/download/trustedge-arm-deb.zip",
-        "unzip trustedge-arm-deb.zip",
-        "sudo dpkg -i trustedge_{{VERSION}}.arm.deb",
-        "trustedge --version",
-        "sudo adduser \"$(whoami)\" trustedge"
+        "sudo DIGITCERT_EULA_ACCEPT=yes dpkg -i trustedge_<version>.arm.deb"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-trustedge-on-linux.html",
+      "notes": [
+        "Replace <version> with the actual version string."
+      ]
     },
     "tpm_provision": {
-      "title": "Reset, take ownership, and provision TPM2 device",
+      "title": "Provision TPM2 device (ARM32)",
       "commands": [
-        "git clone https://github.com/digicert/trustedge.git",
-        "cd trustedge/tools/SecureElement",
-        "unzip tpm2_tools-arm32-{{VERSION}}.zip",
-        "unzip tpm2_tools-arm32.zip",
         "sudo ./reset_tpm2.sh",
-        "sudo ./provision_tpm2.sh",
         "sudo ./bin/digicert_tpm2_takeownership --sm=/dev/tpm0 --c --credfile=/etc/digicert/creds.tpm2",
+        "sudo ./provision_tpm2.sh",
         "sudo ./bin/digicert_tpm2_provision --sm=/dev/tpm0 --ekpwd= --ekalg=rsa --srkpwd= --srkalg=rsa --credfile=/etc/digicert/creds.tpm2",
         "sudo ./bin/smp_tpm2_getidstr_bin --w"
       ],
-      "source_url": "https://github.com/digicert/trustedge/tree/main/tools/SecureElement",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/tutorials/generate-hardware-based-private-key-tpm2.html",
+      "notes": [
+        "Same commands apply; verify TPM device path."
+      ]
     },
     "cert_selfsigned": {
-      "title": "Generate self\u2011signed ML\u2011DSA certificates for PQC demo",
+      "title": "Generate self\u2011signed ML\u2011DSA certificates (ARM32)",
       "commands": [
-        "sudo cp ca_csr.cnf /etc/digicert/keystore/conf",
-        "sudo cp server_csr.cnf /etc/digicert/keystore/conf",
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651",
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt"
+        "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651",
+        "sudo trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "notes": [
+        "Works on any architecture."
+      ]
     },
     "cert_est": {
-      "title": "Enroll a certificate via EST",
+      "title": "EST enrollment example (ARM32)",
       "commands": [
         "trustedge certificate est --algorithm ECC --curve P256 --uri ${EST_URI} --csr-conf sample_est_csr.conf --key-alias eccTestKey --log-level INFO"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/est-enrollment.html",
-      "notes": []
+      "notes": [
+        "Replace ${EST_URI} with the actual EST endpoint."
+      ]
     },
     "cert_scep": {
-      "title": "Enroll a certificate via SCEP",
+      "title": "SCEP enrollment example (ARM32)",
       "commands": [
         "trustedge certificate scep --scepc-serverURL ${SCEP_ENDPOINT} --scepc-serverType GEN_POST --csr-conf sample_scep_csr.cnf --algorithm RSA --size 2048 --key-alias myGenTap --scepc-challengePass ${SCEP_PASS} --scepc-pkiOperation PKCSReq --tap"
       ],
       "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge-certificate-scep.html",
-      "notes": []
+      "notes": [
+        "Replace placeholders with real values."
+      ]
     },
     "run_cli": {
-      "title": "Display TrustEdge help and version",
+      "title": "Run basic TrustEdge CLI commands (ARM32)",
       "commands": [
         "trustedge --help",
         "trustedge --version"
       ],
       "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge.html",
-      "notes": []
+      "notes": [
+        "Verifies the binary works on 32\u2011bit ARM."
+      ]
     },
     "run_agent": {
-      "title": "Configure TrustEdge agent with bootstrap zip",
+      "title": "Configure and start the TrustEdge agent (ARM32)",
       "commands": [
-        "sudo trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>"
+        "sudo trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>",
+        "sudo systemctl start trustedge.service"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge-agent.html",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/tutorials/initialize-and-start-trustedge-trustedge-agent.html",
+      "notes": [
+        "Same as other architectures."
+      ]
     },
     "pqc_demo": {
-      "title": "Run the PQC MQTT demo (broker, subscriber, publisher)",
+      "title": "Run PQC MQTT demo (ARM32)",
       "commands": [
-        "chmod +x start_broker.sh",
-        "./start_broker.sh --keystore /etc/digicert/keystore",
         "chmod +x consumer.sh",
         "./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore",
         "chmod +x publisher.sh",
         "./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "notes": [
+        "Demonstrates PQC\u2011secured MQTT on 32\u2011bit ARM."
+      ]
     },
     "verify": {
-      "title": "Verify generated certificates",
+      "title": "Verify generated certificates (ARM32)",
       "commands": [
-        "trustedge certificate -pc /etc/digicert/keystore/certs/server.crt",
-        "trustedge certificate -pc /etc/digicert/keystore/certs/CA.crt"
+        "trustedge certificate -pc /etc/digicert/keystore/certs/server.pem",
+        "trustedge certificate -pc /etc/digicert/keystore/certs/CA.pem"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "notes": [
+        "Prints certificate details."
+      ]
     }
   },
   "zephyr": {
     "prerequisites": {
-      "title": "Clone TrustCore and install Zephyr prerequisites",
+      "title": "Clone TrustCore and prepare Zephyr build",
       "commands": [
         "git clone https://github.com/digicert/trustcore.git",
         "cd trustcore",
         "./scripts/ci/trustedge/ci_trustedge_build_zephyr.sh --zephyr-install"
       ],
       "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html",
-      "notes": []
+      "notes": [
+        "Installs Zephyr dependencies required for building TrustEdge on Zephyr."
+      ]
     },
     "install": {
-      "title": "Build TrustEdge for Zephyr and run on native simulation board",
+      "title": "Build TrustEdge for Zephyr and run",
       "commands": [
         "cd ${TRUSTCORE}",
         "./scripts/ci/trustedge/ci_trustedge_build_zephyr.sh --board native_sim",
         "./bin/trustedge"
       ],
       "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html",
-      "notes": []
+      "notes": [
+        "Replace ${TRUSTCORE} with the path to the cloned repository."
+      ]
     },
     "run_cli": {
-      "title": "Display TrustEdge help and version on Zephyr build",
+      "title": "Run TrustEdge CLI on Zephyr",
       "commands": [
-        "trustedge --help",
-        "trustedge --version"
+        "./bin/trustedge --help",
+        "./bin/trustedge --version"
       ],
       "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge.html",
-      "notes": []
+      "notes": [
+        "Zephyr binary supports the same CLI options."
+      ]
+    },
+    "run_agent": {
+      "title": "Start TrustEdge agent on Zephyr (interactive)",
+      "commands": [
+        "./bin/trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>"
+      ],
+      "source_url": "https://dev.digicert.com/trustedge/tutorials/initialize-and-start-trustedge-trustedge-agent.html",
+      "notes": [
+        "Zephyr does not use systemd; run interactively."
+      ]
     }
   },
   "meta": {
-    "version": "latest",
+    "version": "master",
     "model_used": "openai/gpt-oss-120b:fastest",
-    "generated_at": "2026-09-09T07:41:45.461026Z",
+    "generated_at": "2026-09-09T09:30:23.352082Z",
     "hallucination_warnings": 0,
     "sources_consulted": [
       {
