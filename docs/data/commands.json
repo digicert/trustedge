@@ -40,6 +40,8 @@
     "cert_selfsigned": {
       "title": "Generate self\u2011signed ML\u2011DSA certificates for PQC demo",
       "commands": [
+        "sudo cp ca_csr.cnf /etc/digicert/keystore/conf",
+        "sudo cp server_csr.cnf /etc/digicert/keystore/conf",
         "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651",
         "sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt"
       ],
@@ -145,6 +147,8 @@
     "cert_selfsigned": {
       "title": "Generate self\u2011signed ML\u2011DSA certificates for PQC demo",
       "commands": [
+        "sudo cp ca_csr.cnf /etc/digicert/keystore/conf",
+        "sudo cp server_csr.cnf /etc/digicert/keystore/conf",
         "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651",
         "sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt"
       ],
@@ -248,6 +252,8 @@
     "cert_selfsigned": {
       "title": "Generate self\u2011signed ML\u2011DSA certificates for PQC demo",
       "commands": [
+        "sudo cp ca_csr.cnf /etc/digicert/keystore/conf",
+        "sudo cp server_csr.cnf /etc/digicert/keystore/conf",
         "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.key -x CA.crt -i ca_csr.cnf -da 3651",
         "sudo trustedge certificate -a QS -g MLDSA_44 -o server.key -x server.crt -i server_csr.cnf -da 3651 -sk CA.key -sc CA.crt"
       ],
