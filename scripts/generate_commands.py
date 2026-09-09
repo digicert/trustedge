@@ -137,6 +137,53 @@ def fetch_page(url: str) -> dict | None:
 
     return {"url": url, "title": title, "code_blocks": blocks}
 
+
+# ── TrustCore GitHub Markdown sources (raw content) ─────────────────────────
+# TrustCore is TrustEdge's underlying SDK — its samples/BUILD_RUN.md contains
+# the most accurate real-world command examples (build, run, configure).
+GITHUB_MD_PAGES = [
+    {
+        "url":     "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
+        "raw_url": "https://raw.githubusercontent.com/digicert/trustcore/main/samples/trustedge/BUILD_RUN.md",
+        "title":   "TrustCore — TrustEdge Build & Run Guide (samples/trustedge/BUILD_RUN.md)",
+    },
+    {
+        "url":     "https://github.com/digicert/trustcore",
+        "raw_url": "https://raw.githubusercontent.com/digicert/trustcore/main/README.md",
+        "title":   "TrustCore SDK — README",
+    },
+]
+
+def fetch_markdown_page(entry: dict) -> dict | None:
+    """Fetch a raw GitHub Markdown file and extract fenced shell code blocks."""
+    try:
+        resp = requests.get(entry["raw_url"], timeout=15,
+                            headers={"User-Agent": "TrustEdge-CmdGen/1.0"})
+        if resp.status_code == 404:
+            print(f"  ⚠ 404: {entry['raw_url']}")
+            return None
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"  ⚠ Could not fetch {entry['raw_url']}: {e}")
+        return None
+
+    # Extract fenced code blocks: ```sh / ```bash / ```shell / plain ```
+    raw = resp.text
+    fenced = re.findall(
+        r'```(?:sh|bash|shell|console|text)?\s*\n(.*?)```',
+        raw, re.DOTALL | re.IGNORECASE
+    )
+    blocks = []
+    for block in fenced:
+        clean = block.strip()
+        # Keep only blocks that reference trustedge or common install commands
+        if re.search(r'\btrustedge\b|sudo\s+\w|wget\s+http|dpkg\s+-i|apt\s+install|git\s+clone|cmake\b|make\b', clean):
+            if clean and len(clean) > 5:
+                blocks.append(clean)
+
+    return {"url": entry["url"], "title": entry["title"], "code_blocks": blocks}
+
+
 # ── Load CLI reference first — used to seed the hallucination guard ───────────
 print("── Step 0: Loading CLI reference (trustedge.txt) ──")
 cli_reference_text = ""
@@ -179,6 +226,20 @@ if not all_code_blocks:
     print("✗ FAIL — No command blocks fetched from any doc page.")
     print("  Check network access and that the URLs above are correct.")
     sys.exit(1)
+
+# ── Step 1b: Fetch TrustCore GitHub Markdown sources ─────────────────────────
+print("\n── Step 1b: Fetching TrustCore SDK sources (GitHub Markdown) ──")
+for entry in GITHUB_MD_PAGES:
+    print(f"  → {entry['raw_url']}")
+    page = fetch_markdown_page(entry)
+    time.sleep(0.5)
+    if page and page["code_blocks"]:
+        fetched_pages.append(page)
+        for block in page["code_blocks"]:
+            all_code_blocks.append({"url": page["url"], "block": block})
+        print(f"     ✓ {len(page['code_blocks'])} command blocks found")
+    elif page:
+        print(f"     – no command blocks found in {entry['title']}")
 
 # Read repo docs for TPM / PQC commands not on the web portal
 print("\n── Step 2: Reading repo documentation ──")
@@ -283,10 +344,17 @@ or flag not shown here.
 
 {cli_reference_text}
 
-══ SECONDARY SOURCES: dev.digicert.com documentation ══
+══ SECONDARY SOURCES: TrustCore SDK (GitHub) — build & run examples ══
+TrustCore is the underlying SDK for TrustEdge. The BUILD_RUN.md and README
+below are the most accurate real-world examples of how TrustEdge is built,
+configured and run. Treat these as high-authority examples alongside the CLI reference.
+
+{format_fetched_pages([p for p in fetched_pages if 'github.com' in p['url']])}
+
+══ TERTIARY SOURCES: dev.digicert.com documentation ══
 These pages provide usage examples and context for the CLI commands above.
 
-{format_fetched_pages(fetched_pages)}
+{format_fetched_pages([p for p in fetched_pages if 'github.com' not in p['url']])}
 
 ══ REPO DOCS (TPM provisioning and PQC demo) ══
 {repo_doc_text.get('SecureElement', '')}
