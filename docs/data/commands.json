@@ -24,6 +24,10 @@
     "tpm_provision": {
       "title": "Reset, take ownership, and provision TPM2 device",
       "commands": [
+        "git clone https://github.com/digicert/trustedge.git",
+        "cd trustedge/tools/SecureElement",
+        "unzip tpm2_tools-x86_64-{{VERSION}}.zip",
+        "unzip tpm2_tools-x86_64.zip",
         "sudo ./reset_tpm2.sh",
         "sudo ./provision_tpm2.sh",
         "sudo ./bin/digicert_tpm2_takeownership --sm=/dev/tpm0 --c --credfile=/etc/digicert/creds.tpm2",
@@ -125,6 +129,10 @@
     "tpm_provision": {
       "title": "Reset, take ownership, and provision TPM2 device",
       "commands": [
+        "git clone https://github.com/digicert/trustedge.git",
+        "cd trustedge/tools/SecureElement",
+        "unzip tpm2_tools-aarch64-{{VERSION}}.zip",
+        "unzip tpm2_tools-aarch64.zip",
         "sudo ./reset_tpm2.sh",
         "sudo ./provision_tpm2.sh",
         "sudo ./bin/digicert_tpm2_takeownership --sm=/dev/tpm0 --c --credfile=/etc/digicert/creds.tpm2",
@@ -224,6 +232,10 @@
     "tpm_provision": {
       "title": "Reset, take ownership, and provision TPM2 device",
       "commands": [
+        "git clone https://github.com/digicert/trustedge.git",
+        "cd trustedge/tools/SecureElement",
+        "unzip tpm2_tools-arm32-{{VERSION}}.zip",
+        "unzip tpm2_tools-arm32.zip",
         "sudo ./reset_tpm2.sh",
         "sudo ./provision_tpm2.sh",
         "sudo ./bin/digicert_tpm2_takeownership --sm=/dev/tpm0 --c --credfile=/etc/digicert/creds.tpm2",
