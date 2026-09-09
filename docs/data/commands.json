@@ -4,7 +4,7 @@
       "title": "Install build dependencies",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y build-essential cmake rpm"
+        "sudo apt install -y build-essential cmake rpm wget unzip"
       ],
       "source_url": "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
       "notes": []
@@ -104,7 +104,7 @@
       "title": "Install build dependencies",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y build-essential cmake rpm"
+        "sudo apt install -y build-essential cmake rpm wget unzip"
       ],
       "source_url": "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
       "notes": []
@@ -202,7 +202,7 @@
       "title": "Install build dependencies",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y build-essential cmake rpm"
+        "sudo apt install -y build-essential cmake rpm wget unzip"
       ],
       "source_url": "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
       "notes": []
