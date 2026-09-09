@@ -141,15 +141,17 @@ def fetch_page(url: str) -> dict | None:
 # ── TrustCore GitHub Markdown sources (raw content) ─────────────────────────
 # TrustCore is TrustEdge's underlying SDK — its samples/BUILD_RUN.md contains
 # the most accurate real-world command examples (build, run, configure).
+TRUSTCORE_REF = os.environ.get("TRUSTCORE_REF", "main")
+
 GITHUB_MD_PAGES = [
     {
-        "url":     "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
-        "raw_url": "https://raw.githubusercontent.com/digicert/trustcore/main/samples/trustedge/BUILD_RUN.md",
+        "url":     f"https://github.com/digicert/trustcore/blob/{TRUSTCORE_REF}/samples/trustedge/BUILD_RUN.md",
+        "raw_url": f"https://raw.githubusercontent.com/digicert/trustcore/{TRUSTCORE_REF}/samples/trustedge/BUILD_RUN.md",
         "title":   "TrustCore — TrustEdge Build & Run Guide (samples/trustedge/BUILD_RUN.md)",
     },
     {
-        "url":     "https://github.com/digicert/trustcore",
-        "raw_url": "https://raw.githubusercontent.com/digicert/trustcore/main/README.md",
+        "url":     f"https://github.com/digicert/trustcore/blob/{TRUSTCORE_REF}/README.md",
+        "raw_url": f"https://raw.githubusercontent.com/digicert/trustcore/{TRUSTCORE_REF}/README.md",
         "title":   "TrustCore SDK — README",
     },
 ]
