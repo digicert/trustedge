@@ -349,12 +349,12 @@ TrustCore is the underlying SDK for TrustEdge. The BUILD_RUN.md and README
 below are the most accurate real-world examples of how TrustEdge is built,
 configured and run. Treat these as high-authority examples alongside the CLI reference.
 
-{format_fetched_pages([p for p in fetched_pages if 'github.com' in p['url']])}
+{format_fetched_pages([p for p in fetched_pages if p['url'].startswith('https://github.com/digicert/trustcore')])}
 
 ══ TERTIARY SOURCES: dev.digicert.com documentation ══
 These pages provide usage examples and context for the CLI commands above.
 
-{format_fetched_pages([p for p in fetched_pages if 'github.com' not in p['url']])}
+{format_fetched_pages([p for p in fetched_pages if not p['url'].startswith('https://github.com/digicert/trustcore')])}
 
 ══ REPO DOCS (TPM provisioning and PQC demo) ══
 {repo_doc_text.get('SecureElement', '')}
