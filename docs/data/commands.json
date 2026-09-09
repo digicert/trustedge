@@ -77,6 +77,8 @@
     "pqc_demo": {
       "title": "Run the PQC MQTT demo (broker, subscriber, publisher)",
       "commands": [
+        "git clone https://github.com/digicert/trustedge.git",
+        "cd trustedge/examples/pqc-demo",
         "chmod +x start_broker.sh",
         "./start_broker.sh --keystore /etc/digicert/keystore",
         "chmod +x consumer.sh",
