@@ -78,6 +78,19 @@
   .header-pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px; }
   .pill { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); border-radius: 100px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
 
+  /* ── Architecture diagram ── */
+  .header-diagram { width: 100%; max-width: 860px; margin: 28px auto 0; }
+  .header-diagram svg { width: 100%; height: auto; display: block; }
+  @keyframes dashFlow {
+    to { stroke-dashoffset: -36; }
+  }
+  @keyframes pipeFlow {
+    0%   { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -48; }
+  }
+  .cert-line { animation: dashFlow 2s linear infinite; }
+  .pipe-line { animation: pipeFlow 1.6s linear infinite; }
+
   /* ── Progress bar ── */
   .progress-bar {
     background: var(--surface);
@@ -346,14 +359,218 @@
     <span style="font-size:20px; font-weight:800; letter-spacing:-0.5px;">DigiCert TrustEdge</span>
   </div>
   <div class="header-badge">Platform Setup Guide</div>
-  <h1>Get TrustEdge Running on Your Device</h1>
-  <p>Select your hardware and OS to get exact, step-by-step instructions tailored to your platform.</p>
+  <h1>Keys. Certs. MQTT. Lifecycle.</h1>
+  <p>TrustEdge does what OpenSSL does — then hands your device to Device Trust Manager. PQC-ready, cloud-connected, any platform.</p>
+
+  <!-- Architecture diagram: DTM (north) → TrustEdge devices (south) + Servers (east) -->
+  <div class="header-diagram">
+    <svg viewBox="0 0 860 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="TrustEdge architecture: Device Trust Manager issues certificates to devices and servers, enabling secure TLS pipelines">
+      <defs>
+        <!-- Glow filter for nodes -->
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <!-- Arrow markers -->
+        <marker id="arrowW" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 Z" fill="rgba(255,255,255,0.6)"/>
+        </marker>
+        <marker id="arrowWL" markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto">
+          <path d="M8,0 L8,6 L0,3 Z" fill="rgba(255,255,255,0.6)"/>
+        </marker>
+        <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 Z" fill="#4ADE80"/>
+        </marker>
+        <marker id="arrowGreenL" markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto">
+          <path d="M8,0 L8,6 L0,3 Z" fill="#4ADE80"/>
+        </marker>
+      </defs>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           NORTH: Device Trust Manager (DTM) cloud node
+           ══════════════════════════════════════════════════════════════ -->
+      <!-- Node background -->
+      <rect x="290" y="10" width="280" height="74" rx="14" fill="rgba(0,55,133,0.85)" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" filter="url(#glow)"/>
+      <!-- Cloud icon: contained in left 48px strip, centered vertically -->
+      <g transform="translate(306,22)">
+        <path d="M12 22 Q5 22 5 16 Q5 10 10 9 Q10 3 17 3 Q23 3 24 8 Q28 8 28 13 Q28 18 23 18 L12 18 Q8 18 12 22Z" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.5"/>
+        <circle cx="10" cy="25" r="2" fill="rgba(255,255,255,0.45)"/>
+        <line x1="10" y1="23" x2="10" y2="27" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+        <circle cx="17" cy="25" r="2" fill="rgba(255,255,255,0.45)"/>
+        <line x1="17" y1="23" x2="17" y2="27" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+        <circle cx="24" cy="25" r="2" fill="rgba(255,255,255,0.45)"/>
+        <line x1="24" y1="23" x2="24" y2="27" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+      </g>
+      <!-- Vertical divider between icon and text -->
+      <line x1="348" y1="20" x2="348" y2="74" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <!-- DTM text block: anchored to x=356 (left of text zone), centered at y -->
+      <text x="430" y="37" text-anchor="middle" fill="white" font-size="13" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="-0.3">Device Trust Manager</text>
+      <text x="430" y="52" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9.5" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.8">DigiCert SaaS · Certificate Authority</text>
+      <!-- PQC badge -->
+      <rect x="362" y="60" width="136" height="16" rx="8" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <text x="430" y="72" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9.5" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">ML-DSA · ML-KEM · ECDSA · RSA</text>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           SOUTH: TrustEdge Devices (4 device nodes)
+           ══════════════════════════════════════════════════════════════ -->
+      <!-- Device 1: IoT/Embedded -->
+      <g transform="translate(36,210)">
+        <rect width="100" height="70" rx="10" fill="rgba(0,55,133,0.7)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <!-- chip icon -->
+        <rect x="28" y="10" width="44" height="30" rx="4" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+        <rect x="34" y="16" width="32" height="18" rx="2" fill="rgba(0,163,224,0.4)"/>
+        <text x="50" y="29" text-anchor="middle" fill="white" font-size="8" font-weight="800" font-family="monospace">MCU</text>
+        <!-- pins -->
+        <line x1="28" y1="17" x2="23" y2="17" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <line x1="28" y1="23" x2="23" y2="23" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <line x1="28" y1="29" x2="23" y2="29" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <line x1="72" y1="17" x2="77" y2="17" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <line x1="72" y1="23" x2="77" y2="23" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <line x1="72" y1="29" x2="77" y2="29" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <text x="50" y="56" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">IoT Device</text>
+        <text x="50" y="67" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="8" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Zephyr / ARM</text>
+      </g>
+
+      <!-- Device 2: Edge Gateway -->
+      <g transform="translate(158,210)">
+        <rect width="100" height="70" rx="10" fill="rgba(0,55,133,0.7)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <rect x="20" y="10" width="60" height="36" rx="4" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+        <rect x="24" y="14" width="52" height="4" rx="2" fill="rgba(0,163,224,0.5)"/>
+        <rect x="24" y="20" width="52" height="4" rx="2" fill="rgba(0,163,224,0.3)"/>
+        <rect x="24" y="26" width="52" height="4" rx="2" fill="rgba(0,163,224,0.2)"/>
+        <rect x="24" y="32" width="52" height="4" rx="2" fill="rgba(0,163,224,0.15)"/>
+        <circle cx="75" cy="49" r="4" fill="none" stroke="rgba(74,222,128,0.7)" stroke-width="1.5"/>
+        <circle cx="75" cy="49" r="1.5" fill="rgba(74,222,128,0.9)"/>
+        <text x="50" y="56" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Edge Gateway</text>
+        <text x="50" y="67" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="8" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">x86-64 / ARM64</text>
+      </g>
+
+      <!-- Device 3: Industrial SBC -->
+      <g transform="translate(280,210)">
+        <rect width="100" height="70" rx="10" fill="rgba(0,55,133,0.7)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <rect x="18" y="8" width="64" height="40" rx="4" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+        <rect x="22" y="12" width="28" height="28" rx="2" fill="rgba(0,96,204,0.5)"/>
+        <text x="36" y="30" text-anchor="middle" fill="white" font-size="8" font-weight="800" font-family="monospace">CPU</text>
+        <rect x="54" y="12" width="24" height="12" rx="2" fill="rgba(0,163,224,0.4)"/>
+        <text x="66" y="22" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="7" font-weight="700" font-family="monospace">TPM</text>
+        <rect x="54" y="28" width="24" height="12" rx="2" fill="rgba(255,255,255,0.1)"/>
+        <text x="66" y="38" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="6" font-family="monospace">RAM</text>
+        <text x="50" y="56" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Industrial SBC</text>
+        <text x="50" y="67" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="8" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">NXP / RPi / OnLogic</text>
+      </g>
+
+      <!-- TrustEdge Agent banner across devices -->
+      <rect x="30" y="285" width="356" height="13" rx="6" fill="rgba(0,163,224,0.2)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
+      <text x="208" y="295" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">TrustEdge Agent · x.509 Birth &amp; Operational Certificates</text>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           EAST: Servers
+           ══════════════════════════════════════════════════════════════ -->
+      <!-- MQTT Broker -->
+      <g transform="translate(680,60)">
+        <rect width="150" height="50" rx="10" fill="rgba(0,55,133,0.65)" stroke="rgba(0,163,224,0.5)" stroke-width="1.5"/>
+        <!-- server stack icon -->
+        <rect x="10" y="10" width="30" height="6" rx="2" fill="rgba(0,163,224,0.6)"/>
+        <rect x="10" y="19" width="30" height="6" rx="2" fill="rgba(0,163,224,0.4)"/>
+        <rect x="10" y="28" width="30" height="6" rx="2" fill="rgba(0,163,224,0.25)"/>
+        <circle cx="36" cy="13" r="2" fill="rgba(74,222,128,0.9)"/>
+        <circle cx="36" cy="22" r="2" fill="rgba(74,222,128,0.6)"/>
+        <text x="90" y="23" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">MQTT Broker</text>
+        <text x="90" y="37" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">MQTTS · TLS 1.3</text>
+      </g>
+
+      <!-- HTTPS / REST Server -->
+      <g transform="translate(680,130)">
+        <rect width="150" height="50" rx="10" fill="rgba(0,55,133,0.65)" stroke="rgba(0,163,224,0.5)" stroke-width="1.5"/>
+        <rect x="10" y="10" width="30" height="6" rx="2" fill="rgba(0,163,224,0.6)"/>
+        <rect x="10" y="19" width="30" height="6" rx="2" fill="rgba(0,163,224,0.4)"/>
+        <rect x="10" y="28" width="30" height="6" rx="2" fill="rgba(0,163,224,0.25)"/>
+        <circle cx="36" cy="13" r="2" fill="rgba(74,222,128,0.9)"/>
+        <circle cx="36" cy="22" r="2" fill="rgba(74,222,128,0.6)"/>
+        <text x="90" y="23" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">HTTPS Server</text>
+        <text x="90" y="37" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">mTLS · REST API</text>
+      </g>
+
+      <!-- Wi-Fi RADIUS -->
+      <g transform="translate(680,200)">
+        <rect width="150" height="50" rx="10" fill="rgba(0,55,133,0.65)" stroke="rgba(0,163,224,0.5)" stroke-width="1.5"/>
+        <rect x="10" y="10" width="30" height="6" rx="2" fill="rgba(0,163,224,0.6)"/>
+        <rect x="10" y="19" width="30" height="6" rx="2" fill="rgba(0,163,224,0.4)"/>
+        <rect x="10" y="28" width="30" height="6" rx="2" fill="rgba(0,163,224,0.25)"/>
+        <circle cx="36" cy="13" r="2" fill="rgba(74,222,128,0.9)"/>
+        <circle cx="36" cy="22" r="2" fill="rgba(74,222,128,0.6)"/>
+        <text x="90" y="23" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Wi-Fi RADIUS</text>
+        <text x="90" y="37" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">EAP-TLS 1.3 · 802.1X</text>
+      </g>
+
+      <!-- Server label bar -->
+      <rect x="674" y="258" width="162" height="13" rx="6" fill="rgba(0,163,224,0.2)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
+      <text x="755" y="268" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">Passwordless Server Auth</text>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           DOTTED CERT ISSUANCE LINES: DTM → Devices
+           ══════════════════════════════════════════════════════════════ -->
+      <!-- DTM to Device 1 -->
+      <path d="M 370,82 C 340,140 156,180 86,210" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0s"/>
+      <!-- DTM to Device 2 -->
+      <path d="M 400,82 C 380,140 248,180 208,210" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0.4s"/>
+      <!-- DTM to Device 3 -->
+      <path d="M 430,82 C 420,145 360,180 330,210" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0.8s"/>
+
+      <!-- Cert issuance label on left side -->
+      <text x="200" y="148" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(-55,200,148)">issues x.509 cert</text>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           DOTTED CERT ISSUANCE LINES: DTM → Servers
+           ══════════════════════════════════════════════════════════════ -->
+      <!-- DTM to MQTT -->
+      <path d="M 570,46 C 620,46 660,70 680,80" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0.2s"/>
+      <!-- DTM to HTTPS -->
+      <path d="M 570,52 C 620,90 655,130 680,150" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0.6s"/>
+      <!-- DTM to RADIUS -->
+      <path d="M 570,60 C 620,130 650,185 680,218" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:1s"/>
+
+      <!-- Cert label right side -->
+      <text x="640" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(30,640,120)">issues x.509 cert</text>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           SECURE DATA PIPELINE: Devices ↔ Servers (horizontal, mid)
+           ══════════════════════════════════════════════════════════════ -->
+      <!-- Pipeline track -->
+      <line x1="390" y1="248" x2="676" y2="180" stroke="rgba(74,222,128,0.18)" stroke-width="8" stroke-linecap="round"/>
+      <!-- Animated flow line -->
+      <line x1="390" y1="248" x2="676" y2="180" stroke="rgba(74,222,128,0.7)" stroke-width="2" stroke-dasharray="10 6" fill="none" class="pipe-line" marker-end="url(#arrowGreen)" marker-start="url(#arrowGreenL)"/>
+      <!-- Pipeline label -->
+      <text fill="rgba(74,222,128,0.9)" font-size="10" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+        <textPath href="#pipeLabel" startOffset="10%">🔒 Secure Data Pipeline · MQTTS / HTTPS / EAP-TLS 1.3</textPath>
+      </text>
+      <path id="pipeLabel" d="M 390,244 L 676,176" fill="none"/>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           ZONE LABELS
+           ══════════════════════════════════════════════════════════════ -->
+      <!-- North label -->
+      <rect x="4" y="10" width="60" height="16" rx="8" fill="rgba(255,255,255,0.1)"/>
+      <text x="34" y="22" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">CLOUD</text>
+
+      <!-- South label -->
+      <rect x="4" y="192" width="60" height="16" rx="8" fill="rgba(255,255,255,0.1)"/>
+      <text x="34" y="204" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">DEVICES</text>
+
+      <!-- East label -->
+      <rect x="720" y="35" width="60" height="16" rx="8" fill="rgba(255,255,255,0.1)"/>
+      <text x="750" y="47" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">SERVERS</text>
+    </svg>
+  </div>
+
   <div class="header-pills">
     <span class="pill">✦ Post-Quantum Ready</span>
     <span class="pill">✦ TPM 2.0 Support</span>
     <span class="pill">✦ TLS 1.3</span>
     <span class="pill">✦ x86 · ARM64 · ARM32</span>
     <span class="pill">✦ Zephyr RTOS</span>
+    <span class="pill">✦ Linux</span>
+    <span class="pill">✦ Windows</span>
   </div>
 </div>
 
@@ -388,6 +605,7 @@
       <div class="cat-tab" onclick="filterCat('aarch64')">ARM 64-bit</div>
       <div class="cat-tab" onclick="filterCat('arm32')">ARM 32-bit</div>
       <div class="cat-tab" onclick="filterCat('zephyr')">Zephyr RTOS</div>
+      <div class="cat-tab" onclick="filterCat('linux')">Linux</div>
       <div class="cat-tab windows-tab" onclick="filterCat('windows')">Windows</div>
       <div class="cat-tab" onclick="filterCat('simulation')">Simulation</div>
     </div>
@@ -1621,28 +1839,24 @@ ls bin/`)}
   // ─── Step: Key Generation & Certificate ───
   if (board.cat !== 'zephyr') {
     if (state.cert === 'selfsigned') {
-      // Prefer AI-generated commands from commands.json; fall back to verified built-ins
-      const cmds = getCommands(board.arch, 'cert_selfsigned') || [
-        `# Generate ECC P-256 software key + self-signed certificate\ntrustedge certificate \\\n  -a ECC -c P256 \\\n  -i ca_csr.cnf \\\n  -x mydevice.pem \\\n  -da 365 \\\n  -o mydevice`,
+      const ssCmds = getCommands(board.arch, 'cert_selfsigned') || [
+        `trustedge certificate -a ECC -c P256 \\\n  -i ca_csr.cnf \\\n  -x mydevice.pem \\\n  -da 365 \\\n  -o mydevice`,
         `trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem`,
       ];
-      const notes = getNotes(board.arch, 'cert_selfsigned');
-      html += section(stepNum++, 'Generate Key and Self-Signed Certificate', `
-        <p class="instr-p">Use <code>trustedge certificate</code> to generate a key pair and self-signed certificate — no external CA required.</p>
-        <div class="note">Place your CSR config file (<code>ca_csr.cnf</code>) in <code>/etc/digicert/keystore/conf/</code> before running.</div>
-        ${cmds.map((c,i) => code(i===0?`Generate key + certificate (${board.archLabel})`:'Verify certificate', c)).join('')}
-        ${notes.map(n=>`<p class="instr-p">${escHtml(n)}</p>`).join('')}
-        <div class="success-note">✓ Key: <code>/etc/digicert/keystore/keys/mydevice.pem</code> · Cert: <code>/etc/digicert/keystore/certs/mydevice.pem</code></div>
+      html += section(stepNum++, 'Generate Keys and Certificate (Self-Signed)', `
+        <p class="instr-p">Use the TrustEdge CLI to generate a key pair and self-signed certificate — no external CA required.</p>
+        ${ssCmds.map((c,i) => code(getNotes(board.arch,'cert_selfsigned')?.[i] || (i===0?'Generate key and self-signed certificate':'Verify the certificate'), c)).join('')}
+        <div class="success-note">✓ Certificate stored at <code>/etc/digicert/keystore/certs/mydevice.pem</code></div>
       `, false);
     } else {
-      const cmds = getCommands(board.arch, 'cert_est') || [
+      const estCmds = getCommands(board.arch, 'cert_est') || [
         `trustedge certificate est \\\n  --uri https://pki.digicert.com/.well-known/est/<profile-id>/simpleenroll \\\n  -a ECC -c P256 \\\n  -i mycsr.cnf \\\n  -user <est-username> \\\n  -pass <est-password> \\\n  -ka mydevice`,
         `trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem`,
       ];
       html += section(stepNum++, 'Enroll Certificate via EST (Device Trust Manager)', `
         <p class="instr-p">Obtain a certificate from DigiCert PKI via the EST protocol. Requires a Device Trust Manager account with an EST endpoint configured.</p>
-        <div class="note">You need: your EST endpoint URI and credentials from the Device Trust Manager console.</div>
-        ${cmds.map((c,i) => code(i===0?'EST simple enroll':'Verify certificate', c)).join('')}
+        <div class="note">You need: your EST server URL, EST username, and password from Device Trust Manager console.</div>
+        ${estCmds.map((c,i) => code(getNotes(board.arch,'cert_est')?.[i] || (i===0?'Enroll via EST':'Verify the issued certificate'), c)).join('')}
       `, false);
     }
   }
@@ -1650,26 +1864,25 @@ ls bin/`)}
   // ─── Step: Run TrustEdge ───
   if (board.cat !== 'zephyr') {
     if (state.mode === 'cli') {
-      const mqttCmds = getCommands(board.arch, 'run_cli') || [
+      const cliCmds = getCommands(board.arch, 'run_cli') || [
         `trustedge --version\ntrustedge --help`,
-        `# Publish a test message over MQTT with TLS\ntrustedge mqtt \\\n  --mqtt_servername mqtt.digicert.com \\\n  --mqtt_port 8883 \\\n  --mqtt_transport SSL \\\n  --ssl_cert_file /etc/digicert/keystore/certs/mydevice.pem \\\n  --ssl_key_file /etc/digicert/keystore/keys/mydevice.pem \\\n  --mqtt_pub_topic test/hello \\\n  --mqtt_pub_message "Hello from TrustEdge"`,
+        `trustedge mqtt \\\n  --mqtt_servername mqtt.digicert.com \\\n  --mqtt_port 8883 \\\n  --mqtt_transport SSL \\\n  --ssl_cert_file /etc/digicert/keystore/certs/mydevice.pem \\\n  --ssl_key_file /etc/digicert/keystore/keys/mydevice.pem \\\n  --mqtt_pub_topic test/hello \\\n  --mqtt_pub_message "Hello from TrustEdge"`,
       ];
       html += section(stepNum++, 'Run TrustEdge (CLI Mode)', `
         <p class="instr-p">Verify TrustEdge is working correctly with a quick end-to-end test.</p>
-        ${mqttCmds.map((c,i) => code(i===0?'Check version':'Test MQTT over TLS', c)).join('')}
+        ${cliCmds.map((c,i) => code(getNotes(board.arch,'run_cli')?.[i] || (i===0?'Check version and available commands':'Test MQTT over TLS'), c)).join('')}
         <div class="success-note">✓ TrustEdge CLI is working. You can now use it to automate certificate lifecycle management on this device.</div>
       `, false);
     } else {
       const agentCmds = getCommands(board.arch, 'run_agent') || [
-        `# Configure agent with bootstrap zip from Device Trust Manager\nsudo trustedge agent \\\n  --configure \\\n  --trustedge-user trustedge \\\n  --trustedge-group trustedge \\\n  --bootstrap-zip ./<your-guid>.zip`,
-        `# Start as a systemd service\nsudo systemctl start trustedge.service\nsudo systemctl enable trustedge.service\nsudo systemctl status trustedge.service`,
+        `sudo trustedge agent \\\n  --configure \\\n  --trustedge-user trustedge \\\n  --trustedge-group trustedge \\\n  --bootstrap-zip ./<your-guid>.zip`,
+        `sudo systemctl enable trustedge.service\nsudo systemctl start trustedge.service`,
         `sudo journalctl -u trustedge -f`,
       ];
       html += section(stepNum++, 'Configure TrustEdge Agent Mode', `
         <p class="instr-p">Set up TrustEdge to run as a system daemon managed by DigiCert Device Trust Manager.</p>
-        <div class="note">Agent mode requires a Device Trust Manager subscription. Download the bootstrap zip from the DTM console before running.</div>
-        ${agentCmds.map((c,i)=>code(['Configure agent','Start service','Monitor logs'][i]||'',c)).join('')}
-        ${code('Verify device appears in Device Trust Manager', '# Visit: https://www.digicert.com/device-trust-manager\n# Navigate to: Devices → All Devices\n# Your device should appear with status "Active"')}
+        <div class="note">Agent mode requires a Device Trust Manager subscription and a bootstrap zip provisioned by DigiCert.</div>
+        ${agentCmds.map((c,i) => code(getNotes(board.arch,'run_agent')?.[i] || (['Configure TrustEdge agent','Enable and start TrustEdge service','Monitor agent logs'][i] || ''), c)).join('')}
         <div class="success-note">✓ TrustEdge agent is running. Device is now managed by DigiCert Device Trust Manager.</div>
       `, false);
     }
@@ -1808,6 +2021,14 @@ async function loadCommands() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     COMMANDS = await res.json();
     const meta = COMMANDS.meta || {};
+    if (meta.version && meta.version !== 'seed') {
+      const banner = document.getElementById('version-banner');
+      if (banner) {
+        const warn = meta.hallucination_warnings > 0 ? ` · ⚠ ${meta.hallucination_warnings} warning(s)` : ' · ✓ verified';
+        banner.textContent = `Commands generated for TrustEdge ${meta.version} from ${meta.sources_consulted?.length || 0} doc pages${warn}`;
+        banner.hidden = true;
+      }
+    }
     // Inject sources panel into Step 4 after instructions render
     window._commandsMeta = meta;
   } catch (e) {
@@ -1868,6 +2089,10 @@ renderBoards();
 loadCommands();
 </script>
 
+<!-- Version banner (shown after commands.json loads with a real version) -->
+<div id="version-banner" hidden
+  style="position:fixed;top:0;left:0;right:0;z-index:400;background:#166534;color:white;
+    text-align:center;padding:6px;font-size:12px;font-weight:600;"></div>
 
 </body>
 </html>
