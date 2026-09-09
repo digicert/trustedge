@@ -15,7 +15,8 @@
         "wget https://github.com/digicert/trustedge/releases/latest/download/trustedge-x64-deb.zip",
         "unzip trustedge-x64-deb.zip",
         "sudo dpkg -i trustedge_{{VERSION}}.x86_64.deb",
-        "trustedge --version"
+        "trustedge --version",
+        "sudo adduser \"$(whoami)\" trustedge"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
       "notes": []
@@ -115,7 +116,8 @@
         "wget https://github.com/digicert/trustedge/releases/latest/download/trustedge-aarch64-deb.zip",
         "unzip trustedge-aarch64-deb.zip",
         "sudo dpkg -i trustedge_{{VERSION}}.aarch64.deb",
-        "trustedge --version"
+        "trustedge --version",
+        "sudo adduser \"$(whoami)\" trustedge"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
       "notes": []
@@ -213,7 +215,8 @@
         "wget https://github.com/digicert/trustedge/releases/latest/download/trustedge-arm-deb.zip",
         "unzip trustedge-arm-deb.zip",
         "sudo dpkg -i trustedge_{{VERSION}}.arm.deb",
-        "trustedge --version"
+        "trustedge --version",
+        "sudo adduser \"$(whoami)\" trustedge"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
       "notes": []
