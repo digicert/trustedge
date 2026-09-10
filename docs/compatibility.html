@@ -91,6 +91,21 @@
   .cert-line { animation: dashFlow 2s linear infinite; }
   .pipe-line { animation: pipeFlow 1.6s linear infinite; }
 
+  /* ── Fleet selector ── */
+  .fleet-bar {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 10px 24px; display: flex; align-items: center; justify-content: center; gap: 10px;
+    flex-wrap: wrap;
+  }
+  .fleet-bar-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; }
+  .fleet-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .fleet-chip {
+    font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 100px; cursor: pointer;
+    background: var(--surface); border: 1.5px solid var(--border); color: var(--text-muted); transition: all .15s;
+  }
+  .fleet-chip:hover { border-color: var(--brand); color: var(--brand); }
+  .fleet-chip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+
   /* ── Progress bar ── */
   .progress-bar {
     background: var(--surface);
@@ -229,7 +244,7 @@
   .os-name { font-size: 14px; font-weight: 600; }
   .os-ver { font-size: 11px; color: var(--text-muted); }
 
-  /* ── Options ── */
+  /* ── Options (legacy, kept for compatibility) ── */
   .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
   @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
   .option-group label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
@@ -242,6 +257,64 @@
   .option-card.selected { border-color: var(--brand); background: var(--brand-light); }
   .option-card-title { font-size: 13px; font-weight: 700; }
   .option-card-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── Goal cards (Step 3) ── */
+  .goal-prompt { font-size: 15px; color: var(--text-muted); margin-bottom: 20px; }
+  .goal-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 8px; }
+  @media (max-width: 700px) { .goal-cards { grid-template-columns: 1fr; } }
+  .goal-card {
+    background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius);
+    padding: 20px; cursor: pointer; transition: all .18s; position: relative;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .goal-card:hover { border-color: var(--brand); box-shadow: var(--shadow); transform: translateY(-1px); }
+  .goal-card.selected { border-color: var(--brand); background: var(--brand-light); }
+  .goal-card.dtm-gate { border-style: solid; }
+  .goal-card-icon { font-size: 26px; line-height: 1; }
+  .goal-card-title { font-size: 14px; font-weight: 700; line-height: 1.3; }
+  .goal-card-tagline { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+  .goal-card-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .goal-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 100px;
+    background: var(--surface3); color: var(--text-muted); border: 1px solid var(--border);
+  }
+  .goal-badge.pqc { background: #F3E8FF; color: #7C3AED; border-color: #C4B5FD; }
+  .goal-badge.dtm { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; }
+  .goal-badge.std { background: #F0FDF4; color: #15803D; border-color: #BBF7D0; }
+  /* Sub-goals expand area */
+  .subgoal-area {
+    grid-column: 1 / -1; display: none;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin-top: -4px;
+    animation: fadeIn .2s ease;
+  }
+  .subgoal-area.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .subgoal-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--text-muted); margin-bottom: 12px; }
+  .subgoal-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 700px) { .subgoal-cards { grid-template-columns: 1fr; } }
+  .subgoal-card {
+    background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius-sm);
+    padding: 14px 16px; cursor: pointer; transition: all .15s;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .subgoal-card:hover { border-color: var(--brand); }
+  .subgoal-card.selected { border-color: var(--brand); background: var(--brand-light); }
+  .subgoal-card-icon { font-size: 18px; }
+  .subgoal-card-title { font-size: 13px; font-weight: 700; }
+  .subgoal-card-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+  /* Advanced toggle */
+  .advanced-toggle { font-size: 12px; color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-top: 12px; user-select: none; }
+  .advanced-toggle:hover { color: var(--brand); }
+  .advanced-panel { display: none; margin-top: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .advanced-panel.open { display: block; }
+  .adv-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .adv-chip {
+    font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 100px; cursor: pointer;
+    background: var(--surface3); border: 1.5px solid var(--border); color: var(--text-muted); transition: all .15s;
+  }
+  .adv-chip:hover { border-color: var(--brand); color: var(--brand); }
+  .adv-chip.on { background: var(--brand-light); border-color: var(--brand); color: var(--brand); }
 
   /* ── Instruction output ── */
   .instr-header {
@@ -362,7 +435,7 @@
   <h1>Keys. Certs. MQTT. Lifecycle.</h1>
   <p>TrustEdge does what OpenSSL does — then hands your device to Device Trust Manager. PQC-ready, cloud-connected, any platform.</p>
 
-  <!-- Architecture diagram: DTM (north) → TrustEdge devices (south) + Servers (east) -->
+  <!-- Architecture diagram: Device Trust Manager (north) → TrustEdge devices (south) + Servers (east) -->
   <div class="header-diagram">
     <svg viewBox="0 0 860 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="TrustEdge architecture: Device Trust Manager issues certificates to devices and servers, enabling secure TLS pipelines">
       <defs>
@@ -387,7 +460,7 @@
       </defs>
 
       <!-- ══════════════════════════════════════════════════════════════
-           NORTH: Device Trust Manager (DTM) cloud node
+           NORTH: Device Trust Manager cloud node
            ══════════════════════════════════════════════════════════════ -->
       <!-- Node background -->
       <rect x="290" y="10" width="280" height="74" rx="14" fill="rgba(0,55,133,0.85)" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" filter="url(#glow)"/>
@@ -403,7 +476,7 @@
       </g>
       <!-- Vertical divider between icon and text -->
       <line x1="348" y1="20" x2="348" y2="74" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <!-- DTM text block: anchored to x=356 (left of text zone), centered at y -->
+      <!-- Device Trust Manager text block: anchored to x=356 (left of text zone), centered at y -->
       <text x="430" y="37" text-anchor="middle" fill="white" font-size="13" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="-0.3">Device Trust Manager</text>
       <text x="430" y="52" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9.5" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.8">DigiCert SaaS · Certificate Authority</text>
       <!-- PQC badge -->
@@ -517,8 +590,14 @@
       <!-- DTM to Device 3 -->
       <path d="M 430,82 C 420,145 360,180 330,210" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0.8s"/>
 
-      <!-- Cert issuance label on left side -->
-      <text x="200" y="148" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(-55,200,148)">issues x.509 cert</text>
+      <!-- Labels: one per DTM→Device line -->
+      <!-- Line 1 (leftmost, to device 1): Zero Touch Provisioning -->
+      <text x="200" y="148" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="8" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="translate(0,-20) rotate(-55,200,148)">Zero Touch Provisioning</text>
+      <!-- Line 2 (middle, to device 2): OTA Update -->
+      <text x="290" y="180" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="8" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(-42,290,180)">OTA Update</text>
+
+      <!-- Line 3 (rightmost, to device 3): Cert Lifecycle -->
+      <text x="378" y="190" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="8" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(-28,378,190)">Cert Lifecycle Mgmt</text>
 
       <!-- ══════════════════════════════════════════════════════════════
            DOTTED CERT ISSUANCE LINES: DTM → Servers
@@ -531,7 +610,7 @@
       <path d="M 570,60 C 620,130 650,185 680,218" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:1s"/>
 
       <!-- Cert label right side -->
-      <text x="640" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(30,640,120)">issues x.509 cert</text>
+      <text x="640" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(30,640,120)">mTLS · Policy-managed</text>
 
       <!-- ══════════════════════════════════════════════════════════════
            SECURE DATA PIPELINE: Devices ↔ Servers (horizontal, mid)
@@ -569,21 +648,31 @@
     <span class="pill">✦ TLS 1.3</span>
     <span class="pill">✦ x86 · ARM64 · ARM32</span>
     <span class="pill">✦ Zephyr RTOS</span>
-    <span class="pill">✦ Linux</span>
+    <span class="pill">✦ Yocto</span>
+    <span class="pill">✦ Debian - Ubuntu</span>
     <span class="pill">✦ Windows</span>
+  </div>
+</div>
+
+<div class="fleet-bar">
+  <span class="fleet-bar-label">Evaluation scope:</span>
+  <div class="fleet-chips">
+    <div class="fleet-chip on" id="fleet-poc"    onclick="setFleet('poc')">Single device PoC</div>
+    <div class="fleet-chip"    id="fleet-pilot"  onclick="setFleet('pilot')">Pilot fleet (10–50 devices)</div>
+    <div class="fleet-chip"    id="fleet-prod"   onclick="setFleet('prod')">Production rollout</div>
   </div>
 </div>
 
 <div class="progress-bar">
   <div class="progress-steps">
     <div class="step-tab active" id="tab-1" onclick="goToStep(1)">
-      <span class="step-num">1</span><span class="step-label">Hardware</span>
+      <span class="step-num">1</span><span class="step-label">Goal</span>
     </div>
     <div class="step-tab" id="tab-2" onclick="goToStep(2)">
-      <span class="step-num">2</span><span class="step-label">OS</span>
+      <span class="step-num">2</span><span class="step-label">Hardware</span>
     </div>
     <div class="step-tab" id="tab-3" onclick="goToStep(3)">
-      <span class="step-num">3</span><span class="step-label">Options</span>
+      <span class="step-num">3</span><span class="step-label">OS</span>
     </div>
     <div class="step-tab" id="tab-4" onclick="goToStep(4)">
       <span class="step-num">4</span><span class="step-label">Instructions</span>
@@ -593,8 +682,96 @@
 
 <div class="main">
 
-  <!-- ══════════════════════════════════ STEP 1 ══════════════════════════════════ -->
+  <!-- ══════════════════════════════════ STEP 1 — GOAL ══════════════════════════════════ -->
   <div class="step-panel active" id="panel-1">
+    <div class="step-header">
+      <h2>How do you want to manage your device's security and cryptography?</h2>
+      <p class="goal-prompt">Pick a goal — we'll guide hardware selection and generate exact commands.</p>
+    </div>
+
+    <div class="goal-cards" id="goal-cards">
+
+      <!-- Card 1: DTM Agent — gateway card -->
+      <div class="goal-card dtm-gate" id="goal-dtm" onclick="selectGoal('dtm')">
+        <div class="goal-card-icon">🌐</div>
+        <div class="goal-card-title">Cloud-Managed Device Identity</div>
+        <div class="goal-card-tagline">Realtime Security Posture — Manufacturer-issued Birth certificates, renew on policy, telemetry over mTLS. Full lifecycle.</div>
+        <div class="goal-card-badges">
+          <span class="goal-badge dtm">OTA Updates</span>
+          <span class="goal-badge dtm">mTLS</span>
+          <span class="goal-badge dtm">Zero Touch Provisioning</span>
+          <span class="goal-badge dtm">Policy-driven</span>
+          <span class="goal-badge pqc">FIPS 204 (PQC)</span>
+          <span class="goal-badge" style="background:#FEF3C7;color:#92400E;border-color:#FDE68A;">IEC 62443</span>
+        </div>
+      </div>
+
+      <!-- Card 2: PKI Enrollment -->
+      <div class="goal-card" id="goal-pki" onclick="selectGoal('pki')">
+        <div class="goal-card-icon">📜</div>
+        <div class="goal-card-title">PKI Enrollment via EST / SCEP</div>
+        <div class="goal-card-tagline">Submit a CSR and enroll a signed X.509 cert from any CA using standard protocols.</div>
+        <div class="goal-card-badges">
+          <span class="goal-badge std">RFC 7030 EST</span>
+          <span class="goal-badge std">SCEP</span>
+          <span class="goal-badge std">PKCS#10 CSR</span>
+          <span class="goal-badge std">Any CA</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Local Crypto -->
+      <div class="goal-card" id="goal-local" onclick="selectGoal('local')">
+        <div class="goal-card-icon">🔑</div>
+        <div class="goal-card-title">Standalone Crypto — Private Keys &amp; Certs</div>
+        <div class="goal-card-tagline">Hardware-bound or software private key, CSRs, and certificates.</div>
+        <div class="goal-card-badges">
+          <span class="goal-badge std">OpenSSL-compatible</span>
+          <span class="goal-badge std">ECDSA / RSA</span>
+          <span class="goal-badge pqc">ML-DSA (PQC)</span>
+          <span class="goal-badge std">Air-gapped</span>
+        </div>
+      </div>
+
+      <!-- Sub-goal expansion for DTM -->
+      <div class="subgoal-area" id="subgoal-area">
+        <div class="subgoal-label">After provisioning, what's the primary use case?</div>
+        <div class="subgoal-cards">
+          <div class="subgoal-card" id="sub-ztp" onclick="selectSubGoal('ztp')">
+            <div class="subgoal-card-icon">🏭</div>
+            <div class="subgoal-card-title">Zero Touch Provisioning</div>
+            <div class="subgoal-card-desc">IDevID / LDevID factory provisioning. Device self-registers on first boot — no per-device manual steps.</div>
+          </div>
+          <div class="subgoal-card" id="sub-lifecycle" onclick="selectSubGoal('lifecycle')">
+            <div class="subgoal-card-icon">♻️</div>
+            <div class="subgoal-card-title">Certificate Lifecycle Management</div>
+            <div class="subgoal-card-desc">Device enrolls, certs auto-renew on policy. mTLS identity always current — no manual intervention.</div>
+          </div>
+          <div class="subgoal-card" id="sub-ota" onclick="selectSubGoal('ota')">
+            <div class="subgoal-card-icon">📡</div>
+            <div class="subgoal-card-title">Over-the-Air (OTA) Update</div>
+            <div class="subgoal-card-desc">Signed firmware or config pushed to device fleet over secure channel. Integrity verified before apply.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /goal-cards -->
+
+    <!-- PKI sub-toggle -->
+    <div id="pki-subtoggle" style="display:none; margin-top:4px; margin-bottom:8px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Enrollment protocol</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="adv-chip on" id="pki-est-chip" onclick="selectPkiProto('est')">EST (RFC 7030)</div>
+        <div class="adv-chip" id="pki-scep-chip" onclick="selectPkiProto('scep')">SCEP</div>
+      </div>
+    </div>
+
+    <div class="nav-row" style="margin-top:16px;">
+      <button class="btn btn-primary" id="btn-next-1" onclick="goToStep(2)" disabled>Next: Choose Hardware →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ STEP 2 — HARDWARE ══════════════════════════════════ -->
+  <div class="step-panel" id="panel-2">
     <div class="step-header">
       <h2>Choose Your Hardware</h2>
       <p>Select your board or CPU. Don't have hardware yet? Use the Simulation option.</p>
@@ -602,62 +779,52 @@
     <div class="cat-tabs" id="cat-tabs">
       <div class="cat-tab active" onclick="filterCat('all')">All Platforms</div>
       <div class="cat-tab" onclick="filterCat('x86_64')">x86-64</div>
-      <div class="cat-tab" onclick="filterCat('aarch64')">ARM 64-bit</div>
+      <div class="cat-tab" onclick="filterCat('aarch64')">ARM 6 4-bit</div>
       <div class="cat-tab" onclick="filterCat('arm32')">ARM 32-bit</div>
       <div class="cat-tab" onclick="filterCat('zephyr')">Zephyr RTOS</div>
       <div class="cat-tab" onclick="filterCat('linux')">Linux</div>
       <div class="cat-tab windows-tab" onclick="filterCat('windows')">Windows</div>
       <div class="cat-tab" onclick="filterCat('simulation')">Simulation</div>
     </div>
+    <div id="goal-hw-hint" style="display:none; margin-bottom:12px; padding:10px 14px; background:var(--brand-light); border:1px solid var(--brand); border-radius:var(--radius-sm); font-size:13px; color:var(--brand-dark);"></div>
     <div class="board-grid" id="board-grid"></div>
     <div class="nav-row">
-      <button class="btn btn-primary" onclick="goToStep(2)" id="btn-next-1" disabled>Next: Choose OS →</button>
+      <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(3)" id="btn-next-2" disabled>Next: Choose OS →</button>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════ STEP 2 ══════════════════════════════════ -->
-  <div class="step-panel" id="panel-2">
+  <!-- ══════════════════════════════════ STEP 3 — OS ══════════════════════════════════ -->
+  <div class="step-panel" id="panel-3">
     <div class="step-header">
       <h2>Choose Your Operating System</h2>
       <p>Compatible OS options for your selected hardware.</p>
     </div>
     <div class="info-box" id="board-info-box"></div>
     <div class="os-grid" id="os-grid"></div>
-    <div class="nav-row">
-      <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
-      <button class="btn btn-primary" onclick="goToStep(3)" id="btn-next-2" disabled>Next: Options →</button>
-    </div>
-  </div>
 
-  <!-- ══════════════════════════════════ STEP 3 ══════════════════════════════════ -->
-  <div class="step-panel" id="panel-3">
-    <div class="step-header">
-      <h2>Configure Your Setup</h2>
-      <p>Choose your deployment mode and optional features.</p>
-    </div>
-    <div class="options-grid">
-      <div class="option-group">
-        <label>Deployment Mode</label>
-        <div class="option-cards" id="mode-cards"></div>
+    <!-- Advanced options (TPM + PQC) for DTM goal -->
+    <div id="advanced-os-wrap" style="display:none; margin-top:16px;">
+      <div class="advanced-toggle" onclick="toggleAdvanced()">
+        <span id="adv-arrow">▼</span> Advanced options
       </div>
-      <div class="option-group">
-        <label>Security Hardware</label>
-        <div class="option-cards" id="tpm-cards"></div>
-      </div>
-    </div>
-    <div class="options-grid">
-      <div class="option-group">
-        <label>Post-Quantum Demo</label>
-        <div class="option-cards" id="pqc-cards"></div>
-      </div>
-      <div class="option-group">
-        <label>Certificate Source</label>
-        <div class="option-cards" id="cert-cards"></div>
+      <div class="advanced-panel open" id="advanced-panel">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Security Hardware</div>
+            <div class="adv-row" id="adv-tpm-chips"></div>
+          </div>
+          <div id="adv-pqc-wrap">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Post-Quantum Demo</div>
+            <div class="adv-row" id="adv-pqc-chips"></div>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="nav-row">
       <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
-      <button class="btn btn-primary" onclick="generateAndShow()">Generate Instructions →</button>
+      <button class="btn btn-primary" id="btn-next-3" onclick="generateAndShow()" disabled>Generate Instructions →</button>
     </div>
   </div>
 
@@ -670,7 +837,7 @@
     <div class="summary-bar" id="summary-bar"></div>
     <div id="instructions-output"></div>
     <div class="nav-row">
-      <button class="btn btn-secondary" onclick="goToStep(3)">← Modify Options</button>
+      <button class="btn btn-secondary" onclick="goToStep(3)">← Change OS</button>
       <button class="btn btn-ghost" onclick="goToStep(1)">↺ Start Over</button>
     </div>
   </div>
@@ -1090,10 +1257,14 @@ const OS_OPTIONS = {
 let state = {
   board: null,
   os: null,
-  mode: 'cli',          // cli | agent
+  fleet: 'poc',         // poc | pilot | prod
+  goal: null,           // local | pki | dtm
+  subgoal: null,        // lifecycle | ota | ztp  (only when goal=dtm)
+  pkiProto: 'est',      // est | scep              (only when goal=pki)
+  mode: 'cli',          // cli | agent  (derived from goal)
   tpm: 'none',          // none | hardware | software
   pqc: 'skip',          // skip | demo
-  cert: 'selfsigned',   // selfsigned | est
+  cert: 'selfsigned',   // selfsigned | est | scep (derived from goal/pkiProto)
 };
 
 // ═══════════════════════ ICONS (SVG) ═══════════════════════
@@ -1364,7 +1535,29 @@ function renderBoards() {
 function selectBoard(id) {
   state.board = id;
   state.os = null;
-  document.getElementById('btn-next-1').disabled = false;
+  // Step 2 is now Hardware — its Next button is btn-next-2
+  const btn = document.getElementById('btn-next-2');
+  if (btn) btn.disabled = false;
+  renderBoards();
+}
+
+function renderHardware() {
+  // Show goal-aware hint at top of hardware step
+  const hint = document.getElementById('goal-hw-hint');
+  if (hint) {
+    const hintMap = {
+      local:     null, // all boards work — no hint needed
+      pki:       '💡 All boards support EST / SCEP enrollment. Boards with TPM 2.0 provide hardware-backed keys.',
+      dtm:       '💡 For Cloud-Managed Device Identity, boards with a hardware TPM 2.0 are recommended for production deployments.',
+      lifecycle: '💡 Boards with hardware TPM 2.0 provide tamper-resistant key storage for automated cert renewal.',
+      ota:       '💡 Any board works for OTA update evaluation. TPM-equipped boards add signed payload verification.',
+      ztp:       '💡 Zero Touch Provisioning works on any board. For factory-scale ZTP, TPM 2.0 is strongly recommended.',
+    };
+    const key = state.subgoal || state.goal;
+    const msg = hintMap[key];
+    hint.style.display = msg ? 'block' : 'none';
+    if (msg) hint.innerHTML = msg;
+  }
   renderBoards();
 }
 
@@ -1402,11 +1595,136 @@ function renderOS() {
 
 function selectOS(id) {
   state.os = id;
-  document.getElementById('btn-next-2').disabled = false;
+  // Step 3 is now OS — its Generate button is btn-next-3
+  const btn = document.getElementById('btn-next-3');
+  if (btn) btn.disabled = false;
+  // Show advanced options for DTM goal
+  const advWrap = document.getElementById('advanced-os-wrap');
+  if (advWrap) {
+    advWrap.style.display = state.goal === 'dtm' ? 'block' : 'none';
+    if (state.goal === 'dtm') renderAdvancedChips();
+  }
   renderOS();
 }
 
-// ═══════════════════════ RENDER OPTIONS ═══════════════════════
+// ═══════════════════════ GOAL SELECTION (Step 3) ═══════════════════════
+
+function setFleet(f) {
+  state.fleet = f;
+  ['poc','pilot','prod'].forEach(id => {
+    document.getElementById('fleet-' + id).classList.toggle('on', id === f);
+  });
+}
+
+function selectGoal(goal) {
+  state.goal = goal;
+  state.subgoal = null;
+
+  // Derive mode + cert from goal
+  if (goal === 'local') {
+    state.mode = 'cli'; state.cert = 'selfsigned';
+  } else if (goal === 'pki') {
+    state.mode = 'cli'; state.cert = state.pkiProto;
+  } else if (goal === 'dtm') {
+    state.mode = 'agent'; state.cert = 'est';
+  }
+
+  // Highlight selected goal card
+  document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('goal-' + goal);
+  if (card) card.classList.add('selected');
+
+  // Show/hide sub-goal area and PKI toggle
+  const subArea = document.getElementById('subgoal-area');
+  const pkiSub  = document.getElementById('pki-subtoggle');
+  if (subArea) subArea.classList.toggle('visible', goal === 'dtm');
+  if (pkiSub) pkiSub.style.display = goal === 'pki' ? 'block' : 'none';
+
+  // Enable Next button — DTM needs a sub-goal first
+  const btn = document.getElementById('btn-next-1');
+  if (btn) btn.disabled = goal === 'dtm';
+}
+
+function selectSubGoal(sub) {
+  state.subgoal = sub;
+  document.querySelectorAll('.subgoal-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('sub-' + sub);
+  if (card) card.classList.add('selected');
+  // DTM path: sub-goal resolves the Next button
+  const btn = document.getElementById('btn-next-1');
+  if (btn) btn.disabled = false;
+}
+
+function selectPkiProto(proto) {
+  state.pkiProto = proto;
+  state.cert = proto;
+  document.getElementById('pki-est-chip').classList.toggle('on', proto === 'est');
+  document.getElementById('pki-scep-chip').classList.toggle('on', proto === 'scep');
+}
+
+function toggleAdvanced() {
+  const panel = document.getElementById('advanced-panel');
+  const arrow = document.getElementById('adv-arrow');
+  const open  = panel.classList.toggle('open');
+  arrow.textContent = open ? '▼' : '▶';
+  if (open) renderAdvancedChips();
+}
+
+function renderAdvancedChips() {
+  const board = BOARDS.find(b => b.id === state.board);
+  const isWindows = state.os === 'windows-11' || state.os === 'windows-iot-ltsc';
+
+  // TPM chips
+  const tpmOpts = [{ id:'none', label:'Software Keystore' }];
+  if (board && (board.tpm || board.tpmOptional)) tpmOpts.unshift({ id:'hardware', label:'Hardware TPM 2.0' });
+  if (isWindows && state.tpm !== 'hardware') state.tpm = 'hardware';
+  const tpmWrap = document.getElementById('adv-tpm-chips');
+  if (tpmWrap) tpmWrap.innerHTML = tpmOpts.map(o =>
+    `<div class="adv-chip ${state.tpm===o.id?'on':''}" onclick="setAdv('tpm','${o.id}')">${o.label}</div>`
+  ).join('');
+
+  // PQC chips (not on Windows or Zephyr)
+  const pqcWrap = document.getElementById('adv-pqc-wrap');
+  if (pqcWrap) {
+    const showPqc = !isWindows && board && board.cat !== 'zephyr';
+    pqcWrap.style.display = showPqc ? 'block' : 'none';
+    if (showPqc) {
+      document.getElementById('adv-pqc-chips').innerHTML = [
+        { id:'skip', label:'Skip' },
+        { id:'demo', label:'Run PQC Demo (ML-DSA)' },
+      ].map(o =>
+        `<div class="adv-chip ${state.pqc===o.id?'on':''}" onclick="setAdv('pqc','${o.id}')">${o.label}</div>`
+      ).join('');
+    }
+  }
+}
+
+function setAdv(key, val) {
+  state[key] = val;
+  renderAdvancedChips();
+}
+
+
+function renderGoals() {
+  // Restore visual state when revisiting step 1
+  document.querySelectorAll('.goal-card').forEach(c => {
+    c.classList.toggle('selected', c.id === 'goal-' + state.goal);
+  });
+  document.querySelectorAll('.subgoal-card').forEach(c => {
+    c.classList.toggle('selected', c.id === 'sub-' + state.subgoal);
+  });
+  const subArea = document.getElementById('subgoal-area');
+  if (subArea) subArea.classList.toggle('visible', state.goal === 'dtm');
+  const pkiSub = document.getElementById('pki-subtoggle');
+  if (pkiSub) pkiSub.style.display = state.goal === 'pki' ? 'block' : 'none';
+  const btn = document.getElementById('btn-next-1');
+  if (btn) {
+    const ready = state.goal === 'local' || state.goal === 'pki' || (state.goal === 'dtm' && state.subgoal);
+    btn.disabled = !ready;
+  }
+}
+
+// ═══════════════════════ RENDER OPTIONS (legacy — no longer used for Step 3) ═══════════════════════
 
 function renderOptions() {
   const board = BOARDS.find(b => b.id === state.board);
@@ -1471,16 +1789,19 @@ function setState(key, val) {
 // ═══════════════════════ STEP NAVIGATION ═══════════════════════
 
 function goToStep(n) {
-  if (n > 1 && !state.board) return;
-  if (n > 2 && !state.os) return;
+  // New sequence: 1=Goal, 2=Hardware, 3=OS, 4=Instructions
+  if (n > 1 && !state.goal) return;
+  if (n > 1 && state.goal === 'dtm' && !state.subgoal) return;
+  if (n > 2 && !state.board) return;
+  if (n > 3 && !state.os) return;
   [1,2,3,4].forEach(i => {
     document.getElementById(`panel-${i}`).classList.toggle('active', i === n);
     const tab = document.getElementById(`tab-${i}`);
     tab.classList.toggle('active', i === n);
     tab.classList.toggle('done', i < n);
   });
-  if (n === 2) renderOS();
-  if (n === 3) renderOptions();
+  if (n === 2) renderHardware();
+  if (n === 3) renderOS();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1535,20 +1856,53 @@ function buildInstructions() {
   const board = BOARDS.find(b => b.id === state.board);
   const os = OS_OPTIONS[state.os];
 
+  const FLEET_LABELS = {
+    poc:   'Single device PoC',
+    pilot: 'Pilot fleet (10–50 devices)',
+    prod:  'Production rollout',
+  };
+  const FLEET_NOTES = {
+    poc:   '',
+    pilot: 'Commands below apply to each device. For bulk provisioning, wrap in a loop or use your configuration management tool (Ansible, Chef, SaltStack).',
+    prod:  'For production fleet rollout, use DTM Provisioning Profiles and your MDM/configuration management platform to deploy these commands at scale. Test on a canary device first.',
+  };
+
+  const GOAL_LABELS = {
+    local:     '🔑 Local Crypto Toolkit',
+    pki:       `📜 PKI Enrollment via ${(state.pkiProto||'est').toUpperCase()}`,
+    dtm:       '🌐 Cloud-Managed Device Identity',
+  };
+  const SUBGOAL_LABELS = {
+    lifecycle: '♻️ Certificate Lifecycle Management',
+    ota:       '📡 Over-the-Air (OTA) Update',
+    ztp:       '🏭 Zero Touch Provisioning',
+  };
+
   // Summary bar
-  document.getElementById('summary-bar').innerHTML = [
+  const summaryItems = [
     { lbl: 'Board', val: board.name },
-    { lbl: 'CPU', val: board.archLabel },
-    { lbl: 'OS', val: `${os.name} ${os.ver}` },
-    { lbl: 'Mode', val: state.mode === 'cli' ? 'CLI' : 'Agent (Daemon)' },
-    { lbl: 'TPM', val: state.tpm === 'hardware' ? 'Hardware TPM 2.0' : 'Software Keystore' },
-  ].map(i => `<div class="summary-item"><span class="lbl">${i.lbl}:</span><span class="val">${i.val}</span></div>`).join('');
+    { lbl: 'CPU',   val: board.archLabel },
+    { lbl: 'OS',    val: `${os.name} ${os.ver}` },
+    { lbl: 'Goal',  val: GOAL_LABELS[state.goal] || state.goal },
+  ];
+  if (state.subgoal) summaryItems.push({ lbl: 'Use case', val: SUBGOAL_LABELS[state.subgoal] });
+  if (state.tpm === 'hardware') summaryItems.push({ lbl: 'TPM', val: 'Hardware TPM 2.0' });
+  summaryItems.push({ lbl: 'Scope', val: FLEET_LABELS[state.fleet] || 'Single device PoC' });
+  document.getElementById('summary-bar').innerHTML = summaryItems
+    .map(i => `<div class="summary-item"><span class="lbl">${i.lbl}:</span><span class="val">${i.val}</span></div>`).join('');
+
+  // Subtitle for instruction header
+  const modeDesc = state.goal === 'dtm'
+    ? `Agent daemon · ${SUBGOAL_LABELS[state.subgoal] || ''}`
+    : state.goal === 'pki'
+      ? `CLI mode · ${(state.pkiProto||'est').toUpperCase()} enrollment`
+      : 'CLI mode · local key & certificate generation';
 
   // Build sections
   let html = `<div class="instr-header">
     <h3>${board.name} × ${os.name} — TrustEdge Setup</h3>
-    <p>${state.mode === 'agent' ? 'Agent mode (daemon) with Device Trust Manager' : 'CLI mode — standalone, no DTM required'}${state.pqc === 'demo' ? ' · Post-Quantum (PQC) Demo included' : ''}</p>
-  </div><div class="instr-body">`;
+    <p>${modeDesc}${state.pqc === 'demo' ? ' · Post-Quantum (PQC) Demo included' : ''}</p>
+  </div>${FLEET_NOTES[state.fleet] ? `<div class="note" style="margin:0 0 1rem;">${FLEET_NOTES[state.fleet]}</div>` : ''}<div class="instr-body">`;
 
   let stepNum = 1;
   const isWindows = state.os === 'windows-11' || state.os === 'windows-iot-ltsc';
@@ -1848,15 +2202,33 @@ ls bin/`)}
         ${ssCmds.map((c,i) => code(getNotes(board.arch,'cert_selfsigned')?.[i] || (i===0?'Generate key and self-signed certificate':'Verify the certificate'), c)).join('')}
         <div class="success-note">✓ Certificate stored at <code>/etc/digicert/keystore/certs/mydevice.pem</code></div>
       `, false);
+    } else if (state.cert === 'scep') {
+      const scepCmds = getCommands(board.arch, 'cert_scep') || [
+        `trustedge certificate scep \\\n  --scepc-serverURL <scep-server-url> \\\n  --scepc-serverType GEN_POST \\\n  --csr-conf sample_scep_csr.cnf \\\n  --algorithm ECC --curve P256 \\\n  --key-alias mydevice \\\n  --scepc-challengePass <challenge-password> \\\n  --scepc-pkiOperation PKCSReq`,
+        `trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem`,
+      ];
+      html += section(stepNum++, 'Enroll Certificate via SCEP', `
+        <p class="instr-p">Submit a PKCS#10 CSR to your SCEP-enabled CA and receive a signed X.509 certificate. Works with any SCEP-compliant CA (DigiCert, EJBCA, Microsoft NDES).</p>
+        <div class="note" style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+          <span>You'll need your SCEP server URL and challenge password. If using DigiCert PKI, find these in the Device Trust Manager console under <strong>Enrollment Profiles → SCEP</strong>.</span>
+          <a href="https://www.digicert.com/device-trust-manager" target="_blank" rel="noopener noreferrer" style="font-weight:700;color:var(--brand);white-space:nowrap;flex-shrink:0;">Open Device Trust Manager ↗</a>
+        </div>
+        ${scepCmds.map((c,i) => code(getNotes(board.arch,'cert_scep')?.[i] || (i===0?'Enroll via SCEP':'Verify the issued certificate'), c)).join('')}
+        <div class="success-note">✓ Certificate enrolled and stored at <code>/etc/digicert/keystore/certs/mydevice.pem</code></div>
+      `, false);
     } else {
       const estCmds = getCommands(board.arch, 'cert_est') || [
         `trustedge certificate est \\\n  --uri https://pki.digicert.com/.well-known/est/<profile-id>/simpleenroll \\\n  -a ECC -c P256 \\\n  -i mycsr.cnf \\\n  -user <est-username> \\\n  -pass <est-password> \\\n  -ka mydevice`,
         `trustedge certificate -pc /etc/digicert/keystore/certs/mydevice.pem`,
       ];
-      html += section(stepNum++, 'Enroll Certificate via EST (Device Trust Manager)', `
-        <p class="instr-p">Obtain a certificate from DigiCert PKI via the EST protocol. Requires a Device Trust Manager account with an EST endpoint configured.</p>
-        <div class="note">You need: your EST server URL, EST username, and password from Device Trust Manager console.</div>
+      html += section(stepNum++, 'Enroll Certificate via EST (RFC 7030)', `
+        <p class="instr-p">Submit a PKCS#10 CSR to your CA's EST endpoint and receive a signed X.509 certificate. Works with any EST-compliant CA.</p>
+        <div class="note" style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+          <span>You'll need your EST server URL, username, and password. If using DigiCert PKI, find these in the Device Trust Manager console under <strong>Enrollment Profiles → EST</strong>.</span>
+          <a href="https://www.digicert.com/device-trust-manager" target="_blank" rel="noopener noreferrer" style="font-weight:700;color:var(--brand);white-space:nowrap;flex-shrink:0;">Open Device Trust Manager ↗</a>
+        </div>
         ${estCmds.map((c,i) => code(getNotes(board.arch,'cert_est')?.[i] || (i===0?'Enroll via EST':'Verify the issued certificate'), c)).join('')}
+        <div class="success-note">✓ Certificate enrolled and stored at <code>/etc/digicert/keystore/certs/mydevice.pem</code></div>
       `, false);
     }
   }
@@ -1879,12 +2251,72 @@ ls bin/`)}
         `sudo systemctl enable trustedge.service\nsudo systemctl start trustedge.service`,
         `sudo journalctl -u trustedge -f`,
       ];
-      html += section(stepNum++, 'Configure TrustEdge Agent Mode', `
-        <p class="instr-p">Set up TrustEdge to run as a system daemon managed by DigiCert Device Trust Manager.</p>
-        <div class="note">Agent mode requires a Device Trust Manager subscription and a bootstrap zip provisioned by DigiCert.</div>
-        ${agentCmds.map((c,i) => code(getNotes(board.arch,'run_agent')?.[i] || (['Configure TrustEdge agent','Enable and start TrustEdge service','Monitor agent logs'][i] || ''), c)).join('')}
-        <div class="success-note">✓ TrustEdge agent is running. Device is now managed by DigiCert Device Trust Manager.</div>
+      const subGoalNote = {
+        lifecycle: 'The agent will handle cert enrollment and renewal automatically via DTM policy.',
+        ota:       'Once the agent is running, OTA payloads are pushed and verified via the DTM channel.',
+        ztp:       'For Zero Touch Provisioning, the bootstrap zip encodes the IDevID — device self-registers on first boot.',
+      }[state.subgoal] || '';
+      html += section(stepNum++, 'Provision Device & Start Agent', `
+        <details open>
+          <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);list-style:none;display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+            <span>▼</span> Already provisioned? <span style="font-weight:400;">Click to collapse this section</span>
+          </summary>
+          <p class="instr-p">Set up TrustEdge to run as a system daemon managed by DigiCert Device Trust Manager.</p>
+          <div class="note" style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+            <span>Before running these commands, log in to the Device Trust Manager console and download the bootstrap zip for this device.</span>
+            <a href="https://www.digicert.com/device-trust-manager" target="_blank" rel="noopener noreferrer" style="font-weight:700;color:var(--brand);white-space:nowrap;flex-shrink:0;">Open Device Trust Manager ↗</a>
+          </div>
+          ${agentCmds.map((c,i) => code(getNotes(board.arch,'run_agent')?.[i] || (['Bootstrap and configure TrustEdge agent','Enable and start TrustEdge service','Monitor agent logs'][i] || ''), c)).join('')}
+        </details>
+        ${subGoalNote ? `<div class="success-note">✓ Agent running · ${subGoalNote}</div>` : '<div class="success-note">✓ TrustEdge agent is running and managed by Device Trust Manager.</div>'}
       `, false);
+
+      // ── Sub-goal specific instructions ──
+      if (state.subgoal === 'lifecycle') {
+        html += section(stepNum++, 'Certificate Lifecycle Management', `
+          <p class="instr-p">Once online, the agent polls DTM for certificate policies. Enrollment and renewal happen automatically — no manual CSR submission.</p>
+          <div class="note">Verify cert status and renewal schedule in the DTM console under <strong>Devices → Certificates</strong>.</div>
+          ${code('Check active certificate on device', `trustedge certificate -pc /etc/digicert/keystore/certs/device.pem`)}
+          ${code('Verify agent connectivity and last policy sync', `sudo journalctl -u trustedge.service --since "1 hour ago" | grep -E "policy|cert|renew|enroll"`)}
+          <div class="success-note">✓ Cert lifecycle is now policy-driven. Expiry events trigger auto-renewal with zero downtime.</div>
+        `, false);
+      } else if (state.subgoal === 'ota') {
+        html += section(stepNum++, 'Over-the-Air (OTA) Update', `
+          <p class="instr-p">Signed update payloads are pushed from DTM to the device over the mTLS-secured MQTT channel. TrustEdge verifies the payload signature before applying.</p>
+          <div class="note">OTA update policies are configured in the DTM console under <strong>Device Policies → Software Update</strong>.</div>
+          ${code('Monitor OTA events in agent log', `sudo journalctl -u trustedge.service -f | grep -i "ota\\|update\\|firmware\\|payload"`)}
+          ${code('Verify applied update', `trustedge agent --status`)}
+          <div class="success-note">✓ OTA pipeline active. Updates are cryptographically signed and integrity-verified before apply.</div>
+        `, false);
+      } else if (state.subgoal === 'ztp') {
+        html += section(stepNum++, 'Zero Touch Provisioning', `
+          <div class="mfg-field-callout" style="display:flex;gap:0;border:1.5px solid #C7D2FE;border-radius:10px;overflow:hidden;margin-bottom:1.25rem;font-size:0.85rem;">
+            <div style="background:#EEF2FF;padding:0.9rem 1.1rem;flex:1;">
+              <div style="font-weight:700;color:#4338CA;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;">🏭 Manufacturing</div>
+              <ol style="margin:0;padding-left:1.1rem;color:#374151;line-height:1.7;">
+                <li>Device Trust Manager generates a <strong>Provisioning Profile</strong> encoding the IDevID root of trust.</li>
+                <li>A bootstrap zip is produced per device (or batch) from the <a href="https://one.digicert.com/iot/Device Trust Manager" target="_blank" style="color:#4338CA;">Device Trust Manager → Fleet → Provisioning Profiles</a> section.</li>
+                <li>Zip is flashed or written to the device's secure storage at the factory line.</li>
+              </ol>
+            </div>
+            <div style="background:#E0E7FF;display:flex;align-items:center;padding:0 0.75rem;color:#6366F1;font-size:1.2rem;flex-shrink:0;">→</div>
+            <div style="background:#F0FDF4;padding:0.9rem 1.1rem;flex:1;">
+              <div style="font-weight:700;color:#166534;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;">📦 Field (First Boot)</div>
+              <ol style="margin:0;padding-left:1.1rem;color:#374151;line-height:1.7;">
+                <li>TrustEdge reads the bootstrap zip containing the <strong>IDevID</strong> (factory identity).</li>
+                <li>Authenticates to Device Trust Manager using IDevID, receives an operational <strong>LDevID</strong> cert.</li>
+                <li>Device appears in Device Trust Manager Devices dashboard — no per-device manual steps.</li>
+              </ol>
+            </div>
+          </div>
+          <p class="instr-p" style="margin-top:0;">The IDevID → LDevID chain follows IEEE 802.1AR. IDevID is the immutable factory identity; LDevID is the operational cert managed by Device Trust Manager throughout the device's lifecycle.</p>
+          ${code('Verify ZTP completed — device should auto-appear in Device Trust Manager', `# Check device registered itself
+trustedge agent --status
+# Look for: "device_id", "enrolled": true, "cert_valid_until"`)}
+          ${code('Check IDevID → LDevID transition in logs', `sudo journalctl -u trustedge.service | grep -E "IDevID|LDevID|bootstrap|enroll|registered"`)}
+          <div class="success-note">✓ Device self-provisioned. It will appear in Device Trust Manager Devices dashboard within seconds of first boot.</div>
+        `, false);
+      }
     }
   }
 
@@ -1981,7 +2413,7 @@ export PATH=$PATH:/usr/bin`)}
         { title: '⚛️ TrustCore SDK', url: 'https://github.com/digicert/trustcore', desc: 'Source code and build instructions' },
         { title: '🛡️ PQC Solutions', url: 'https://www.digicert.com/solutions/security-solutions-for-post-quantum-computing', desc: 'Post-Quantum strategy and tools' },
         { title: '🐛 GitHub Issues', url: 'https://github.com/digicert/trustedge/issues', desc: 'Report bugs or request features' },
-        { title: '💬 DigiCert Support', url: 'https://www.digicert.com/support/pki-support', desc: 'Enterprise support (DTM subscribers)' },
+        { title: '💬 DigiCert Support', url: 'https://www.digicert.com/support/pki-support', desc: 'Enterprise support (Device Trust Manager subscribers)' },
       ].map(l => `<a href="${l.url}" target="_blank" style="text-decoration:none;">
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:all .15s;" onmouseover="this.style.borderColor='var(--brand)'" onmouseout="this.style.borderColor='var(--border)'">
           <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">${l.title}</div>
