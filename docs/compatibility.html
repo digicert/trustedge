@@ -654,14 +654,14 @@
   </div>
 </div>
 
-<div class="fleet-bar">
+<!-- <div class="fleet-bar">
   <span class="fleet-bar-label">Evaluation scope:</span>
   <div class="fleet-chips">
     <div class="fleet-chip on" id="fleet-poc"    onclick="setFleet('poc')">Single device PoC</div>
     <div class="fleet-chip"    id="fleet-pilot"  onclick="setFleet('pilot')">Pilot fleet (10–50 devices)</div>
     <div class="fleet-chip"    id="fleet-prod"   onclick="setFleet('prod')">Production rollout</div>
   </div>
-</div>
+</div> -->
 
 <div class="progress-bar">
   <div class="progress-steps">
@@ -722,13 +722,13 @@
       <!-- Card 3: Local Crypto -->
       <div class="goal-card" id="goal-local" onclick="selectGoal('local')">
         <div class="goal-card-icon">🔑</div>
-        <div class="goal-card-title">Standalone Crypto — Private Keys &amp; Certs</div>
-        <div class="goal-card-tagline">Hardware-bound or software private key, CSRs, and certificates.</div>
+        <div class="goal-card-title">Crypto CLI · MQTT Client</div>
+        <div class="goal-card-tagline">Generate hardware-bound or software private key, CSRs, and certificates.</div>
         <div class="goal-card-badges">
-          <span class="goal-badge std">OpenSSL-compatible</span>
+          <span class="goal-badge std">MQTT pub/sub</span>
           <span class="goal-badge std">ECDSA / RSA</span>
           <span class="goal-badge pqc">ML-DSA (PQC)</span>
-          <span class="goal-badge std">Air-gapped</span>
+          <!-- <span class="goal-badge std">Air-gapped</span> -->
         </div>
       </div>
 
@@ -755,6 +755,23 @@
       </div>
 
     </div><!-- /goal-cards -->
+
+    <!-- Local Crypto sub-goal expansion -->
+    <div class="subgoal-area" id="local-subgoal-area">
+      <div class="subgoal-label">How do you want to use TrustEdge?</div>
+      <div class="subgoal-cards">
+        <div class="subgoal-card" id="sub-mqtt" onclick="selectLocalSubGoal('mqtt')">
+          <div class="subgoal-card-icon">📡</div>
+          <div class="subgoal-card-title">MQTT Client</div>
+          <div class="subgoal-card-desc">Publish and subscribe over MQTTS / TLS. Secure broker connection with mTLS.</div>
+        </div>
+        <div class="subgoal-card" id="sub-crypto" onclick="selectLocalSubGoal('crypto')">
+          <div class="subgoal-card-icon">🔑</div>
+          <div class="subgoal-card-title">OpenSSL-style CLI</div>
+          <div class="subgoal-card-desc">Generate private keys, CSRs, and self-signed certificates. ECDSA, RSA, or ML-DSA (PQC).</div>
+        </div>
+      </div>
+    </div>
 
     <!-- PKI sub-toggle -->
     <div id="pki-subtoggle" style="display:none; margin-top:4px; margin-bottom:8px;">
@@ -1259,6 +1276,7 @@ let state = {
   os: null,
   fleet: 'poc',         // poc | pilot | prod
   goal: null,           // local | pki | dtm
+  localSubgoal: null,   // mqtt | crypto           (only when goal=local)
   subgoal: null,        // lifecycle | ota | ztp  (only when goal=dtm)
   pkiProto: 'est',      // est | scep              (only when goal=pki)
   mode: 'cli',          // cli | agent  (derived from goal)
@@ -1619,6 +1637,7 @@ function setFleet(f) {
 function selectGoal(goal) {
   state.goal = goal;
   state.subgoal = null;
+  state.localSubgoal = null;
 
   // Derive mode + cert from goal
   if (goal === 'local') {
@@ -1634,15 +1653,20 @@ function selectGoal(goal) {
   const card = document.getElementById('goal-' + goal);
   if (card) card.classList.add('selected');
 
-  // Show/hide sub-goal area and PKI toggle
-  const subArea = document.getElementById('subgoal-area');
-  const pkiSub  = document.getElementById('pki-subtoggle');
-  if (subArea) subArea.classList.toggle('visible', goal === 'dtm');
-  if (pkiSub) pkiSub.style.display = goal === 'pki' ? 'block' : 'none';
+  // Show/hide sub-goal areas and PKI toggle
+  const subArea      = document.getElementById('subgoal-area');
+  const localSubArea = document.getElementById('local-subgoal-area');
+  const pkiSub       = document.getElementById('pki-subtoggle');
+  if (subArea)      subArea.classList.toggle('visible', goal === 'dtm');
+  if (localSubArea) localSubArea.classList.toggle('visible', goal === 'local');
+  if (pkiSub)       pkiSub.style.display = goal === 'pki' ? 'block' : 'none';
 
-  // Enable Next button — DTM needs a sub-goal first
+  // Reset local sub-card highlights
+  document.querySelectorAll('#local-subgoal-area .subgoal-card').forEach(c => c.classList.remove('selected'));
+
+  // Enable Next — DTM needs a sub-goal, local needs a sub-goal; PKI and others go straight through
   const btn = document.getElementById('btn-next-1');
-  if (btn) btn.disabled = goal === 'dtm';
+  if (btn) btn.disabled = (goal === 'dtm' || goal === 'local');
 }
 
 function selectSubGoal(sub) {
@@ -1651,6 +1675,15 @@ function selectSubGoal(sub) {
   const card = document.getElementById('sub-' + sub);
   if (card) card.classList.add('selected');
   // DTM path: sub-goal resolves the Next button
+  const btn = document.getElementById('btn-next-1');
+  if (btn) btn.disabled = false;
+}
+
+function selectLocalSubGoal(sub) {
+  state.localSubgoal = sub;
+  document.querySelectorAll('#local-subgoal-area .subgoal-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('sub-' + sub);
+  if (card) card.classList.add('selected');
   const btn = document.getElementById('btn-next-1');
   if (btn) btn.disabled = false;
 }
@@ -1719,7 +1752,7 @@ function renderGoals() {
   if (pkiSub) pkiSub.style.display = state.goal === 'pki' ? 'block' : 'none';
   const btn = document.getElementById('btn-next-1');
   if (btn) {
-    const ready = state.goal === 'local' || state.goal === 'pki' || (state.goal === 'dtm' && state.subgoal);
+    const ready = (state.goal === 'local' && state.localSubgoal) || state.goal === 'pki' || (state.goal === 'dtm' && state.subgoal);
     btn.disabled = !ready;
   }
 }
@@ -1791,7 +1824,8 @@ function setState(key, val) {
 function goToStep(n) {
   // New sequence: 1=Goal, 2=Hardware, 3=OS, 4=Instructions
   if (n > 1 && !state.goal) return;
-  if (n > 1 && state.goal === 'dtm' && !state.subgoal) return;
+  if (n > 1 && state.goal === 'dtm'   && !state.subgoal)      return;
+  if (n > 1 && state.goal === 'local' && !state.localSubgoal) return;
   if (n > 2 && !state.board) return;
   if (n > 3 && !state.os) return;
   [1,2,3,4].forEach(i => {
