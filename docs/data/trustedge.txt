@@ -659,3 +659,113 @@ Copyright (c) 2026 Digicert Inc
   Version: 24.7.2-5230
   Build: Release (TAP-Local)
   Date: 2026-06-03 05:37
+  Usage: mqtt [Options]
+  Options:
+    --help                                              Display this help menu
+    --mqtt_servername <servername>                      MQTT broker to connect to
+    --mqtt_port <port>                                  Network port used for connection
+    --mqtt_client_id <id>                               Client ID used for MQTT connection
+    --mqtt_version <version>                            Version of MQTT to negotiate
+                                                            5 (default)
+                                                            3.1.1
+    --print_hex_bytes                                   Display payload in hex bytes
+    --mqtt_sub_topic <topic>                            Subscribe to topic. Can be specified multiple times
+    --mqtt_sub_topic_no_local_option                    Pass this in to not receive messages published by this client.
+                                                        Applies to the most recently passed in --mqtt_sub_topic
+    --mqtt_sub_topic_retain_as_published                Messages on this subscription keep the retain flag they were published with.
+                                                        Applies to the most recently passed in --mqtt_sub_topic
+    --mqtt_sub_topic_retain_handling <0|1|2>            Control retained message behaviour on connection establishment.
+                                                        Applies to the most recently passed in --mqtt_sub_topic
+                                                            0: Receive retained messages on subscribe (default)
+                                                            1: Receive retained messages only if the subscription does not exist
+                                                            2: Do not receive retained messages
+    --mqtt_sub_topic_single                             Send separate subscribe messages per topic
+    --mqtt_unsub_topic <topic>                          Unsubscribe to a topic. Can be specified multiple times
+    --mqtt_unsub_topic_single                           Send separate unsubscribe messages per topic
+    --mqtt_pub_topic <topic>                            Publish topic. Can be specified multiple times
+    --mqtt_pub_message <message>                        Publish message, applies to most recently passed in --mqtt_pub_topic.
+                                                        Can be specified multiple times
+    --mqtt_pub_file <file>                              Publish file contents, applies to most recently passed in --mqtt_pub_topic.
+                                                        Can be specified multiple times
+    --mqtt_pub_qos <0|1|2>                              Set the QoS level for the most recently specified message.
+                                                        Applies to most recently passed in --mqtt_pub_message/--mqtt_pub_file.
+                                                            0: At most once  - No acknowledgement, messages may be lost. (default)
+                                                            1: At least once - Acknowledged delivery, possible duplicates.
+                                                            2: Exactly once  - Acknowledged delivery, no duplicates.
+    --mqtt_pub_retain                                   Set the retain flag when publishing a message.
+                                                        Applies to most recently passed in --mqtt_pub_message/--mqtt_pub_file.
+    --mqtt_clean_start                                  Set clean start to disable resuming from a session
+    --mqtt_session_expiry_interval <seconds>            Set the session expiry interval in seconds. Determines how long the
+                                                        session is persisted after the connection is closed.
+                                                            0: Session ends once network connection is closed (default)
+                                                            1 - 4294967294: Session is persisted for this many seconds
+                                                            4294967295: Session does not expire
+                                                        session is persisted after the connection is closed.
+    --mqtt_keep_alive <seconds>                         Keep alive time in seconds
+    --mqtt_username <username>                          Optional username sent in the connect
+    --mqtt_password <password>                          Optional password sent in the connect
+    --mqtt_will_topic <topic>                           Set the will topic
+    --mqtt_will_message <message>                       Set the will message
+    --mqtt_will_qos <0|1|2>                             Set the will QoS level
+    --mqtt_will_retain                                  Set the will retain flag
+    --mqtt_connect_properties <property> <value>        Set MQTT Connect Properties
+     Supported Connect Properties:
+        session_expiry_interval <seconds>               Session expiry interval in seconds.
+        receive_maximum <value>                         The number of QoS 1 and QoS 2 messages the client can process concurrently.
+        max_packet_size <bytes>                         Maximum packet size the client is willing to receive in bytes
+        topic_alias_max <value>                         Highest value the client is willing to accept as topic alias
+        request_response_info                           Set request_response_info to request response information in the CONNACK packet
+        request_problem_info                            Set request_problem_info to indicate whether reason strings or user properties should be sent in case of failures
+        user_property <key> <value>                     Set connect user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_publish_properties <property> <value>        Set MQTT Publish Properties
+     Supported Publish Properties:
+        payload_format_indicator <0|1>                  Set the payload format indicator
+                                                            0: Unspecified Bytes
+                                                            1: UTF-8 Encoded Character Data
+        message_expiry_interval <seconds>               Set the message expiry interval in seconds
+        topic_alias <value>                             Set the topic alias value
+        response_topic <topic>                          Set the response topic
+        correlation_data <data>                         Set the correlation data
+        content_type <type>                             Set the content type
+        user_property <key> <value>                     Set publish user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_subscribe_properties <property> <value>      Set MQTT Subscribe Properties
+     Supported Subscribe Properties:
+        user_property <key> <value>                         Set subscribe user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_unsubscribe_properties <property> <value>    Set MQTT Unsubscribe Properties
+     Supported Unsubscribe Properties:
+        user_property <key> <value>                     Set unsubscribe user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_disconnect_properties <property> <value>     Set MQTT Disconnect Properties
+     Supported Disconnect Properties:
+        session_expiry_interval <seconds>               Session expiry interval in seconds.
+        user_property <key> <value>                     Set disconnect user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_will_properties <property> <value>           Set MQTT Will Properties
+     Supported Will Properties:
+        message_expiry_interval <seconds>               Set the message expiry interval in seconds
+        content_type                                    Set the content type
+        response_topic                                  Set the response topic
+        correlation_data                                Set the correlation data
+        payload_format_indicator <0|1>                  Set the payload format indicator
+                                                            0: Unspecified Bytes
+                                                            1: UTF-8 Encoded Character Data
+        will_delay_interval <seconds>                   Set the will delay interval in seconds
+        user_property <key> <value>                     Set will user property with the specified key and value
+                                                        Can be specified multiple times
+    --mqtt_transport <transport>                        Choose the transport used for MQTT connection
+                                                            TCP (default)
+                                                            SSL
+    --ssl_ca_file <file>                                Only applies if transport is SSL. SSL CA certificate file
+    --ssl_allow_untrusted                               Only applies if transport is SSL. Allow untrusted certificates for SSL
+    --ssl_key_file <file>                               Only applies if transport is SSL. SSL key file for client authentication
+    --ssl_cert_file <file>                              Only applies if transport is SSL. SSL certificate file for client authentication
+    --proxy <proxy>                                     Connect using proxy. Following formats allowed
+                                                            http://[username:password@]hostname:port
+                                                            https://[username:password@]hostname:port
+    --require-pqc                                       Enforce usage of PQC algorithms
+
+     Note: MQTT v3.1.1 does not support properties
+
