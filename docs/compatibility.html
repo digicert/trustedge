@@ -686,7 +686,7 @@
   <div class="step-panel active" id="panel-1">
     <div class="step-header">
       <h2>Choose Your Hardware</h2>
-      <p>Select your board or CPU. <span onclick="filterCat('simulation')" style="color:var(--brand);cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:2px;" title="Filter to simulation options">⚡ No device yet? Run your full PoV on your laptop in minutes.</span></p>
+      <p>Select your board or CPU. <span onclick="filterCat('simulation')" style="color:var(--brand);cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:2px;" title="Filter to simulation options">⚡ No device yet? Run Simulation in a matter of minutes.</span></p>
     </div>
     <div class="cat-tabs" id="cat-tabs">
       <div class="cat-tab active" onclick="filterCat('all')">All Platforms</div>
@@ -697,6 +697,18 @@
       <div class="cat-tab" onclick="filterCat('linux')">Linux</div>
       <div class="cat-tab windows-tab" onclick="filterCat('windows')">Windows</div>
       <div class="cat-tab" onclick="filterCat('simulation')">Simulation</div>
+    </div>
+    <div style="margin:12px 0 8px; position:relative;">
+      <input
+        id="board-search"
+        type="text"
+        placeholder="Search boards — e.g. Raspberry Pi, Jetson, x86, TPM…"
+        oninput="filterBoardSearch(this.value)"
+        style="width:100%;box-sizing:border-box;padding:9px 12px 9px 36px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:14px;outline:none;transition:border-color .15s;"
+        onfocus="this.style.borderColor='var(--brand)'"
+        onblur="this.style.borderColor='var(--border)'"
+      />
+      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;opacity:.5;">🔍</span>
     </div>
     <div class="board-grid" id="board-grid"></div>
     <div class="nav-row" style="margin-top:16px;">
@@ -1508,10 +1520,27 @@ function osIcon(type) {
 
 let currentCat = 'all';
 
+let boardSearchQuery = '';
+
+function filterBoardSearch(q) {
+  boardSearchQuery = q.trim().toLowerCase();
+  // Clear category tab highlight while searching
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  if (!boardSearchQuery) {
+    // Restore "All Platforms" active state when search is cleared
+    currentCat = 'all';
+    document.querySelectorAll('.cat-tab')[0].classList.add('active');
+  }
+  renderBoards();
+}
+
 function filterCat(cat) {
   currentCat = cat;
+  boardSearchQuery = '';
+  const searchEl = document.getElementById('board-search');
+  if (searchEl) searchEl.value = '';
   document.querySelectorAll('.cat-tab').forEach(t => {
-    const isAll  = cat === 'all' && t.textContent.trim() === 'All Platforms';
+    const isAll   = cat === 'all' && t.textContent.trim() === 'All Platforms';
     const isMatch = t.textContent.toLowerCase().includes(cat);
     t.classList.toggle('active', isAll || isMatch);
   });
@@ -1520,10 +1549,17 @@ function filterCat(cat) {
 
 function renderBoards() {
   const grid = document.getElementById('board-grid');
-  const filtered = currentCat === 'all' ? BOARDS
+  let filtered = currentCat === 'all' ? BOARDS
     : currentCat === 'x86_64'  ? BOARDS.filter(b => b.arch === 'x86_64'  && b.cat !== 'windows' && b.cat !== 'simulation')
     : currentCat === 'aarch64' ? BOARDS.filter(b => b.arch === 'aarch64' && b.cat !== 'simulation')
     : BOARDS.filter(b => b.cat === currentCat);
+  if (boardSearchQuery) {
+    filtered = BOARDS.filter(b =>
+      [b.name, b.cpu, b.archLabel, b.cat, b.vendor || ''].some(f =>
+        f.toLowerCase().includes(boardSearchQuery)
+      )
+    );
+  }
   grid.innerHTML = filtered.map(b => `
     <div class="board-card ${state.board === b.id ? 'selected' : ''} ${b.vendor === 'onlogic' ? 'onlogic-card' : ''} ${b.cat === 'windows' ? 'windows-card' : ''}"
          onclick="selectBoard('${b.id}')">
@@ -1552,10 +1588,11 @@ function renderBoards() {
 function selectBoard(id) {
   state.board = id;
   state.os = null;
-  // Step 1 is now Hardware — its Next button is btn-next-1
   const btn = document.getElementById('btn-next-1');
   if (btn) btn.disabled = false;
   renderBoards();
+  // Auto-advance to OS step — delay lets the selected state register visually
+  setTimeout(() => goToStep(2), 450);
 }
 
 function renderHardware() {
