@@ -1,22 +1,23 @@
 {
   "x86_64": {
     "prerequisites": {
-      "title": "Install build prerequisites",
+      "title": "Install build dependencies",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y build-essential cmake rpm wget unzip"
+        "sudo apt install -y build-essential cmake rpm"
       ],
       "source_url": "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
       "notes": []
     },
     "install": {
-      "title": "Download and install TrustEdge package",
+      "title": "Install TrustEdge package",
       "commands": [
-        "wget https://github.com/digicert/trustedge/releases/latest/download/trustedge_{{VERSION}}.x86_64.deb",
         "sudo dpkg -i trustedge_{{VERSION}}.x86_64.deb"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-trustedge-on-linux.html",
+      "notes": [
+        "Replace {{VERSION}} with the desired TrustEdge version (e.g., 24.7.2-2187)."
+      ]
     },
     "tpm_provision": {
       "title": "Reset and provision TPM2 device",
@@ -26,14 +27,14 @@
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/generate-hardware-based-private-key-tpm2.html",
       "notes": [
-        "Assumes TPM device is /dev/tpm0"
+        "Assumes TPM device is /dev/tpm0; adjust if different."
       ]
     },
     "cert_selfsigned": {
-      "title": "Generate self\u2011signed ML\u2011DSA certificates for PQC demo",
+      "title": "Generate self\u2011signed ML\u2011DSA root CA and server certificates",
       "commands": [
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651",
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem"
+        "trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651",
+        "trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
       "notes": []
@@ -63,7 +64,7 @@
       "notes": []
     },
     "run_agent": {
-      "title": "Configure and start TrustEdge agent",
+      "title": "Configure and start the TrustEdge agent",
       "commands": [
         "sudo trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>",
         "sudo systemctl start trustedge.service"
@@ -72,12 +73,12 @@
       "notes": []
     },
     "pqc_demo": {
-      "title": "Run PQC MQTT subscriber and publisher scripts",
+      "title": "Run the PQC demo scripts (publisher and consumer)",
       "commands": [
-        "chmod +x consumer.sh",
-        "./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore",
         "chmod +x publisher.sh",
-        "./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore"
+        "chmod +x consumer.sh",
+        "./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore",
+        "./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
       "notes": []
@@ -94,22 +95,23 @@
   },
   "aarch64": {
     "prerequisites": {
-      "title": "Install build prerequisites",
+      "title": "Install build dependencies",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y build-essential cmake rpm wget unzip"
+        "sudo apt install -y build-essential cmake rpm"
       ],
       "source_url": "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
       "notes": []
     },
     "install": {
-      "title": "Download and install TrustEdge package for AArch64",
+      "title": "Install TrustEdge package",
       "commands": [
-        "wget https://github.com/digicert/trustedge/releases/latest/download/trustedge_{{VERSION}}.aarch64.deb",
         "sudo dpkg -i trustedge_{{VERSION}}.aarch64.deb"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-trustedge-on-linux.html",
+      "notes": [
+        "Replace {{VERSION}} with the desired TrustEdge version."
+      ]
     },
     "tpm_provision": {
       "title": "Reset and provision TPM2 device",
@@ -119,14 +121,14 @@
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/generate-hardware-based-private-key-tpm2.html",
       "notes": [
-        "Assumes TPM device is /dev/tpm0"
+        "Assumes TPM device is /dev/tpm0."
       ]
     },
     "cert_selfsigned": {
-      "title": "Generate self\u2011signed ML\u2011DSA certificates for PQC demo",
+      "title": "Generate self\u2011signed ML\u2011DSA root CA and server certificates",
       "commands": [
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651",
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem"
+        "trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651",
+        "trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
       "notes": []
@@ -156,7 +158,7 @@
       "notes": []
     },
     "run_agent": {
-      "title": "Configure and start TrustEdge agent",
+      "title": "Configure and start the TrustEdge agent",
       "commands": [
         "sudo trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>",
         "sudo systemctl start trustedge.service"
@@ -165,12 +167,12 @@
       "notes": []
     },
     "pqc_demo": {
-      "title": "Run PQC MQTT subscriber and publisher scripts",
+      "title": "Run the PQC demo scripts (publisher and consumer)",
       "commands": [
-        "chmod +x consumer.sh",
-        "./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore",
         "chmod +x publisher.sh",
-        "./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore"
+        "chmod +x consumer.sh",
+        "./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore",
+        "./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
       "notes": []
@@ -187,22 +189,23 @@
   },
   "arm32": {
     "prerequisites": {
-      "title": "Install build prerequisites",
+      "title": "Install build dependencies",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y build-essential cmake rpm wget unzip"
+        "sudo apt install -y build-essential cmake rpm"
       ],
       "source_url": "https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md",
       "notes": []
     },
     "install": {
-      "title": "Download and install TrustEdge package for ARM32",
+      "title": "Install TrustEdge package",
       "commands": [
-        "wget https://github.com/digicert/trustedge/releases/latest/download/trustedge_{{VERSION}}.arm.deb",
         "sudo dpkg -i trustedge_{{VERSION}}.arm.deb"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
-      "notes": []
+      "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-trustedge-on-linux.html",
+      "notes": [
+        "Replace {{VERSION}} with the desired TrustEdge version."
+      ]
     },
     "tpm_provision": {
       "title": "Reset and provision TPM2 device",
@@ -212,14 +215,14 @@
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/generate-hardware-based-private-key-tpm2.html",
       "notes": [
-        "Assumes TPM device is /dev/tpm0"
+        "Assumes TPM device is /dev/tpm0."
       ]
     },
     "cert_selfsigned": {
-      "title": "Generate self\u2011signed ML\u2011DSA certificates for PQC demo",
+      "title": "Generate self\u2011signed ML\u2011DSA root CA and server certificates",
       "commands": [
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651",
-        "sudo trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem"
+        "trustedge certificate -a QS -g MLDSA_44 -o CA.pem -x CA.pem -i ca_csr.cnf -da 3651",
+        "trustedge certificate -a QS -g MLDSA_44 -o server.pem -x server.pem -i server_csr.cnf -da 3651 -sk CA.pem -sc CA.pem"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
       "notes": []
@@ -249,7 +252,7 @@
       "notes": []
     },
     "run_agent": {
-      "title": "Configure and start TrustEdge agent",
+      "title": "Configure and start the TrustEdge agent",
       "commands": [
         "sudo trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>",
         "sudo systemctl start trustedge.service"
@@ -258,12 +261,12 @@
       "notes": []
     },
     "pqc_demo": {
-      "title": "Run PQC MQTT subscriber and publisher scripts",
+      "title": "Run the PQC demo scripts (publisher and consumer)",
       "commands": [
-        "chmod +x consumer.sh",
-        "./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore",
         "chmod +x publisher.sh",
-        "./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore"
+        "chmod +x consumer.sh",
+        "./publisher.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore",
+        "./consumer.sh --broker mqtt-pqc-broker --port 8883 --keystore /etc/digicert/keystore"
       ],
       "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
       "notes": []
@@ -280,48 +283,61 @@
   },
   "zephyr": {
     "prerequisites": {
-      "title": "Install Zephyr build dependencies",
+      "title": "Install Zephyr build prerequisites",
       "commands": [
         "sudo apt update",
-        "sudo apt install -y git wget unzip"
+        "sudo apt install -y git python3-pip",
+        "pip3 install west"
       ],
       "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html",
       "notes": []
     },
     "install": {
-      "title": "Clone TrustCore repository and build TrustEdge for Zephyr",
+      "title": "Build TrustEdge for Zephyr",
       "commands": [
         "git clone https://github.com/digicert/trustcore.git",
         "cd trustcore",
         "./scripts/ci/trustedge/ci_trustedge_build_zephyr.sh --zephyr-install",
-        "./scripts/ci/trustedge/ci_trustedge_build_zephyr.sh --board native_sim"
-      ],
-      "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html",
-      "notes": []
-    },
-    "run_cli": {
-      "title": "Run TrustEdge binary on Zephyr native simulation",
-      "commands": [
+        "cd ${ZEPHYR_BASE}",
+        "git apply <path-to>/trustedge_zephyr.patch",
+        "cd ${TRUSTCORE}",
+        "./scripts/ci/trustedge/ci_trustedge_build_zephyr.sh --board native_sim",
         "./bin/trustedge"
       ],
       "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html",
+      "notes": [
+        "Replace <path-to> with the actual path to the Zephyr patch file."
+      ]
+    },
+    "run_cli": {
+      "title": "Run TrustEdge MQTT client on Zephyr",
+      "commands": [
+        "trustedge mqtt --mqtt_servername broker.hivemq.com --mqtt_pub_topic house/bulb1 --mqtt_pub_message \"test message\" --mqtt_port 1883 --mqtt_clean_start"
+      ],
+      "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge-mqtt.html",
       "notes": []
     },
     "run_agent": {
-      "title": "Start TrustEdge agent on Zephyr device",
+      "title": "Start TrustEdge agent on Zephyr",
       "commands": [
-        "trustedge agent"
+        "trustedge agent --configure --trustedge-user trustedge --trustedge-group trustedge --bootstrap-zip ./<guid.zip>"
       ],
-      "source_url": "https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html",
-      "notes": [
-        "Zephyr builds expose the same CLI commands as the Linux binary"
-      ]
+      "source_url": "https://dev.digicert.com/trustedge/cli-reference/trustedge-agent.html",
+      "notes": []
+    },
+    "verify": {
+      "title": "Verify a generated certificate on Zephyr",
+      "commands": [
+        "trustedge certificate -pc /etc/digicert/keystore/certs/server.pem"
+      ],
+      "source_url": "https://dev.digicert.com/trustedge/tutorials/using-pqc-to-secure-mqtt-with-trustedge.html",
+      "notes": []
     }
   },
   "meta": {
-    "version": "latest",
+    "version": "master",
     "model_used": "openai/gpt-oss-120b:fastest",
-    "generated_at": "2026-09-11T04:27:44.438517Z",
+    "generated_at": "2026-10-06T09:41:34.549575Z",
     "hallucination_warnings": 0,
     "sources_consulted": [
       {
