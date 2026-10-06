@@ -76,20 +76,20 @@ Add:
 SERIAL_NUMBER=123ABC
 ```
 
-5. Reload systemd and restart the service:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl restart trustedge.service
-```
-
-6. Configure the TrustEdge agent using the bootstrap ZIP downloaded from Device Trust Manager:
+5. Configure the TrustEdge agent using the bootstrap ZIP downloaded from Device Trust Manager:
 
 ```bash
 sudo trustedge agent --configure --bootstrap-zip /path/to/downloaded/bootstrap.zip
 ```
 
 Replace `/path/to/downloaded/bootstrap.zip` with the actual file you downloaded from Device Trust Manager.
+
+6. Reload systemd and restart the service:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart trustedge.service
+```
 
 ## Option 2: Set the variable directly in the service
 
