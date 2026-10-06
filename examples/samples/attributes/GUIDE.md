@@ -14,7 +14,7 @@ cp root.pem ica.pem /etc/digicert/keystore/ca/
 
 Example: use your real CA and ICA certificate files instead of the placeholders `root.pem` and `ica.pem`.
 
-2. Make sure the sample file [attributes.json](attributes.json) is present at `/etc/digicert/conf/attributes.json` before starting the agent. This file contains your custom inventory attributes.
+2. Make sure the sample file [attributes.json](attributes.json) is present at `/etc/digicert/conf/attributes.json` before starting the agent. This file contains your custom inventory attributes. Example below just sets variable "SERIAL_NUMBER" as environment variable and same TrustEdge can read and map to the certifcate issued from Device Trust Manager.
 
 ```bash 
 {
