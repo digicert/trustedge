@@ -432,213 +432,186 @@
     <span style="font-size:20px; font-weight:800; letter-spacing:-0.5px;">DigiCert TrustEdge</span>
   </div>
   <div class="header-badge">Platform Setup Guide</div>
-  <h1>Keys. Certs. MQTT. Lifecycle.</h1>
-  <p>TrustEdge does what OpenSSL does — then hands your device to Device Trust Manager. PQC-ready, cloud-connected, any platform.</p>
+  <h1>Cert Lifecycle . MQTT . EST</h1>
+  <p>Your device, any OS, any cloud, fast production . TrustEdge handles the trust - PQC-ready.</p>
 
   <!-- Architecture diagram: Device Trust Manager (north) → TrustEdge devices (south) + Servers (east) -->
   <div class="header-diagram">
-    <svg viewBox="0 0 860 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="TrustEdge architecture: Device Trust Manager issues certificates to devices and servers, enabling secure TLS pipelines">
+    <!--
+      Layout (viewBox 820 × 220):
+      ┌──────────────────────────────────┐   ← DTM (top-center)
+      │   Device Trust Manager  [CA]     │
+      └────────────┬─────────────────────┘
+          dotted   │cert              dotted
+          cert ↓   │issuance     cert ↓
+      ┌────────────┴──┐    🔒    ┌────────────────────┐
+      │  TrustEdge    │←────────→│  Any TLS 1.3 Server│
+      │  Agent        │ Mutual   │  MQTTS · HTTPS      │
+      │  (device)     │ TLS 1.3  │  EAP-TLS · 802.1X  │
+      └───────────────┘          └────────────────────┘
+    -->
+    <svg viewBox="0 0 820 220" fill="none" xmlns="http://www.w3.org/2000/svg"
+         aria-label="Device Trust Manager issues x.509 certificates to TrustEdge devices and any TLS 1.3 server, enabling mutual-auth secure pipelines">
       <defs>
-        <!-- Glow filter for nodes -->
-        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="4" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+          <feGaussianBlur stdDeviation="3.5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
-        <!-- Arrow markers -->
-        <marker id="arrowW" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 Z" fill="rgba(255,255,255,0.6)"/>
-        </marker>
-        <marker id="arrowWL" markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto">
-          <path d="M8,0 L8,6 L0,3 Z" fill="rgba(255,255,255,0.6)"/>
-        </marker>
-        <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
           <path d="M0,0 L0,6 L8,3 Z" fill="#4ADE80"/>
         </marker>
-        <marker id="arrowGreenL" markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto">
+        <marker id="arrowGreenL" markerWidth="8" markerHeight="8" refX="1" refY="3" orient="auto">
           <path d="M8,0 L8,6 L0,3 Z" fill="#4ADE80"/>
         </marker>
       </defs>
 
-      <!-- ══════════════════════════════════════════════════════════════
-           NORTH: Device Trust Manager cloud node
-           ══════════════════════════════════════════════════════════════ -->
-      <!-- Node background -->
-      <rect x="290" y="10" width="280" height="74" rx="14" fill="rgba(0,55,133,0.85)" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" filter="url(#glow)"/>
-      <!-- Cloud icon: contained in left 48px strip, centered vertically -->
-      <g transform="translate(306,22)">
-        <path d="M12 22 Q5 22 5 16 Q5 10 10 9 Q10 3 17 3 Q23 3 24 8 Q28 8 28 13 Q28 18 23 18 L12 18 Q8 18 12 22Z" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.5"/>
-        <circle cx="10" cy="25" r="2" fill="rgba(255,255,255,0.45)"/>
-        <line x1="10" y1="23" x2="10" y2="27" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
-        <circle cx="17" cy="25" r="2" fill="rgba(255,255,255,0.45)"/>
-        <line x1="17" y1="23" x2="17" y2="27" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
-        <circle cx="24" cy="25" r="2" fill="rgba(255,255,255,0.45)"/>
-        <line x1="24" y1="23" x2="24" y2="27" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+      <!-- ── DTM: top-center authority node ── -->
+      <rect x="240" y="10" width="340" height="66" rx="14"
+            fill="rgba(0,40,120,0.90)" stroke="rgba(255,255,255,0.30)" stroke-width="1.5"
+            filter="url(#glow)"/>
+      <!-- shield icon -->
+      <g transform="translate(258,22)">
+        <path d="M14 2 L24 6 V14 C24 20 19 25 14 27 C9 25 4 20 4 14 V6 Z"
+              fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.6)" stroke-width="1.4"/>
+        <path d="M10 14 L13 17 L18 11" stroke="#4ADE80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
-      <!-- Vertical divider between icon and text -->
-      <line x1="348" y1="20" x2="348" y2="74" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <!-- Device Trust Manager text block: anchored to x=356 (left of text zone), centered at y -->
-      <text x="430" y="37" text-anchor="middle" fill="white" font-size="13" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="-0.3">Device Trust Manager</text>
-      <text x="430" y="52" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9.5" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.8">DigiCert SaaS · Certificate Authority</text>
-      <!-- PQC badge -->
-      <rect x="362" y="60" width="136" height="16" rx="8" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
-      <text x="430" y="72" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9.5" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">ML-DSA · ML-KEM · ECDSA · RSA</text>
-
-      <!-- ══════════════════════════════════════════════════════════════
-           SOUTH: TrustEdge Devices (4 device nodes)
-           ══════════════════════════════════════════════════════════════ -->
-      <!-- Device 1: IoT/Embedded -->
-      <g transform="translate(36,210)">
-        <rect width="100" height="70" rx="10" fill="rgba(0,55,133,0.7)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-        <!-- chip icon -->
-        <rect x="28" y="10" width="44" height="30" rx="4" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
-        <rect x="34" y="16" width="32" height="18" rx="2" fill="rgba(0,163,224,0.4)"/>
-        <text x="50" y="29" text-anchor="middle" fill="white" font-size="8" font-weight="800" font-family="monospace">MCU</text>
-        <!-- pins -->
-        <line x1="28" y1="17" x2="23" y2="17" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-        <line x1="28" y1="23" x2="23" y2="23" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-        <line x1="28" y1="29" x2="23" y2="29" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-        <line x1="72" y1="17" x2="77" y2="17" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-        <line x1="72" y1="23" x2="77" y2="23" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-        <line x1="72" y1="29" x2="77" y2="29" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-        <text x="50" y="56" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">IoT Device</text>
-        <text x="50" y="67" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="8" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Zephyr / ARM</text>
+      <!-- cloud icon -->
+      <g transform="translate(282,24)">
+        <path d="M8 17 Q3 17 3 12 Q3 7 7 6.5 Q7 2 13 2 Q18 2 19 6 Q22 6 22 10 Q22 14 18 14 L8 14 Q5 14 8 17Z"
+              fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.3"/>
       </g>
-
-      <!-- Device 2: Edge Gateway -->
-      <g transform="translate(158,210)">
-        <rect width="100" height="70" rx="10" fill="rgba(0,55,133,0.7)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-        <rect x="20" y="10" width="60" height="36" rx="4" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
-        <rect x="24" y="14" width="52" height="4" rx="2" fill="rgba(0,163,224,0.5)"/>
-        <rect x="24" y="20" width="52" height="4" rx="2" fill="rgba(0,163,224,0.3)"/>
-        <rect x="24" y="26" width="52" height="4" rx="2" fill="rgba(0,163,224,0.2)"/>
-        <rect x="24" y="32" width="52" height="4" rx="2" fill="rgba(0,163,224,0.15)"/>
-        <circle cx="75" cy="49" r="4" fill="none" stroke="rgba(74,222,128,0.7)" stroke-width="1.5"/>
-        <circle cx="75" cy="49" r="1.5" fill="rgba(74,222,128,0.9)"/>
-        <text x="50" y="56" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Edge Gateway</text>
-        <text x="50" y="67" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="8" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">x86-64 / ARM64</text>
-      </g>
-
-      <!-- Device 3: Industrial SBC -->
-      <g transform="translate(280,210)">
-        <rect width="100" height="70" rx="10" fill="rgba(0,55,133,0.7)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-        <rect x="18" y="8" width="64" height="40" rx="4" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-        <rect x="22" y="12" width="28" height="28" rx="2" fill="rgba(0,96,204,0.5)"/>
-        <text x="36" y="30" text-anchor="middle" fill="white" font-size="8" font-weight="800" font-family="monospace">CPU</text>
-        <rect x="54" y="12" width="24" height="12" rx="2" fill="rgba(0,163,224,0.4)"/>
-        <text x="66" y="22" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="7" font-weight="700" font-family="monospace">TPM</text>
-        <rect x="54" y="28" width="24" height="12" rx="2" fill="rgba(255,255,255,0.1)"/>
-        <text x="66" y="38" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="6" font-family="monospace">RAM</text>
-        <text x="50" y="56" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Industrial SBC</text>
-        <text x="50" y="67" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="8" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">NXP / RPi / OnLogic</text>
-      </g>
-
-      <!-- TrustEdge Agent banner across devices -->
-      <rect x="30" y="285" width="356" height="13" rx="6" fill="rgba(0,163,224,0.2)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
-      <text x="208" y="295" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">TrustEdge Agent · x.509 Birth &amp; Operational Certificates</text>
-
-      <!-- ══════════════════════════════════════════════════════════════
-           EAST: Servers
-           ══════════════════════════════════════════════════════════════ -->
-      <!-- MQTT Broker -->
-      <g transform="translate(680,60)">
-        <rect width="150" height="50" rx="10" fill="rgba(0,55,133,0.65)" stroke="rgba(0,163,224,0.5)" stroke-width="1.5"/>
-        <!-- server stack icon -->
-        <rect x="10" y="10" width="30" height="6" rx="2" fill="rgba(0,163,224,0.6)"/>
-        <rect x="10" y="19" width="30" height="6" rx="2" fill="rgba(0,163,224,0.4)"/>
-        <rect x="10" y="28" width="30" height="6" rx="2" fill="rgba(0,163,224,0.25)"/>
-        <circle cx="36" cy="13" r="2" fill="rgba(74,222,128,0.9)"/>
-        <circle cx="36" cy="22" r="2" fill="rgba(74,222,128,0.6)"/>
-        <text x="90" y="23" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">MQTT Broker</text>
-        <text x="90" y="37" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">MQTTS · TLS 1.3</text>
-      </g>
-
-      <!-- HTTPS / REST Server -->
-      <g transform="translate(680,130)">
-        <rect width="150" height="50" rx="10" fill="rgba(0,55,133,0.65)" stroke="rgba(0,163,224,0.5)" stroke-width="1.5"/>
-        <rect x="10" y="10" width="30" height="6" rx="2" fill="rgba(0,163,224,0.6)"/>
-        <rect x="10" y="19" width="30" height="6" rx="2" fill="rgba(0,163,224,0.4)"/>
-        <rect x="10" y="28" width="30" height="6" rx="2" fill="rgba(0,163,224,0.25)"/>
-        <circle cx="36" cy="13" r="2" fill="rgba(74,222,128,0.9)"/>
-        <circle cx="36" cy="22" r="2" fill="rgba(74,222,128,0.6)"/>
-        <text x="90" y="23" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">HTTPS Server</text>
-        <text x="90" y="37" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">mTLS · REST API</text>
-      </g>
-
-      <!-- Wi-Fi RADIUS -->
-      <g transform="translate(680,200)">
-        <rect width="150" height="50" rx="10" fill="rgba(0,55,133,0.65)" stroke="rgba(0,163,224,0.5)" stroke-width="1.5"/>
-        <rect x="10" y="10" width="30" height="6" rx="2" fill="rgba(0,163,224,0.6)"/>
-        <rect x="10" y="19" width="30" height="6" rx="2" fill="rgba(0,163,224,0.4)"/>
-        <rect x="10" y="28" width="30" height="6" rx="2" fill="rgba(0,163,224,0.25)"/>
-        <circle cx="36" cy="13" r="2" fill="rgba(74,222,128,0.9)"/>
-        <circle cx="36" cy="22" r="2" fill="rgba(74,222,128,0.6)"/>
-        <text x="90" y="23" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Wi-Fi RADIUS</text>
-        <text x="90" y="37" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">EAP-TLS 1.3 · 802.1X</text>
-      </g>
-
-      <!-- Server label bar -->
-      <rect x="674" y="258" width="162" height="13" rx="6" fill="rgba(0,163,224,0.2)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
-      <text x="755" y="268" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">Passwordless Server Auth</text>
-
-      <!-- ══════════════════════════════════════════════════════════════
-           DOTTED CERT ISSUANCE LINES: DTM → Devices
-           ══════════════════════════════════════════════════════════════ -->
-      <!-- DTM to Device 1 -->
-      <path d="M 370,82 C 340,140 156,180 86,210" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0s"/>
-      <!-- DTM to Device 2 -->
-      <path d="M 400,82 C 380,140 248,180 208,210" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0.4s"/>
-      <!-- DTM to Device 3 -->
-      <path d="M 430,82 C 420,145 360,180 330,210" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0.8s"/>
-
-      <!-- Labels: one per DTM→Device line -->
-      <!-- Line 1 (leftmost, to device 1): Zero Touch Provisioning -->
-      <text x="200" y="148" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="8" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="translate(0,-20) rotate(-55,200,148)">Zero Touch Provisioning</text>
-      <!-- Line 2 (middle, to device 2): OTA Update -->
-      <text x="290" y="180" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="8" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(-42,290,180)">OTA Update</text>
-
-      <!-- Line 3 (rightmost, to device 3): Cert Lifecycle -->
-      <text x="378" y="190" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="8" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(-28,378,190)">Cert Lifecycle Mgmt</text>
-
-      <!-- ══════════════════════════════════════════════════════════════
-           DOTTED CERT ISSUANCE LINES: DTM → Servers
-           ══════════════════════════════════════════════════════════════ -->
-      <!-- DTM to MQTT -->
-      <path d="M 570,46 C 620,46 660,70 680,80" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0.2s"/>
-      <!-- DTM to HTTPS -->
-      <path d="M 570,52 C 620,90 655,130 680,150" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:0.6s"/>
-      <!-- DTM to RADIUS -->
-      <path d="M 570,60 C 620,130 650,185 680,218" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" class="cert-line" style="animation-delay:1s"/>
-
-      <!-- Cert label right side -->
-      <text x="640" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="600" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" transform="rotate(30,640,120)">mTLS · Policy-managed</text>
-
-      <!-- ══════════════════════════════════════════════════════════════
-           SECURE DATA PIPELINE: Devices ↔ Servers (horizontal, mid)
-           ══════════════════════════════════════════════════════════════ -->
-      <!-- Pipeline track -->
-      <line x1="390" y1="248" x2="676" y2="180" stroke="rgba(74,222,128,0.18)" stroke-width="8" stroke-linecap="round"/>
-      <!-- Animated flow line -->
-      <line x1="390" y1="248" x2="676" y2="180" stroke="rgba(74,222,128,0.7)" stroke-width="2" stroke-dasharray="10 6" fill="none" class="pipe-line" marker-end="url(#arrowGreen)" marker-start="url(#arrowGreenL)"/>
-      <!-- Pipeline label -->
-      <text fill="rgba(74,222,128,0.9)" font-size="10" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-        <textPath href="#pipeLabel" startOffset="10%">🔒 Data Pipeline · MQTTS / HTTPS / EAP-TLS 1.3</textPath>
+      <!-- divider -->
+      <line x1="314" y1="18" x2="314" y2="68" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      <!-- title -->
+      <text x="410" y="34" text-anchor="middle" fill="white"
+            font-size="14" font-weight="800"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif"
+            letter-spacing="-0.3">Device Trust Manager</text>
+      <text x="410" y="50" text-anchor="middle" fill="rgba(255,255,255,0.62)"
+            font-size="10" font-weight="600"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif"
+            letter-spacing="0.5">CA . OTA . Zero Touch Provisioning </text>
+      <!-- PQC pill -->
+      <rect x="318" y="57" width="184" height="14" rx="7"
+            fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <text x="410" y="67.5" text-anchor="middle" fill="rgba(255,255,255,0.80)"
+            font-size="9" font-weight="700"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+        ML-DSA · ML-KEM · ECDSA · RSA
       </text>
-      <path id="pipeLabel" d="M 390,244 L 676,176" fill="none"/>
 
-      <!-- ══════════════════════════════════════════════════════════════
-           ZONE LABELS
-           ══════════════════════════════════════════════════════════════ -->
-      <!-- North label -->
-      <rect x="4" y="10" width="60" height="16" rx="8" fill="rgba(255,255,255,0.1)"/>
-      <text x="34" y="22" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">CLOUD</text>
+      <!-- ── LEFT box: TrustEdge Device / Client ── -->
+      <rect x="24" y="130" width="230" height="76" rx="13"
+            fill="rgba(0,50,130,0.78)" stroke="rgba(255,255,255,0.28)" stroke-width="1.5"/>
+      <!-- chip icon — left-anchored -->
+      <g transform="translate(36,141)">
+        <rect width="38" height="28" rx="5" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.38)" stroke-width="1.2"/>
+        <rect x="5" y="5" width="28" height="18" rx="3" fill="rgba(0,163,224,0.45)"/>
+        <text x="19" y="17.5" text-anchor="middle" fill="white" font-size="7.5" font-weight="800" font-family="monospace">MCU</text>
+        <!-- left pins -->
+        <line x1="0" y1="8"  x2="-5" y2="8"  stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+        <line x1="0" y1="14" x2="-5" y2="14" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+        <line x1="0" y1="20" x2="-5" y2="20" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+        <!-- right pins -->
+        <line x1="38" y1="8"  x2="43" y2="8"  stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+        <line x1="38" y1="14" x2="43" y2="14" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+        <line x1="38" y1="20" x2="43" y2="20" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+      </g>
+      <!-- title + subtitle left-aligned after chip (chip right edge + pins ≈ x=79, start at x=90) -->
+      <text x="90" y="155" text-anchor="start" fill="white"
+            font-size="12.5" font-weight="800"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">TrustEdge Agent</text>
+      <text x="90" y="169" text-anchor="start" fill="rgba(255,255,255,0.62)"
+            font-size="9.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">x.509 Birth → Operational Certs</text>
+      <!-- platform form-factor tags -->
+      <rect x="52" y="179" width="46" height="13" rx="6" fill="rgba(0,163,224,0.25)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
+      <text x="75" y="189" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="8" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">IoT Node</text>
+      <rect x="104" y="179" width="44" height="13" rx="6" fill="rgba(0,163,224,0.25)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
+      <text x="126" y="189" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="8" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Edge GW</text>
+      <rect x="154" y="179" width="52" height="13" rx="6" fill="rgba(0,163,224,0.25)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
+      <text x="180" y="189" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="8" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Industrial</text>
+      <rect x="212" y="179" width="26" height="13" rx="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <text x="225" y="189" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="8" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">SBC</text>
 
-      <!-- South label -->
-      <rect x="4" y="192" width="60" height="16" rx="8" fill="rgba(255,255,255,0.1)"/>
-      <text x="34" y="204" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">DEVICES</text>
+      <!-- ── RIGHT box: consolidated TLS 1.3 Services ── -->
+      <rect x="566" y="130" width="230" height="76" rx="13"
+            fill="rgba(0,60,140,0.78)" stroke="rgba(0,163,224,0.45)" stroke-width="1.5"/>
+      <!-- lock icon -->
+      <g transform="translate(582,148)">
+        <rect x="2" y="12" width="22" height="16" rx="4" fill="rgba(0,163,224,0.4)" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
+        <path d="M5 12 V8 Q13 0 21 8 V12" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.4"/>
+        <circle cx="13" cy="19" r="3" fill="rgba(74,222,128,0.85)"/>
+      </g>
+      <text x="700" y="153" text-anchor="middle" fill="white"
+            font-size="12.5" font-weight="800"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">Any TLS 1.3 Server</text>
+      <text x="700" y="168" text-anchor="middle" fill="rgba(255,255,255,0.62)"
+            font-size="9.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+        Cert issued on behalf of your CA
+      </text>
+      <!-- protocol tags -->
+      <rect x="596" y="176" width="42" height="13" rx="6" fill="rgba(0,163,224,0.25)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
+      <text x="617" y="186" text-anchor="middle" fill="rgba(255,255,255,0.80)" font-size="8" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">MQTTS</text>
+      <rect x="644" y="176" width="38" height="13" rx="6" fill="rgba(0,163,224,0.25)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
+      <text x="663" y="186" text-anchor="middle" fill="rgba(255,255,255,0.80)" font-size="8" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">HTTPS</text>
+      <rect x="688" y="176" width="48" height="13" rx="6" fill="rgba(0,163,224,0.25)" stroke="rgba(0,163,224,0.4)" stroke-width="1"/>
+      <text x="712" y="186" text-anchor="middle" fill="rgba(255,255,255,0.80)" font-size="8" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">EAP-TLS</text>
+      <rect x="742" y="176" width="42" height="13" rx="6" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <text x="763" y="186" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="8" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">802.1X</text>
 
-      <!-- East label -->
-      <rect x="720" y="35" width="60" height="16" rx="8" fill="rgba(255,255,255,0.1)"/>
-      <text x="750" y="47" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.5">SERVERS</text>
+      <!-- ── CERT ISSUANCE: DTM → Device (dotted, animated) ── -->
+      <path d="M 330,76 C 290,100 200,115 139,130"
+            stroke="rgba(255,255,255,0.48)" stroke-width="1.6" stroke-dasharray="5 4"
+            fill="none" class="cert-line"/>
+      <!-- label -->
+      <text font-size="9" font-weight="600" fill="rgba(255,255,255,0.50)"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+        <textPath href="#certLabelL" startOffset="12%">issues x.509 cert ↓</textPath>
+      </text>
+      <path id="certLabelL" d="M 310,80 C 270,104 200,116 145,130" fill="none"/>
+
+      <!-- ── CERT ISSUANCE: DTM → Server (dotted, animated) ── -->
+      <path d="M 490,76 C 530,100 620,115 681,130"
+            stroke="rgba(255,255,255,0.48)" stroke-width="1.6" stroke-dasharray="5 4"
+            fill="none" class="cert-line" style="animation-delay:0.5s"/>
+      <!-- label -->
+      <text font-size="9" font-weight="600" fill="rgba(255,255,255,0.50)"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+        <textPath href="#certLabelR" startOffset="12%">issues x.509 cert ↓</textPath>
+      </text>
+      <path id="certLabelR" d="M 510,80 C 550,104 620,116 675,130" fill="none"/>
+
+      <!-- ── SECURE MUTUAL TLS PIPELINE: Device ↔ Server ── -->
+      <!-- glow track -->
+      <line x1="254" y1="168" x2="566" y2="168"
+            stroke="rgba(74,222,128,0.14)" stroke-width="10" stroke-linecap="round"/>
+      <!-- animated flow -->
+      <line x1="254" y1="168" x2="566" y2="168"
+            stroke="rgba(74,222,128,0.75)" stroke-width="2.2" stroke-dasharray="10 5"
+            class="pipe-line"
+            marker-start="url(#arrowGreenL)" marker-end="url(#arrowGreen)"/>
+      <!-- pipeline label on path -->
+      <text font-size="9.5" font-weight="700" fill="rgba(74,222,128,0.90)"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+        <textPath href="#pipePath" startOffset="50%" text-anchor="middle">🔒 Mutual TLS 1.3 · Passwordless Auth · No shared secrets</textPath>
+      </text>
+      <path id="pipePath" d="M 254,158 L 566,158" fill="none"/>
+
+      <!-- ── ZONE LABELS ── -->
+      <rect x="330" y="12" width="44" height="14" rx="7" fill="rgba(255,255,255,0.08)"/>
+      <text x="352" y="22.5" text-anchor="middle" fill="rgba(255,255,255,0.40)"
+            font-size="8.5" font-weight="700"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.8">CLOUD</text>
+
+      <rect x="26" y="132" width="52" height="14" rx="7" fill="rgba(255,255,255,0.08)"/>
+      <text x="52" y="142.5" text-anchor="middle" fill="rgba(255,255,255,0.38)"
+            font-size="8.5" font-weight="700"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.8">CLIENT</text>
+
+      <rect x="742" y="132" width="52" height="14" rx="7" fill="rgba(255,255,255,0.08)"/>
+      <text x="768" y="142.5" text-anchor="middle" fill="rgba(255,255,255,0.38)"
+            font-size="8.5" font-weight="700"
+            font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" letter-spacing="0.8">SERVER</text>
     </svg>
   </div>
 
@@ -691,7 +664,7 @@
     <div class="cat-tabs" id="cat-tabs">
       <div class="cat-tab active" onclick="filterCat('all')">All Platforms</div>
       <div class="cat-tab" onclick="filterCat('x86_64')">x86-64</div>
-      <div class="cat-tab" onclick="filterCat('aarch64')">ARM 6 4-bit</div>
+      <div class="cat-tab" onclick="filterCat('aarch64')">ARM 64-bit</div>
       <div class="cat-tab" onclick="filterCat('arm32')">ARM 32-bit</div>
       <div class="cat-tab" onclick="filterCat('zephyr')">Zephyr RTOS</div>
       <div class="cat-tab" onclick="filterCat('linux')">Linux</div>
