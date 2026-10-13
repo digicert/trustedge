@@ -50,6 +50,21 @@ Build instructions:
 - [Linux](https://github.com/digicert/trustcore/blob/main/samples/trustedge/BUILD_RUN.md)
 - [Zephyr RTOS](https://dev.digicert.com/trustedge/install-and-configure/install-and-run-trustedge-with-zephyr-rtos.html)
 
+## General Porting Instructions to a new CMake-based platform
+
+TrustEdge is built from the [TrustCore SDK](https://github.com/digicert/trustcore) source tree and links against TrustCore SDK's portable C libraries for cryptography, TLS, MQTT, certificate enrollment, secure storage, and platform services.
+
+For a new OS or board, start by validating the TrustCore SDK platform layer and a minimal monolithic TrustEdge CLI build. Once the CLI binary runs, enable certificate enrollment, MQTT/TLS connectivity, [Device Trust Manager](https://docs.digicert.com/en/device-trust-manager.html) agent mode, and optional hardware trust modules such as TPM2, PKCS#11, TEE, or NanoROOT.
+
+Suggested bring-up order:
+
+1. Port `projects/platform`
+2. Build `common`, `asn1`, `initialize`, `nanocap`, and `crypto`
+3. Add `nanocert` and `cert_enroll`
+4. Add `nanossl` and `mqtt_client`
+5. Build `projects/trustedge`
+6. Add service/daemon and package support for the target OS
+
 ## License
 
 This project is available under a **dual-license model**:
