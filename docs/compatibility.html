@@ -1606,10 +1606,11 @@ function renderOS() {
 
 function selectOS(id) {
   state.os = id;
-  // Step 2 is now OS — its Next button is btn-next-2
   const btn = document.getElementById('btn-next-2');
   if (btn) btn.disabled = false;
   renderOS();
+  // Auto-advance to Goal step
+  setTimeout(() => goToStep(3), 450);
 }
 
 // ═══════════════════════ GOAL SELECTION (Step 3) ═══════════════════════
@@ -1658,9 +1659,12 @@ function selectGoal(goal) {
     if (goal === 'dtm') renderAdvancedChips();
   }
 
-  // Enable Next — DTM needs a sub-goal, local needs a sub-goal; PKI and others go straight through
+  // Enable Next — DTM needs a sub-goal, local needs a sub-goal; PKI goes straight through
   const btn = document.getElementById('btn-next-3');
   if (btn) btn.disabled = (goal === 'dtm' || goal === 'local');
+
+  // PKI: auto-advance to instructions — no subgoal needed, EST is default
+  if (goal === 'pki') setTimeout(() => generateAndShow(), 450);
 }
 
 function selectSubGoal(sub) {
@@ -1668,9 +1672,10 @@ function selectSubGoal(sub) {
   document.querySelectorAll('.subgoal-card').forEach(c => c.classList.remove('selected'));
   const card = document.getElementById('sub-' + sub);
   if (card) card.classList.add('selected');
-  // DTM path: sub-goal resolves the Next button
   const btn = document.getElementById('btn-next-3');
   if (btn) btn.disabled = false;
+  // Auto-advance to instructions
+  setTimeout(() => generateAndShow(), 450);
 }
 
 function selectLocalSubGoal(sub) {
@@ -1680,6 +1685,8 @@ function selectLocalSubGoal(sub) {
   if (card) card.classList.add('selected');
   const btn = document.getElementById('btn-next-3');
   if (btn) btn.disabled = false;
+  // Auto-advance to instructions
+  setTimeout(() => generateAndShow(), 450);
 }
 
 function selectPkiProto(proto) {
