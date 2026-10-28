@@ -413,6 +413,25 @@
     font-size: 13px; box-shadow: var(--shadow); z-index: 200;
   }
 
+  /* ── Intent question chips ── */
+  .intent-cat-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .intent-cat-tab { padding:5px 12px; border-radius:100px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); transition:all .15s; }
+  .intent-cat-tab:hover { border-color:var(--brand); color:var(--brand); }
+  .intent-cat-tab.active { background:var(--brand); color:white; border-color:var(--brand); }
+  .intent-chip { display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); cursor:pointer; font-size:13px; color:var(--text); transition:all .15s; max-width:100%; }
+  .intent-chip:hover { border-color:var(--brand); background:var(--brand-light); color:var(--brand-dark); }
+  .intent-chip-icon { font-size:15px; flex-shrink:0; }
+  .intent-chip-text { flex:1; line-height:1.3; }
+  .intent-chip-cat { font-size:10px; font-weight:700; padding:2px 6px; border-radius:100px; flex-shrink:0; }
+  .intent-chip-cat.DTM   { background:#DBEAFE; color:#1D4ED8; }
+  .intent-chip-cat.PKI   { background:#D1FAE5; color:#065F46; }
+  .intent-chip-cat.Crypto { background:#FEF3C7; color:#92400E; }
+  .intent-chip-cat.MQTT  { background:#EDE9FE; color:#5B21B6; }
+  .intent-divider { text-align:center; font-size:12px; color:var(--text-muted); margin:20px 0 16px; position:relative; }
+  .intent-divider::before, .intent-divider::after { content:''; position:absolute; top:50%; width:42%; height:1px; background:var(--border); }
+  .intent-divider::before { left:0; }
+  .intent-divider::after { right:0; }
+
   /* ── Responsive ── */
   @media (max-width: 640px) {
     .board-grid { grid-template-columns: 1fr 1fr; }
@@ -707,9 +726,29 @@
   <!-- ══════════════════════════════════ STEP 3 — GOAL ══════════════════════════════════ -->
   <div class="step-panel" id="panel-3">
     <div class="step-header">
-      <h2>How do you want to manage your device's security and cryptography?</h2>
-      <p class="goal-prompt">Pick a goal — we'll guide hardware selection and generate exact commands.</p>
+      <h2>What are you trying to do?</h2>
+      <p>Pick a scenario or describe it below — we'll generate exact commands.</p>
     </div>
+
+    <div style="position:relative;margin-bottom:14px;">
+      <input id="intent-search" type="text" placeholder="Describe your use case — e.g. 'enroll device with EST' or 'MQTT over TLS'…"
+        oninput="intentSearchInput(this.value)"
+        style="width:100%;box-sizing:border-box;padding:9px 12px 9px 36px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:14px;outline:none;transition:border-color .15s;"
+        onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='var(--border)'"/>
+      <span id="intent-search-icon" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;opacity:.5;">🔍</span>
+    </div>
+
+    <div class="intent-cat-tabs" id="intent-cat-tabs">
+      <div class="intent-cat-tab active" onclick="setIntentFilter('All')">All</div>
+      <div class="intent-cat-tab" onclick="setIntentFilter('DTM')">🌐 DTM</div>
+      <div class="intent-cat-tab" onclick="setIntentFilter('PKI')">📜 PKI</div>
+      <div class="intent-cat-tab" onclick="setIntentFilter('Crypto')">🔑 Crypto</div>
+      <div class="intent-cat-tab" onclick="setIntentFilter('MQTT')">📡 MQTT</div>
+    </div>
+
+    <div id="intent-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
+
+    <div class="intent-divider">— or choose directly —</div>
 
     <div class="goal-cards" id="goal-cards">
 
@@ -1267,6 +1306,7 @@ let state = {
   tpm: 'none',          // none | hardware | software
   pqc: 'skip',          // skip | demo
   cert: 'selfsigned',   // selfsigned | est | scep (derived from goal/pkiProto)
+  dtmVariant: null,     // standard | jitr | attributes | null
 };
 
 // ═══════════════════════ ICONS (SVG) ═══════════════════════
@@ -1615,6 +1655,151 @@ function selectOS(id) {
 
 // ═══════════════════════ GOAL SELECTION (Step 3) ═══════════════════════
 
+// ─── Intent question chips ───
+const INTENT_QUESTIONS = [
+  // DTM
+  { q: "Connect my device to Device Trust Manager", cat: "DTM", icon: "🌐",
+    s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'standard' } },
+  { q: "Provision devices at the factory with no manual steps (ZTP)", cat: "DTM", icon: "🏭",
+    s: { goal:'dtm', subgoal:'ztp', dtmVariant:null } },
+  { q: "Keep device certificates renewing automatically by policy", cat: "DTM", icon: "♻️",
+    s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'standard' } },
+  { q: "Push firmware or config updates to my fleet securely (OTA)", cat: "DTM", icon: "📡",
+    s: { goal:'dtm', subgoal:'ota', dtmVariant:null } },
+  { q: "Report custom device data (serial number, GPS, hardware model) to DTM", cat: "DTM", icon: "📊",
+    s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'attributes' } },
+  { q: "Register a device using just-in-time registration (JITR)", cat: "DTM", icon: "⚡",
+    s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'jitr' } },
+  // PKI
+  { q: "Enroll my device with our enterprise CA using EST", cat: "PKI", icon: "📜",
+    s: { goal:'pki', pkiProto:'est' } },
+  { q: "Enroll my device with our enterprise CA using SCEP", cat: "PKI", icon: "📜",
+    s: { goal:'pki', pkiProto:'scep' } },
+  { q: "Generate a CSR and submit it to a certificate authority", cat: "PKI", icon: "📋",
+    s: { goal:'pki', pkiProto:'est' } },
+  // Crypto
+  { q: "Generate a private key protected by the hardware TPM", cat: "Crypto", icon: "🔐",
+    s: { goal:'local', localSubgoal:'crypto', tpm:'hardware' } },
+  { q: "Generate a software private key (ECDSA or RSA)", cat: "Crypto", icon: "🔑",
+    s: { goal:'local', localSubgoal:'crypto', tpm:'none' } },
+  { q: "Create a self-signed X.509 certificate", cat: "Crypto", icon: "📄",
+    s: { goal:'local', localSubgoal:'crypto' } },
+  { q: "Generate a Certificate Signing Request (CSR)", cat: "Crypto", icon: "📋",
+    s: { goal:'local', localSubgoal:'crypto' } },
+  // MQTT
+  { q: "Connect to an MQTT broker securely over TLS (MQTTS)", cat: "MQTT", icon: "📡",
+    s: { goal:'local', localSubgoal:'mqtt' } },
+  { q: "Secure MQTT with post-quantum cryptography (ML-DSA / ML-KEM)", cat: "MQTT", icon: "🔮",
+    s: { goal:'local', localSubgoal:'mqtt', pqc:'demo' } },
+];
+
+let intentCatFilter = 'All';
+let intentSearch = '';
+let intentAITimer = null;
+
+function renderIntentChips() {
+  const el = document.getElementById('intent-chips');
+  if (!el) return;
+  let list = INTENT_QUESTIONS;
+  if (intentCatFilter !== 'All') list = list.filter(q => q.cat === intentCatFilter);
+  if (intentSearch) list = list.filter(q => q.q.toLowerCase().includes(intentSearch));
+  if (list.length === 0) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:8px 0;">No matching scenarios — try the search or choose directly below.</div>';
+    return;
+  }
+  el.innerHTML = list.map((q,i) => `
+    <div class="intent-chip" onclick='applyIntent(${JSON.stringify(q.s)})'>
+      <span class="intent-chip-icon">${q.icon}</span>
+      <span class="intent-chip-text">${q.q}</span>
+      <span class="intent-chip-cat ${q.cat}">${q.cat}</span>
+    </div>`).join('');
+}
+
+function setIntentFilter(cat) {
+  intentCatFilter = cat;
+  document.querySelectorAll('.intent-cat-tab').forEach(t => {
+    const label = t.textContent.trim().replace(/^[^\s]+\s*/, '');
+    const isAll = cat === 'All' && t.textContent.trim() === 'All';
+    const isMatch = t.textContent.replace(/^[^\s]+\s*/, '').trim() === cat;
+    t.classList.toggle('active', isAll || isMatch || t.textContent.trim() === cat);
+  });
+  // More direct approach: match by onclick
+  document.querySelectorAll('.intent-cat-tab').forEach(t => {
+    const onclick = t.getAttribute('onclick') || '';
+    t.classList.toggle('active', onclick.includes(`'${cat}'`));
+  });
+  renderIntentChips();
+}
+
+function intentSearchInput(val) {
+  intentSearch = val.trim().toLowerCase();
+  clearTimeout(intentAITimer);
+  if (!val) {
+    renderIntentChips();
+    return;
+  }
+  // Instantly filter chips by text match
+  renderIntentChips();
+  // After 300ms debounce, optionally trigger AI resolution for 3+ chars
+  if (val.length >= 3) {
+    intentAITimer = setTimeout(() => resolveIntentAI(val), 600);
+  }
+}
+
+const HF_TOKEN = 'hf_placeholder'; // Replace with actual token
+
+async function resolveIntentAI(query) {
+  const icon = document.getElementById('intent-search-icon');
+  if (icon) icon.textContent = '⏳';
+  try {
+    const res = await fetch('https://router.huggingface.co/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${HF_TOKEN}`,
+      },
+      body: JSON.stringify({
+        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a TrustEdge intent classifier. Return ONLY valid JSON with these exact fields:\n{"goal":"dtm|pki|local","subgoal":"lifecycle|ztp|ota|null","localSubgoal":"mqtt|crypto|null","pkiProto":"est|scep","pqc":"skip|demo","dtmVariant":"standard|jitr|attributes|null"}',
+          },
+          { role: 'user', content: query },
+        ],
+        max_tokens: 200,
+      }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '';
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) {
+      const s = JSON.parse(match[0]);
+      applyIntent(s);
+    }
+  } catch (e) {
+    // silently stop — chip filter already ran
+  } finally {
+    if (icon) icon.textContent = '🔍';
+  }
+}
+
+function applyIntent(s) {
+  if (s.goal)         { state.goal        = s.goal; }
+  if (s.subgoal)      { state.subgoal     = s.subgoal; }
+  if (s.localSubgoal) { state.localSubgoal= s.localSubgoal; }
+  if (s.pkiProto)     { state.pkiProto    = s.pkiProto; state.cert = s.pkiProto; }
+  if (s.tpm)          { state.tpm         = s.tpm; }
+  if (s.pqc)          { state.pqc         = s.pqc; }
+  if (s.dtmVariant !== undefined) { state.dtmVariant = s.dtmVariant; }
+  // Derive mode/cert consistent with selectGoal logic
+  if (state.goal === 'dtm')   { state.mode = 'agent'; state.cert = 'est'; }
+  if (state.goal === 'pki')   { state.mode = 'cli';   state.cert = state.pkiProto || 'est'; }
+  if (state.goal === 'local') { state.mode = 'cli';   state.cert = 'selfsigned'; }
+  setTimeout(() => generateAndShow(), 350);
+}
+
 function setFleet(f) {
   state.fleet = f;
   ['poc','pilot','prod'].forEach(id => {
@@ -1837,6 +2022,7 @@ function goToStep(n) {
   });
   if (n === 1) renderHardware();
   if (n === 2) renderOS();
+  if (n === 3) renderIntentChips();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
