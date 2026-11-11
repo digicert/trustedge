@@ -740,9 +740,9 @@
 
     <div class="intent-cat-tabs" id="intent-cat-tabs">
       <div class="intent-cat-tab active" onclick="setIntentFilter('All')">All</div>
-      <div class="intent-cat-tab" onclick="setIntentFilter('DTM')">🌐 DTM</div>
-      <div class="intent-cat-tab" onclick="setIntentFilter('PKI')">📜 PKI</div>
-      <div class="intent-cat-tab" onclick="setIntentFilter('Crypto')">🔑 Crypto</div>
+      <div class="intent-cat-tab" onclick="setIntentFilter('DTM')">🌐 Cert Lifecycle</div>
+      <div class="intent-cat-tab" onclick="setIntentFilter('PKI')">📜 CA Enrollment</div>
+      <div class="intent-cat-tab" onclick="setIntentFilter('Crypto')">🔑 Keys & Certs</div>
       <div class="intent-cat-tab" onclick="setIntentFilter('MQTT')">📡 MQTT</div>
     </div>
 
@@ -1670,6 +1670,16 @@ const INTENT_QUESTIONS = [
     s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'attributes' } },
   { q: "Register a device using just-in-time registration (JITR)", cat: "DTM", icon: "⚡",
     s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'jitr' } },
+  { q: "Issue X.509 certificates to my devices and servers", cat: "DTM", icon: "🏷️",
+    s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'standard' } },
+  { q: "Set up mutual TLS (mTLS) between devices and backend services", cat: "DTM", icon: "🔒",
+    s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'standard' } },
+  { q: "Monitor certificate expiry across my device fleet", cat: "DTM", icon: "⏱️",
+    s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'standard' } },
+  { q: "Revoke a compromised device certificate and re-enroll", cat: "DTM", icon: "🚫",
+    s: { goal:'dtm', subgoal:'lifecycle', dtmVariant:'revoke' } },
+  { q: "Automate certificate issuance as part of my manufacturing process", cat: "DTM", icon: "🏭",
+    s: { goal:'dtm', subgoal:'ztp', dtmVariant:null } },
   // PKI
   { q: "Enroll my device with our enterprise CA using EST", cat: "PKI", icon: "📜",
     s: { goal:'pki', pkiProto:'est' } },
@@ -1711,7 +1721,7 @@ function renderIntentChips() {
     <div class="intent-chip" onclick='applyIntent(${JSON.stringify(q.s)})'>
       <span class="intent-chip-icon">${q.icon}</span>
       <span class="intent-chip-text">${q.q}</span>
-      <span class="intent-chip-cat ${q.cat}">${q.cat}</span>
+      <span class="intent-chip-cat ${q.cat}">${({DTM:'Cert Lifecycle',PKI:'CA Enrollment',Crypto:'Keys & Certs',MQTT:'MQTT'})[q.cat]||q.cat}</span>
     </div>`).join('');
 }
 
