@@ -29,7 +29,7 @@ The `tpm2_tools` package is available for multiple platforms to ensure portabili
 
 ## TrustEdge CLI Secure Element Quick Start
 
-For a fuller TPM2 local integration-test example, see the [NanoSSL TAP local integration workflow](https://github.com/digicert/trustcore-test/blob/main/.github/workflows/nanossl_tap_local_integration_test.yml). It uses an isolated software TPM, provisions it with the bundle in this repository, checks the resulting TPM configuration and device permissions, and then runs an EST/TAP integration test. The workflow's automated setup is for a disposable test TPM; do not copy its reset/clear steps onto a pre-owned device.
+For a fuller TPM2 local integration-test example, see the [NanoSSL TAP local integration workflow](https://github.com/digicert/trustcore/blob/main/.github/workflows/nanossl_tap_local_integration_test.yml). It uses an isolated software TPM, provisions it with the bundle in this repository, checks the resulting TPM configuration and device permissions, and then runs an EST/TAP integration test. The workflow's automated setup is for a disposable test TPM; do not copy its reset/clear steps onto a pre-owned device.
 
 The CLI must be built or packaged with the provider required by the device. Provider support depends on the TrustEdge build; confirm it before testing:
 
