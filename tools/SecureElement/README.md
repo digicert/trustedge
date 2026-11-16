@@ -66,7 +66,7 @@ SoftHSM2 provides a software PKCS#11 token for development and testing. It does 
 On Ubuntu, install the packages:
 
 ```bash
-sudo apt install opensc softhsm2 libsofthsmv2
+sudo apt install opensc softhsm2 libsofthsm2
 ```
 
 `opensc` provides `pkcs11-tool`, which is used below to inspect the token. The default SoftHSM2 configuration file is `/etc/softhsm2.conf`. If using a different configuration file, select it for the current shell:
@@ -172,7 +172,7 @@ credentials = template.replace(placeholder, b"[ " + pin.encode("ascii") + b" ]")
 Path(sys.argv[1]).write_bytes(base64.b64encode(credentials))
 PY
 
-  sudo install -m 600 -o "$TRUSTEDGE_USER" \
+  install -m 600 -o "$TRUSTEDGE_USER" \
     "$tmp_creds" /etc/digicert/default_creds.pkcs11
 )
 ```
@@ -180,18 +180,8 @@ PY
 The temporary file is private to the invoking user and removed on exit. The installed file is readable only by the specified owner. Check its permissions without displaying its contents:
 
 ```bash
-sudo ls -l /etc/digicert/default_creds.pkcs11
+ls -l /etc/digicert/default_creds.pkcs11
 ```
-
-For a dedicated, single-user test environment, the reference changes ownership of the entire directory to the current user:
-
-```bash
-sudo chown -R "$USER":"$USER" /etc/digicert/
-```
-
-**Warning:** This also changes ownership of existing configurations, credentials, and subdirectories, potentially granting the current user access or disrupting services. Run it only if you are authorized to change every affected file, have checked the existing ownership and permissions, and intend `$USER` to own the credential file. If TrustEdge runs as a different account, this command changes the file's owner away from that account. For shared or production systems, configure only the access required by the actual runtime account instead.
-
-Do not use the provisioning script unchanged against that directory without reviewing its side effects: it recursively changes ownership of the selected config directory to `trustpoint:trustpoint`, grants group read/write on the credential and module config files, and logs the generated command including the PIN in verbose mode.
 
 Base64 is encoding, not encryption. Do not put a real PIN in shell history, enable verbose provisioning with a real PIN, or print decoded credentials to a terminal or log.
 
