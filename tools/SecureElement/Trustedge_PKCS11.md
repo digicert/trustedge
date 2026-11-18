@@ -97,6 +97,8 @@ Slot 507447823
 
 For this token, use `modulename=SoftHSM slot ID 0x1e3f0a0f`, not `Mytoken` or `507447823`.
 
+**Multiple initialized slots:** TrustEdge uses the zeroth SoftHSM slot (slot index `0`) by default. Confirm that the intended token is in that slot using `softhsm2-util --show-slots` and `pkcs11-tool --module "$PKCS11_MODULE" --list-slots`. This slot index is distinct from the TrustEdge `modulenum` and from the SoftHSM slot ID.
+
 Use this configuration template, replacing all angle-bracket placeholders with values for your installation before saving it as `/etc/digicert/pkcs11_smp.conf`:
 
 ```ini
@@ -260,5 +262,19 @@ Replace the example slot index `0` with the index for the intended token from `-
 - **Library not found:** Check the package's installed files with `dpkg -L libsofthsm2 | grep '/libsofthsm2\.so$'`, then use the resolved path for `PKCS11_MODULE` and `modulelibpath`.
 - **Token or slot not found:** Run `softhsm2-util --show-slots` and `pkcs11-tool --module "$PKCS11_MODULE" --list-slots`; check `SOFTHSM2_CONF` if using a nondefault configuration file.
 - **Wrong module or slot selection:** Confirm `--tap-modnum` against the TrustEdge module configuration. Separately select the intended PKCS#11 slot index for `pkcs11-tool`; do not treat it as the TrustEdge module number or SoftHSM2 slot ID.
+- **`moduleidstr` mismatch:** A debug build may report `PKCS11_createModuleList: Module ID string check failed` when the configured identifier does not match the module identifier. A non-debug build may omit the diagnostic and identifier values, even with `--log-level VERBOSE`; their absence does not prove that the configured identifier matches. A debug build may print the mismatch and still continue to generate a key, so verify that the intended token was used.
+
+  In the debug output for the example in this guide, `Slot 0 moduleidstr` is `f5e073310b951737496c41e1da51cdfc245894b3507c175840793964ec80da39`, while `DeviceID string set to` reports `abcd73310b951737496c41e1da51cdfc245894b3507c175840793964ec80da39`. Use the `Slot 0 moduleidstr` value for `/etc/digicert/pkcs11_smp.conf`; do not substitute the separate `DeviceID` diagnostic.
+
+  To inspect these values, rebuild from the matching TrustCore checkout with debug support:
+
+  ```bash
+  ./scripts/ci/trustedge/ci_trustedge_build.sh \
+    --gdb --debug-all --monolithic --package \
+    --cvc --proxy --pqc --pqc-composite \
+    --enable-pc --pkcs11-dynamic
+  ```
+
+  Rerun the TrustEdge operation and inspect the debug output for `Slot 0 moduleidstr`; use the value reported for your token in `/etc/digicert/pkcs11_smp.conf`.
 - **Login or credentials failure:** Recheck the initialized token and user PIN, the credentials file format and access for the TrustEdge runtime account, and the provider instructions for the installed build. Do not print PINs to logs or expose production PINs in command arguments.
 - **Objects not visible:** Confirm `PKCS11_MODULE`, the selected token label/slot index, and `SOFTHSM2_CONF`; then rerun the object listing against that token. If key generation fails, verify the TrustEdge build and module configuration against the matching provider documentation rather than changing unverified identifiers.
