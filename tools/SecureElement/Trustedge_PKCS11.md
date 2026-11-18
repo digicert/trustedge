@@ -12,11 +12,47 @@ On Ubuntu, install the packages:
 sudo apt install opensc softhsm2 libsofthsm2
 ```
 
-`opensc` provides `pkcs11-tool`, which is used below to inspect the token. The default SoftHSM2 configuration file is `/etc/softhsm/softhsm2.conf`. If using a different configuration file, select it for the current shell:
+`opensc` provides `pkcs11-tool`, which is used below to inspect the token. The default SoftHSM2 configuration file is `/etc/softhsm/softhsm2.conf`.
+
+Ensure the user running `softhsm2-util` or `pkcs11-tool` can read `/etc/softhsm/softhsm2.conf` (or the file selected by `SOFTHSM2_CONF`). The account running TrustEdge must also be able to read that configuration file and access its configured token directory.
+
+If using a different configuration file, select it for the current shell:
 
 ```bash
 export SOFTHSM2_CONF=/path/to/softhsm2.conf
 ```
+
+**Optional: use an isolated development token store**
+
+To keep test tokens separate from the system-wide token store, create a dedicated token directory and SoftHSM2 configuration file. The heredoc expands `$HOME` when it writes the file. It replaces any existing configuration at this path:
+
+```bash
+mkdir -p "$HOME/softhsm-test/tokens"
+chmod 700 "$HOME/softhsm-test/tokens"
+
+cat > "$HOME/softhsm-test/softhsm2.conf" <<EOF
+# SoftHSM v2 configuration file
+
+directories.tokendir = $HOME/softhsm-test/tokens
+objectstore.backend = file
+
+# ERROR, WARNING, INFO, DEBUG
+log.level = ERROR
+
+# If CKF_REMOVABLE_DEVICE flag should be set
+slots.removable = false
+
+# Enable and disable PKCS#11 mechanisms using slots.mechanisms.
+slots.mechanisms = ALL
+
+# If the library should reset the state on fork
+library.reset_on_fork = false
+EOF
+
+export SOFTHSM2_CONF="$HOME/softhsm-test/softhsm2.conf"
+```
+
+Run the SoftHSM2 commands and TrustEdge as a user that can read this configuration and access the token directory. If TrustEdge runs as a different account, grant that account the required access to both paths.
 
 List the available tokens and slots:
 
@@ -61,7 +97,7 @@ Slot 507447823
 
 For this token, use `modulename=SoftHSM slot ID 0x1e3f0a0f`, not `Mytoken` or `507447823`.
 
-Use the following configuration template, replacing all angle-bracket placeholders with values for your installation before using it:
+Use this configuration template, replacing all angle-bracket placeholders with values for your installation before saving it as `/etc/digicert/pkcs11_smp.conf`:
 
 ```ini
 providertype=13
@@ -74,11 +110,37 @@ moduleidstr=<MODULE-ID-FOR-YOUR-TOKEN-AND-PROVIDER>
 credfile=default_creds.pkcs11
 ```
 
-The reference configuration uses these fields:
+For example, a configuration for the token shown above could contain the following values. Replace the sample `moduleidstr` and library path with values for your installation:
+
+```ini
+providertype=13
+
+[module]
+modulenum=1
+modulename=SoftHSM slot ID 0x1e3f0a0f
+modulelibpath=/usr/lib/softhsm/libsofthsm2.so
+moduleidstr=f5e073310b951737496c41e1da51cdfc245894b3507c175840793964ec80da39
+credfile=default_creds.pkcs11
+```
+
+After creating or updating `/etc/digicert/pkcs11_smp.conf`, set its owner and group to the TrustEdge runtime account:
+
+```bash
+sudo chown trustedge:trustedge /etc/digicert/pkcs11_smp.conf
+```
+
+This changes ownership but not file permissions. Ensure the `trustedge` user has read permission on the file; check its owner, group, and mode with:
+
+```bash
+ls -l /etc/digicert/pkcs11_smp.conf
+```
+
+The values in the sample are examples and must match your installation. In particular, verify the slot description and library path using the commands in step 1, and use the `moduleidstr` generated for your token and provider. The configuration fields are:
 
 - `providertype=13` selects the PKCS#11 provider (`TAP_PROVIDER_PKCS11`).
 - `modulename` must exactly match that slot's PKCS#11 slot description; it is not the SoftHSM2 token label or slot ID.
 - `modulelibpath` is the absolute path to the PKCS#11 shared library used by the dynamic-load build. Use the actual path located in step 1 (the value assigned to `PKCS11_MODULE`), not the variable name itself.
+- `moduleidstr` identifies the token and provider; use the value generated for your token rather than copying the sample value.
 - TrustEdge resolves a relative `credfile` value relative to `/etc/digicert/pkcs11_smp.conf`. Thus the reference basename `default_creds.pkcs11` refers to `/etc/digicert/default_creds.pkcs11`.
 - `modulenum` is the TrustEdge module identifier selected by `--tap-modnum`. This guide uses `modulenum=1` with `--tap-modnum 1` in the RSA and ECC commands below. This number is not a SoftHSM2 slot ID or a `pkcs11-tool` slot index; `modulenum=1` does not select the uninitialized SoftHSM2 `Slot 1`.
 
