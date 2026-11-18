@@ -12,7 +12,7 @@ On Ubuntu, install the packages:
 sudo apt install opensc softhsm2 libsofthsm2
 ```
 
-`opensc` provides `pkcs11-tool`, which is used below to inspect the token. The default SoftHSM2 configuration file is `/etc/softhsm2.conf`. If using a different configuration file, select it for the current shell:
+`opensc` provides `pkcs11-tool`, which is used below to inspect the token. The default SoftHSM2 configuration file is `/etc/softhsm/softhsm2.conf`. If using a different configuration file, select it for the current shell:
 
 ```bash
 export SOFTHSM2_CONF=/path/to/softhsm2.conf
@@ -78,7 +78,7 @@ The reference configuration uses these fields:
 
 - `providertype=13` selects the PKCS#11 provider (`TAP_PROVIDER_PKCS11`).
 - `modulename` must exactly match that slot's PKCS#11 slot description; it is not the SoftHSM2 token label or slot ID.
-- `modulelibpath` is the absolute path to the PKCS#11 shared library used by the dynamic-load build. Use the actual path located in step 1 (the value assigned to `PKCS11_MODULE`), not the variable name itself. The reference path `/usr/local/lib/softhsm/libsofthsm2.so` is only an example and may differ from the Ubuntu package's installation path.
+- `modulelibpath` is the absolute path to the PKCS#11 shared library used by the dynamic-load build. Use the actual path located in step 1 (the value assigned to `PKCS11_MODULE`), not the variable name itself.
 - TrustEdge resolves a relative `credfile` value relative to `/etc/digicert/pkcs11_smp.conf`. Thus the reference basename `default_creds.pkcs11` refers to `/etc/digicert/default_creds.pkcs11`.
 - `modulenum` is the TrustEdge module identifier selected by `--tap-modnum`. This guide uses `modulenum=1` with `--tap-modnum 1` in the RSA and ECC commands below. This number is not a SoftHSM2 slot ID or a `pkcs11-tool` slot index; `modulenum=1` does not select the uninitialized SoftHSM2 `Slot 1`.
 
@@ -119,7 +119,7 @@ credentials = template.replace(placeholder, b"[ " + pin.encode("ascii") + b" ]")
 Path(sys.argv[1]).write_bytes(base64.b64encode(credentials))
 PY
 
-  sudo install -m 600 -o trustedge \
+  sudo install -m 640 -o trustedge -g trustedge \
     "$tmp_creds" /etc/digicert/default_creds.pkcs11
 )
 ```
@@ -200,23 +200,3 @@ Replace the example slot index `0` with the index for the intended token from `-
 - **Wrong module or slot selection:** Confirm `--tap-modnum` against the TrustEdge module configuration. Separately select the intended PKCS#11 slot index for `pkcs11-tool`; do not treat it as the TrustEdge module number or SoftHSM2 slot ID.
 - **Login or credentials failure:** Recheck the initialized token and user PIN, the credentials file format and access for the TrustEdge runtime account, and the provider instructions for the installed build. Do not print PINs to logs or expose production PINs in command arguments.
 - **Objects not visible:** Confirm `PKCS11_MODULE`, the selected token label/slot index, and `SOFTHSM2_CONF`; then rerun the object listing against that token. If key generation fails, verify the TrustEdge build and module configuration against the matching provider documentation rather than changing unverified identifiers.
-
-##### Key generation fails with `ERR_NOT_IMPLEMENTED (-6017)`
-
-In one SoftHSM2 test setup, RSA key generation failed with `Unable to generate key, error code = ERR_NOT_IMPLEMENTED (-6017)` as an unprivileged user, but succeeded when retried with `sudo` while preserving `SOFTHSM2_CONF`. This error alone does not establish a permissions problem; also check the provider build and module configuration.
-
-If authorized to perform this diagnostic on a test setup, you may need to retry with elevated privileges. First set `SOFTHSM2_CONF` to the absolute path of the configuration used by the failed command. If that command used the documented default, set it explicitly to `/etc/softhsm2.conf`. Verify that the path is nonempty and the file is readable, and that its token-store paths resolve to the same intended token store under both accounts. Do not switch to root's default configuration or a different token store.
-
-```bash
-test -n "$SOFTHSM2_CONF" && test -r "$SOFTHSM2_CONF" &&
-sudo env SOFTHSM2_CONF="$SOFTHSM2_CONF" \
-  trustedge certificate \
-  --algorithm RSA --size 2048 \
-  --output-file rsa_key_2048 \
-  --tap --tap-provider PKCS11 --tap-modnum 1 \
-  --log-level VERBOSE
-```
-
-Success with `sudo` suggests a difference in access or execution context, not proof of a specific cause. Prefer correcting access for the intended TrustEdge runtime account to the configuration, credential files, PKCS#11 library, token storage, and output directory instead of routinely running TrustEdge as root. Do not make these resources world-writable.
-
-The elevated command may create a root-owned output file. Keep generated key material restricted to authorized users and arrange appropriate ownership before using it as the runtime account. Validate any supplied paths, avoid hardcoded PINs or other secrets, and do not include credentials in verbose logs or support output.
