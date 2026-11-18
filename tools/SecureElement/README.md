@@ -37,7 +37,7 @@ The CLI must be built or packaged with the provider required by the device. Prov
 trustedge certificate --help
 ```
 
-The help output should list `PKCS11` or `TPM2` for `--tap-provider`. The `--tap` option enables hardware-backed TAP key generation, `--tap-provider` selects the configured provider, and `--tap-modnum` selects the TAP module (default: `1`).
+The help output should list `PKCS11` or `TPM2` for `--tap-provider`. The `--tap` option enables TAP key generation through the selected provider, `--tap-provider` selects the configured provider, and `--tap-modnum` selects the TAP module (default: `1`). Key storage and protection depend on the provider and its configuration.
 
 ### PKCS#11 device (for example, NXP)
 
@@ -276,3 +276,9 @@ The following diagram illustrates how TPM provisioning integrates with **Device 
 | - Provision Certs         |    |                           |
 +---------------------------+    +---------------------------+
 ```
+
+---
+
+## Additional Documentation
+
+- [TrustEdge PKCS#11 Setup with SoftHSM2](Trustedge_PKCS11.md)
