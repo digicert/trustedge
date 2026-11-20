@@ -14,7 +14,7 @@ sudo apt install opensc softhsm2 libsofthsm2
 
 `opensc` provides `pkcs11-tool`, which is used below to inspect the token.
 
-The helper tools `smp_pkcs11_getslotdesc_bin` and `smp_pkcs11_getmoduleidstr_bin` are delivered in a separate helper-tools package, not with the TrustEdge package or this repository. Install `<HELPER-TOOLS-PACKAGE>` using the instructions supplied with it, then confirm the tools are available:
+The helper tools `smp_pkcs11_getslotdesc_bin` and `smp_pkcs11_getmoduleidstr_bin` are delivered in a helper-tools package. Install `<HELPER-TOOLS-PACKAGE>` using the instructions supplied with it, then confirm the tools are available:
 
 ```bash
 command -v smp_pkcs11_getslotdesc_bin smp_pkcs11_getmoduleidstr_bin
@@ -24,13 +24,28 @@ If the command prints nothing, run the tools from the directory where the packag
 
 #### 2. Configure SoftHSM2
 
-The default SoftHSM2 configuration file is `/etc/softhsm/softhsm2.conf`. The user running `softhsm2-util` or `pkcs11-tool` must be able to read it (or the file selected by `SOFTHSM2_CONF`). The account running TrustEdge must also be able to read that file and access its configured token directory.
-
-To use a different configuration file, select it for the current shell:
+The default SoftHSM2 configuration file is `/etc/softhsm/softhsm2.conf`. To use a different file, select it for the current shell:
 
 ```bash
 export SOFTHSM2_CONF=/path/to/softhsm2.conf
 ```
+
+`SOFTHSM2_CONF` must point to a readable SoftHSM2 configuration whose `directories.tokendir` is writable. If the file is missing or unreadable, the tools fail with `-6000` (`ERR_GENERAL`).
+
+Every account that runs `softhsm2-util`, `pkcs11-tool`, or TrustEdge must be able to read the configuration file and write to the token directory it names. Use the same `SOFTHSM2_CONF` for all of them, because a different file can select a different token store. Run the following checks with the account that will run the command. They verify that:
+
+- the SoftHSM2 configuration file is readable;
+- the `directories.tokendir` value in that file names an existing directory;
+- that token directory is writable.
+
+```bash
+SOFTHSM2_CONFIG="${SOFTHSM2_CONF:-/etc/softhsm/softhsm2.conf}"
+test -r "$SOFTHSM2_CONFIG" && echo "config readable: $SOFTHSM2_CONFIG"
+TOKENDIR=$(sed -n 's/^[[:space:]]*directories\.tokendir[[:space:]]*=[[:space:]]*//p' "$SOFTHSM2_CONFIG")
+test -d "$TOKENDIR" && test -w "$TOKENDIR" && echo "token directory writable: $TOKENDIR"
+```
+
+Each check prints a confirmation only on success; if a line is missing, that check failed. Grant access through ownership or group membership; do not make the directory world-writable.
 
 **Optional: use an isolated development token store**
 
@@ -75,7 +90,7 @@ softhsm2-util --show-slots
 Initialize a token in an available slot, replacing the placeholders with a test label and test-only PINs:
 
 ```bash
-softhsm2-util --init-token --slot '<INITIAL_SLOT_ID>' \
+softhsm2-util --init-token --slot 0 \
   --label '<TEST_TOKEN_LABEL>' \
   --so-pin '<TEST_SO_PIN>' --pin '<TEST_USER_PIN>'
 ```
@@ -284,6 +299,7 @@ Replace the example slot index `0` with the index for the intended token from `-
 
 - **Library not found:** Check the package's installed files with `dpkg -L libsofthsm2 | grep '/libsofthsm2\.so$'`, then use the resolved path for `PKCS11_MODULE` and `modulelibpath`.
 - **Helper tools not found:** Confirm `<HELPER-TOOLS-PACKAGE>` is installed and run `command -v smp_pkcs11_getslotdesc_bin smp_pkcs11_getmoduleidstr_bin`; otherwise run the tools from their installed location.
+- **`-6000` (`ERR_GENERAL`):** Check that `SOFTHSM2_CONF` points to an existing, readable SoftHSM2 configuration and that its `directories.tokendir` is writable by the account running the command (see step 2).
 - **Token or slot not found:** Run `softhsm2-util --show-slots` and `pkcs11-tool --module "$PKCS11_MODULE" --list-slots`; check `SOFTHSM2_CONF` if using a nondefault configuration file.
 - **Wrong module or slot selection:** Confirm `--tap-modnum` matches `modulenum` in `/etc/digicert/pkcs11_smp.conf`. Separately, confirm the intended token is at slot index `0`, which TrustEdge uses by default; do not treat the slot index as the TrustEdge module number or SoftHSM2 slot ID.
 - **`modulename` or `moduleidstr` mismatch:** Re-run both helper tools from step 5 and compare their output for the intended slot with `/etc/digicert/pkcs11_smp.conf`. Values from another token or installation will not match.
