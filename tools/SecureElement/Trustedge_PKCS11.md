@@ -2,21 +2,31 @@
 
 ### SoftHSM2 (PKCS#11 software token)
 
-SoftHSM2 provides a software PKCS#11 token for development and testing. It does not provide the physical security properties of a hardware HSM. The steps below describe the reference workflow; use the actual slot details and follow the credential-provisioning security notes before using it. Do not use production PINs or other production credentials for this test setup.
+SoftHSM2 provides a software PKCS#11 token for development and testing. It does not provide the physical security properties of a hardware HSM. Use only disposable test credentials; do not use production PINs or other production credentials in this setup.
 
-#### 1. Install SoftHSM2 and OpenSC
+#### 1. Install prerequisites
 
-On Ubuntu, install the packages:
+On Ubuntu, install SoftHSM2 and OpenSC:
 
 ```bash
 sudo apt install opensc softhsm2 libsofthsm2
 ```
 
-`opensc` provides `pkcs11-tool`, which is used below to inspect the token. The default SoftHSM2 configuration file is `/etc/softhsm/softhsm2.conf`.
+`opensc` provides `pkcs11-tool`, which is used below to inspect the token.
 
-Ensure the user running `softhsm2-util` or `pkcs11-tool` can read `/etc/softhsm/softhsm2.conf` (or the file selected by `SOFTHSM2_CONF`). The account running TrustEdge must also be able to read that configuration file and access its configured token directory.
+The helper tools `smp_pkcs11_getslotdesc_bin` and `smp_pkcs11_getmoduleidstr_bin` are delivered in a separate helper-tools package, not with the TrustEdge package or this repository. Install `<HELPER-TOOLS-PACKAGE>` using the instructions supplied with it, then confirm the tools are available:
 
-If using a different configuration file, select it for the current shell:
+```bash
+command -v smp_pkcs11_getslotdesc_bin smp_pkcs11_getmoduleidstr_bin
+```
+
+If the command prints nothing, run the tools from the directory where the package installed them.
+
+#### 2. Configure SoftHSM2
+
+The default SoftHSM2 configuration file is `/etc/softhsm/softhsm2.conf`. The user running `softhsm2-util` or `pkcs11-tool` must be able to read it (or the file selected by `SOFTHSM2_CONF`). The account running TrustEdge must also be able to read that file and access its configured token directory.
+
+To use a different configuration file, select it for the current shell:
 
 ```bash
 export SOFTHSM2_CONF=/path/to/softhsm2.conf
@@ -52,7 +62,9 @@ EOF
 export SOFTHSM2_CONF="$HOME/softhsm-test/softhsm2.conf"
 ```
 
-Run the SoftHSM2 commands and TrustEdge as a user that can read this configuration and access the token directory. If TrustEdge runs as a different account, grant that account the required access to both paths.
+If TrustEdge runs as a different account, grant that account the access it needs to both the configuration file and the token directory. Do not make either world-writable.
+
+#### 3. Initialize a token
 
 List the available tokens and slots:
 
@@ -68,89 +80,102 @@ softhsm2-util --init-token --slot '<INITIAL_SLOT_ID>' \
   --so-pin '<TEST_SO_PIN>' --pin '<TEST_USER_PIN>'
 ```
 
-Use the slot ID reported by `softhsm2-util`; do not assume it is `0`. SoftHSM2 may assign a different slot ID after token initialization. Run `softhsm2-util --show-slots` again and note the initialized token's label and slot ID.
+Use the slot ID reported by `softhsm2-util`; do not assume it is `0`. SoftHSM2 may assign a different slot ID after token initialization, so run `softhsm2-util --show-slots` again and note the initialized token's label.
 
-The reference command supplies PINs as command-line arguments. Do not replace these placeholders with production PINs or store real PINs in shell history, scripts, or logs. Use only disposable test credentials and follow the input-protection guidance for the SoftHSM2 version in use.
+This command supplies PINs as command-line arguments. Do not replace these placeholders with production PINs or store real PINs in shell history, scripts, or logs. Follow the input-protection guidance for the SoftHSM2 version in use.
 
-Locate the installed PKCS#11 library and set the environment variable used by the `pkcs11-tool` examples:
+#### 4. Locate the PKCS#11 library
+
+Locate the installed library and set the environment variable used by the examples below:
 
 ```bash
 dpkg -L libsofthsm2 | grep '/libsofthsm2\.so$'
 export PKCS11_MODULE=/path/to/libsofthsm2.so
 ```
 
-`PKCS11_MODULE` is used by `pkcs11-tool` in this guide. The local TrustEdge documentation does not establish that TrustEdge reads this environment variable; its reference configuration instead has a `modulelibpath` field.
+`PKCS11_MODULE` is used by `pkcs11-tool` and the helper tools in this guide. The TrustEdge documentation does not establish that TrustEdge reads this variable; TrustEdge uses the `modulelibpath` field in `/etc/digicert/pkcs11_smp.conf`.
 
-#### 2. Configure the TrustEdge PKCS#11 module
+#### 5. Get `modulename` and `moduleidstr`
 
-The reference workflow uses `/etc/digicert/pkcs11_smp.conf`. Run `softhsm2-util --show-slots` after initializing the token and select the intended token by its label and initialization status. For example, the reference output contains:
+Run the helper tools against the library:
+
+```bash
+smp_pkcs11_getslotdesc_bin -modulelibpath "$PKCS11_MODULE"
+smp_pkcs11_getmoduleidstr_bin -modulelibpath "$PKCS11_MODULE"
+```
+
+Each tool prints one line per slot index. Example output (values differ on every installation):
 
 ```text
-Slot 507447823
-  Slot info:
-    Description:      SoftHSM slot ID 0x1e3f0a0f
-  Token info:
-    Initialized:      yes
-    User PIN init.:   yes
-    Label:            Mytoken
+Slot[0] Module Id String: 0e46a6975aeb8065f0c71ec953f02cb105eabac2705a93341ddd284a3d2f5217
+Slot[1] Module Id String: 38113c36d1f8eb3558d5868d285a7ddcba11128374fd2f13537255c351ea8c2f
+Slot[0] description: SoftHSM slot ID 0x64043b77
+Slot[1] description: SoftHSM slot ID 0x1
 ```
 
-For this token, use `modulename=SoftHSM slot ID 0x1e3f0a0f`, not `Mytoken` or `507447823`.
+- `smp_pkcs11_getslotdesc_bin` provides the value for `modulename`: the text after `description: `.
+- `smp_pkcs11_getmoduleidstr_bin` provides the value for `moduleidstr`.
+- Use the lines for the same slot index from both tools.
 
-**Multiple initialized slots:** TrustEdge uses the zeroth SoftHSM slot (slot index `0`) by default. Confirm that the intended token is in that slot using `softhsm2-util --show-slots` and `pkcs11-tool --module "$PKCS11_MODULE" --list-slots`. This slot index is distinct from the TrustEdge `modulenum` and from the SoftHSM slot ID.
+TrustEdge uses slot index `0` by default. Confirm that slot index `0` is the intended token by matching the token label from `softhsm2-util --show-slots` with the output of:
 
-Use this configuration template, replacing all angle-bracket placeholders with values for your installation before saving it as `/etc/digicert/pkcs11_smp.conf`:
+```bash
+pkcs11-tool --module "$PKCS11_MODULE" --list-slots
+```
+
+The slot index is distinct from the SoftHSM2 slot ID and from the TrustEdge `modulenum`.
+
+#### 6. Write `/etc/digicert/pkcs11_smp.conf`
+
+Verify that `/etc/digicert` exists, then create or edit the file with an editor run as root, for example `sudoedit /etc/digicert/pkcs11_smp.conf`. Replace every angle-bracket placeholder with your own values:
 
 ```ini
 providertype=13
 
 [module]
 modulenum=1
-modulename=<SLOT-DESCRIPTION-FROM-SHOW-SLOTS>
+modulename=<SLOT-DESCRIPTION-FROM-STEP-5>
 modulelibpath=<ABSOLUTE-PATH-TO-libsofthsm2.so>
-moduleidstr=<MODULE-ID-FOR-YOUR-TOKEN-AND-PROVIDER>
+moduleidstr=<MODULE-ID-STRING-FROM-STEP-5>
 credfile=default_creds.pkcs11
 ```
 
-For example, a configuration for the token shown above could contain the following values. Replace the sample `moduleidstr` and library path with values for your installation:
+An example using the sample output from step 5 (replace the sample values with your own):
 
 ```ini
 providertype=13
 
 [module]
 modulenum=1
-modulename=SoftHSM slot ID 0x1e3f0a0f
+modulename=SoftHSM slot ID 0x64043b77
 modulelibpath=/usr/lib/softhsm/libsofthsm2.so
-moduleidstr=f5e073310b951737496c41e1da51cdfc245894b3507c175840793964ec80da39
+moduleidstr=0e46a6975aeb8065f0c71ec953f02cb105eabac2705a93341ddd284a3d2f5217
 credfile=default_creds.pkcs11
 ```
 
-After creating or updating `/etc/digicert/pkcs11_smp.conf`, set its owner and group to the TrustEdge runtime account:
+Set the owner and group to the TrustEdge runtime account, then check the result:
 
 ```bash
 sudo chown trustedge:trustedge /etc/digicert/pkcs11_smp.conf
-```
-
-This changes ownership but not file permissions. Ensure the `trustedge` user has read permission on the file; check its owner, group, and mode with:
-
-```bash
 ls -l /etc/digicert/pkcs11_smp.conf
 ```
 
-The values in the sample are examples and must match your installation. In particular, verify the slot description and library path using the commands in step 1, and use the `moduleidstr` generated for your token and provider. The configuration fields are:
+`chown` changes ownership but not permissions; make sure the `trustedge` user can read the file.
+
+The configuration fields are:
 
 - `providertype=13` selects the PKCS#11 provider (`TAP_PROVIDER_PKCS11`).
-- `modulename` must exactly match that slot's PKCS#11 slot description; it is not the SoftHSM2 token label or slot ID.
-- `modulelibpath` is the absolute path to the PKCS#11 shared library used by the dynamic-load build. Use the actual path located in step 1 (the value assigned to `PKCS11_MODULE`), not the variable name itself.
-- `moduleidstr` identifies the token and provider; use the value generated for your token rather than copying the sample value.
-- TrustEdge resolves a relative `credfile` value relative to `/etc/digicert/pkcs11_smp.conf`. Thus the reference basename `default_creds.pkcs11` refers to `/etc/digicert/default_creds.pkcs11`.
-- `modulenum` is the TrustEdge module identifier selected by `--tap-modnum`. This guide uses `modulenum=1` with `--tap-modnum 1` in the RSA and ECC commands below. This number is not a SoftHSM2 slot ID or a `pkcs11-tool` slot index; `modulenum=1` does not select the uninitialized SoftHSM2 `Slot 1`.
+- `modulename` must exactly match the slot description printed by `smp_pkcs11_getslotdesc_bin`. It is not the token label or slot ID.
+- `modulelibpath` is the absolute path to the PKCS#11 shared library (the value assigned to `PKCS11_MODULE`), not the variable name itself.
+- `moduleidstr` is the module ID string printed by `smp_pkcs11_getmoduleidstr_bin` for the same slot. Do not copy a value from another token or installation.
+- A relative `credfile` is resolved relative to `/etc/digicert/pkcs11_smp.conf`, so `default_creds.pkcs11` refers to `/etc/digicert/default_creds.pkcs11`.
+- `modulenum` is the TrustEdge module identifier selected by `--tap-modnum`. This guide uses `modulenum=1` with `--tap-modnum 1`. It is not a SoftHSM2 slot ID or a `pkcs11-tool` slot index.
 
-#### 3. Configure PKCS#11 credentials
+#### 7. Configure PKCS#11 credentials
 
-TrustCore provides `projects/mocpkcs11_tools/provision/pkcs11_provision_linux.sh` and `projects/mocpkcs11_tools/provision/pkcs11_prov.conf.tmpl`. The script's `DEFAULT_CREDS` template is the source of the reference transformation: it represents entity credentials in the TrustCore credential-file format, and the token user PIN is substituted for the template value before the file is written.
+TrustCore provides `projects/mocpkcs11_tools/provision/pkcs11_provision_linux.sh` and `projects/mocpkcs11_tools/provision/pkcs11_prov.conf.tmpl`. The script's `DEFAULT_CREDS` template represents entity credentials in the TrustCore credential-file format; the token user PIN is substituted into it before the file is written.
 
-The following example performs the reference's template substitution without putting the PIN in a shell command or printing the decoded credentials. Run it from the root of the matching TrustCore checkout. The example uses Python 3 and prompts for the SoftHSM2 **user PIN**, not the SO PIN. It accepts only ASCII letters and digits for this example; choose an appropriate test PIN when initializing the token.
+The following example performs that substitution without putting the PIN in a shell command or printing the decoded credentials. Run it from the root of the matching TrustCore checkout. The example uses Python 3 and prompts for the SoftHSM2 **user PIN**, not the SO PIN. It accepts only ASCII letters and digits for this example; choose an appropriate test PIN when initializing the token.
 
 **The install command overwrites an existing `default_creds.pkcs11`.** Back up or choose a different filename if the file is already in use, and update `credfile` to match. Verify that `/etc/digicert` exists and that the runtime account can traverse it and read the module configuration and SoftHSM2 token files.
 
@@ -188,7 +213,7 @@ PY
 )
 ```
 
-The temporary file is private to the invoking user and removed on exit. The installed file is readable only by the specified owner. Check its permissions without displaying its contents:
+The temporary file is private to the invoking user and removed on exit. The installed file is owned by `trustedge:trustedge` with mode `640`, so only that user and group can read it. Check its permissions without displaying its contents:
 
 ```bash
 ls -l /etc/digicert/default_creds.pkcs11
@@ -196,11 +221,9 @@ ls -l /etc/digicert/default_creds.pkcs11
 
 Base64 is encoding, not encryption. Do not put a real PIN in shell history, enable verbose provisioning with a real PIN, or print decoded credentials to a terminal or log.
 
-#### 4. Build and install TrustEdge with PKCS#11 support
+#### 8. Build and install TrustEdge with PKCS#11 support
 
-The reference build command is:
-
-Run it from the root of the matching TrustCore checkout:
+Run the build from the root of the matching TrustCore checkout:
 
 ```bash
 ./scripts/ci/trustedge/ci_trustedge_build.sh \
@@ -209,14 +232,14 @@ Run it from the root of the matching TrustCore checkout:
   --enable-pc --pkcs11-dynamic
 ```
 
-The TrustCore build script accepts the options above. `--pkcs11-dynamic` enables TAP and dynamic PKCS#11 loading; for this mode, configure the PKCS#11 shared-library path in `modulelibpath`. Use the standard build prerequisites documented for the matching TrustCore checkout. The script copies the generated Debian package to `dist/`; the reference's `trustedge_2.0.2.x86_64.deb` is only an example. List the package generated by your build and install that exact file:
+The TrustCore build script accepts the options above. `--pkcs11-dynamic` enables TAP and dynamic PKCS#11 loading; for this mode, configure the PKCS#11 shared-library path in `modulelibpath`. Use the standard build prerequisites documented for the matching TrustCore checkout. The script copies the generated Debian package to `dist/`. List the package generated by your build and install that exact file:
 
 ```bash
 ls -1 dist/*.deb
 sudo dpkg -i dist/<GENERATED-TRUSTEDGE-PACKAGE>.deb
 ```
 
-#### 5. Generate RSA and ECC keys
+#### 9. Generate RSA and ECC keys
 
 The checked-in CLI help documents `--tap`, `--tap-provider`, `--tap-modnum`, `--algorithm`, `--size`, `--curve`, and `--output-file`. The following commands use the algorithm and curve capitalization shown by that help:
 
@@ -240,7 +263,7 @@ trustedge certificate \
   --log-level VERBOSE
 ```
 
-#### 6. Verify token objects
+#### 10. Verify token objects
 
 List slots with OpenSC and identify the slot **index** corresponding to the initialized token label. This index is not necessarily the slot ID shown by SoftHSM2:
 
@@ -260,21 +283,9 @@ Replace the example slot index `0` with the index for the intended token from `-
 #### Troubleshooting
 
 - **Library not found:** Check the package's installed files with `dpkg -L libsofthsm2 | grep '/libsofthsm2\.so$'`, then use the resolved path for `PKCS11_MODULE` and `modulelibpath`.
+- **Helper tools not found:** Confirm `<HELPER-TOOLS-PACKAGE>` is installed and run `command -v smp_pkcs11_getslotdesc_bin smp_pkcs11_getmoduleidstr_bin`; otherwise run the tools from their installed location.
 - **Token or slot not found:** Run `softhsm2-util --show-slots` and `pkcs11-tool --module "$PKCS11_MODULE" --list-slots`; check `SOFTHSM2_CONF` if using a nondefault configuration file.
-- **Wrong module or slot selection:** Confirm `--tap-modnum` against the TrustEdge module configuration. Separately select the intended PKCS#11 slot index for `pkcs11-tool`; do not treat it as the TrustEdge module number or SoftHSM2 slot ID.
-- **`moduleidstr` mismatch:** A debug build may report `PKCS11_createModuleList: Module ID string check failed` when the configured identifier does not match the module identifier. A non-debug build may omit the diagnostic and identifier values, even with `--log-level VERBOSE`; their absence does not prove that the configured identifier matches. A debug build may print the mismatch and still continue to generate a key, so verify that the intended token was used.
-
-  In the debug output for the example in this guide, `Slot 0 moduleidstr` is `f5e073310b951737496c41e1da51cdfc245894b3507c175840793964ec80da39`, while `DeviceID string set to` reports `abcd73310b951737496c41e1da51cdfc245894b3507c175840793964ec80da39`. Use the `Slot 0 moduleidstr` value for `/etc/digicert/pkcs11_smp.conf`; do not substitute the separate `DeviceID` diagnostic.
-
-  To inspect these values, rebuild from the matching TrustCore checkout with debug support:
-
-  ```bash
-  ./scripts/ci/trustedge/ci_trustedge_build.sh \
-    --gdb --debug-all --monolithic --package \
-    --cvc --proxy --pqc --pqc-composite \
-    --enable-pc --pkcs11-dynamic
-  ```
-
-  Rerun the TrustEdge operation and inspect the debug output for `Slot 0 moduleidstr`; use the value reported for your token in `/etc/digicert/pkcs11_smp.conf`.
+- **Wrong module or slot selection:** Confirm `--tap-modnum` matches `modulenum` in `/etc/digicert/pkcs11_smp.conf`. Separately, confirm the intended token is at slot index `0`, which TrustEdge uses by default; do not treat the slot index as the TrustEdge module number or SoftHSM2 slot ID.
+- **`modulename` or `moduleidstr` mismatch:** Re-run both helper tools from step 5 and compare their output for the intended slot with `/etc/digicert/pkcs11_smp.conf`. Values from another token or installation will not match.
 - **Login or credentials failure:** Recheck the initialized token and user PIN, the credentials file format and access for the TrustEdge runtime account, and the provider instructions for the installed build. Do not print PINs to logs or expose production PINs in command arguments.
 - **Objects not visible:** Confirm `PKCS11_MODULE`, the selected token label/slot index, and `SOFTHSM2_CONF`; then rerun the object listing against that token. If key generation fails, verify the TrustEdge build and module configuration against the matching provider documentation rather than changing unverified identifiers.
