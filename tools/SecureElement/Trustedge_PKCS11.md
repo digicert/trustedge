@@ -9,18 +9,36 @@ SoftHSM2 provides a software PKCS#11 token for development and testing. It does 
 On Ubuntu, install SoftHSM2 and OpenSC:
 
 ```bash
-sudo apt install opensc softhsm2 libsofthsm2
+sudo apt install opensc softhsm2 libsofthsm2 unzip
 ```
 
 `opensc` provides `pkcs11-tool`, which is used below to inspect the token.
 
-The helper tools `smp_pkcs11_getslotdesc_bin` and `smp_pkcs11_getmoduleidstr_bin` are delivered in a helper-tools package. Install `<HELPER-TOOLS-PACKAGE>` using the instructions supplied with it, then confirm the tools are available:
+The helper tools `smp_pkcs11_getslotdesc_bin` and `smp_pkcs11_getmoduleidstr_bin` are provided in the following archives in `tools/SecureElement`:
+
+- `trustedge_pkcs11_tools-aarch64-26.6.3-801.zip`: 64-bit ARM.
+- `trustedge_pkcs11_tools-arm32-26.6.3-801.zip`: 32-bit ARM.
+- `trustedge_pkcs11_tools-x86_64-26.6.3-801.zip`: 64-bit x86.
+
+Check your system architecture with `uname -m`, then set `ARCH` to the matching package suffix (`aarch64`, `arm32`, or `x86_64`). From the repository root, extract both the selected archive and the ZIP inside it into a new directory, then add its `bin` directory to the current shell's `PATH`:
 
 ```bash
-command -v smp_pkcs11_getslotdesc_bin smp_pkcs11_getmoduleidstr_bin
+ARCH=x86_64 # Replace with the suffix for your system
+TOOLS_DIR="$HOME/trustedge-pkcs11-tools-$ARCH"
+mkdir -p "$TOOLS_DIR"
+unzip "tools/SecureElement/trustedge_pkcs11_tools-$ARCH-26.6.3-801.zip" -d "$TOOLS_DIR"
+unzip "$TOOLS_DIR/trustedge_pkcs11_tools-$ARCH.zip" -d "$TOOLS_DIR"
+export PATH="$TOOLS_DIR/bin:$PATH"
 ```
 
-If the command prints nothing, run the tools from the directory where the package installed them.
+Use a new or empty destination directory to avoid overwriting existing files. Confirm that both tools are available:
+
+```bash
+command -v smp_pkcs11_getslotdesc_bin
+command -v smp_pkcs11_getmoduleidstr_bin
+```
+
+If either command prints nothing, check the extraction directory and `PATH`.
 
 #### 2. Configure SoftHSM2
 
@@ -298,7 +316,7 @@ Replace the example slot index `0` with the index for the intended token from `-
 #### Troubleshooting
 
 - **Library not found:** Check the package's installed files with `dpkg -L libsofthsm2 | grep '/libsofthsm2\.so$'`, then use the resolved path for `PKCS11_MODULE` and `modulelibpath`.
-- **Helper tools not found:** Confirm `<HELPER-TOOLS-PACKAGE>` is installed and run `command -v smp_pkcs11_getslotdesc_bin smp_pkcs11_getmoduleidstr_bin`; otherwise run the tools from their installed location.
+- **Helper tools not found:** Confirm the appropriate archive was extracted and its `bin` directory is in `PATH` (see step 1).
 - **`-6000` (`ERR_GENERAL`):** Check that `SOFTHSM2_CONF` points to an existing, readable SoftHSM2 configuration and that its `directories.tokendir` is writable by the account running the command (see step 2).
 - **Token or slot not found:** Run `softhsm2-util --show-slots` and `pkcs11-tool --module "$PKCS11_MODULE" --list-slots`; check `SOFTHSM2_CONF` if using a nondefault configuration file.
 - **Wrong module or slot selection:** Confirm `--tap-modnum` matches `modulenum` in `/etc/digicert/pkcs11_smp.conf`. Separately, confirm the intended token is at slot index `0`, which TrustEdge uses by default; do not treat the slot index as the TrustEdge module number or SoftHSM2 slot ID.
