@@ -1,19 +1,28 @@
 # TrustEdge PKCS#11 Setup with SoftHSM2
 
-### SoftHSM2 (PKCS#11 software token)
+This guide sets up a SoftHSM2 software token as a PKCS#11 provider for TrustEdge on Ubuntu. Its commands use `apt` and `dpkg`; commands for other distributions differ and are not covered.
+
+In summary, this guide covers:
+
+- Installing the prerequisites and the TrustCore and TrustEdge sources (step 1).
+- Building and installing TrustEdge with PKCS#11 support (step 2).
+- Installing the helper tools for your architecture (x86_64, 64-bit ARM, or 32-bit ARM) (step 3).
+- Configuring SoftHSM2 and initializing a token (steps 4 and 5).
+- Configuring the TrustEdge PKCS#11 module and credentials (steps 6 to 9).
+- Generating and verifying RSA and ECC keys (steps 10 and 11).
 
 SoftHSM2 provides a software PKCS#11 token for development and testing. It does not provide the physical security properties of a hardware HSM. Use only disposable test credentials; do not use production PINs or other production credentials in this setup.
 
-#### 1. Install prerequisites
+## 1. Install prerequisites
 
-On Ubuntu, install SoftHSM2, OpenSC, unzip, Python 3, and the tools needed to build TrustEdge from the TrustCore checkout:
+On Ubuntu, install SoftHSM2, OpenSC, unzip, Python 3, git, and the tools needed to build TrustEdge:
 
 ```bash
 sudo apt update
-sudo apt install -y opensc softhsm2 libsofthsm2 unzip python3 build-essential cmake rpm
+sudo apt install -y opensc softhsm2 libsofthsm2 unzip python3 git build-essential cmake rpm
 ```
 
-`opensc` provides `pkcs11-tool`, which is used below to inspect the token. `unzip` extracts the helper-tools archives (step 3), `python3` runs the credentials example (step 9), and `build-essential`, `cmake`, and `rpm` are used to build TrustEdge (step 2).
+`opensc` provides `pkcs11-tool`, which is used below to inspect the token. `unzip` extracts the helper-tools archives (step 3), `python3` runs the credentials example (step 9), `git` clones the repositories below, and `build-essential`, `cmake`, and `rpm` are used to build TrustEdge (step 2).
 
 This guide uses two checkouts:
 
@@ -30,7 +39,7 @@ export TRUSTCORE_DIR="$HOME/trustcore"
 
 If you already have these checkouts, skip the `git clone` lines and set the two variables to their paths.
 
-#### 2. Build and install TrustEdge with PKCS#11 support
+## 2. Build and install TrustEdge with PKCS#11 support
 
 Run the build from the root of the TrustCore checkout:
 
@@ -70,7 +79,14 @@ Log out and log back in to activate the new group membership. Then confirm your 
 id -nG | tr ' ' '\n' | grep -x trustedge
 ```
 
-#### 3. Install the helper tools
+Logging out ends your shell session, so the variables from step 1 are no longer set. Set them again in the new session (adjust the paths if you cloned elsewhere):
+
+```bash
+export TRUSTEDGE_REPO="$HOME/trustedge"
+export TRUSTCORE_DIR="$HOME/trustcore"
+```
+
+## 3. Install the helper tools
 
 The helper tools `smp_pkcs11_getslotdesc_bin` and `smp_pkcs11_getmoduleidstr_bin` are provided in the following archives in `tools/SecureElement` of the TrustEdge repository:
 
@@ -118,7 +134,7 @@ command -v smp_pkcs11_getmoduleidstr_bin
 
 Each command prints the full path to the tool, inside `$TOOLS_DIR/bin`. If either command prints nothing, check the extraction directory and `PATH`.
 
-#### 4. Configure SoftHSM2
+## 4. Configure SoftHSM2
 
 The default SoftHSM2 configuration file is `/etc/softhsm/softhsm2.conf`. To use a different file, select it for the current shell:
 
@@ -126,7 +142,7 @@ The default SoftHSM2 configuration file is `/etc/softhsm/softhsm2.conf`. To use 
 export SOFTHSM2_CONF=/path/to/softhsm2.conf
 ```
 
-`SOFTHSM2_CONF` must point to a readable SoftHSM2 configuration whose `directories.tokendir` is writable. If the file is missing or unreadable, the tools fail with `-6000` (`ERR_GENERAL`).
+`SOFTHSM2_CONF` must point to a readable SoftHSM2 configuration whose `directories.tokendir` is writable. If the file is missing or unreadable, `trustedge` fails with `-6000` (`ERR_GENERAL`).
 
 Every account that runs `softhsm2-util`, `pkcs11-tool`, or TrustEdge must be able to read the configuration file and write to the token directory it names. Use the same `SOFTHSM2_CONF` for all of them, because a different file can select a different token store. Run the following checks with the account that will run the command. They verify that:
 
@@ -143,7 +159,7 @@ test -d "$TOKENDIR" && test -w "$TOKENDIR" && echo "token directory writable: $T
 
 Each check prints a confirmation only on success; if a line is missing, that check failed. Grant access through ownership or group membership; do not make the directory world-writable.
 
-**Optional: use an isolated development token store**
+### Optional: use an isolated development token store
 
 To keep test tokens separate from the system-wide token store, create a dedicated token directory and SoftHSM2 configuration file. The heredoc expands `$HOME` when it writes the file. It replaces any existing configuration at this path:
 
@@ -175,7 +191,7 @@ export SOFTHSM2_CONF="$HOME/softhsm-test/softhsm2.conf"
 
 If TrustEdge runs as a different account, grant that account the access it needs to both the configuration file and the token directory. Do not make either world-writable.
 
-#### 5. Initialize a token
+## 5. Initialize a token
 
 List the available tokens and slots:
 
@@ -183,19 +199,19 @@ List the available tokens and slots:
 softhsm2-util --show-slots
 ```
 
-Initialize a token in an available slot, replacing the placeholders with a test label and test-only PINs:
+Initialize a token in the default slot, replacing the placeholders with a test label and test-only PINs. This guide assumes SoftHSM2 was freshly installed, so slot `0` is available:
 
 ```bash
-softhsm2-util --init-token --slot <SLOT_ID> \
+softhsm2-util --init-token --slot 0 \
   --label '<TEST_TOKEN_LABEL>' \
   --so-pin '<TEST_SO_PIN>' --pin '<TEST_USER_PIN>'
 ```
 
-Use the slot ID reported by `softhsm2-util`. SoftHSM2 may assign a different slot ID after token initialization, so run `softhsm2-util --show-slots` again and note the initialized token's slot ID.
+SoftHSM2 may assign a different slot ID after token initialization, so run `softhsm2-util --show-slots` again and note the initialized token's slot ID.
 
 This command supplies PINs as command-line arguments. Do not replace these placeholders with production PINs or store real PINs in shell history, scripts, or logs. Follow the input-protection guidance for the SoftHSM2 version in use.
 
-#### 6. Locate the PKCS#11 library
+## 6. Locate the PKCS#11 library
 
 Locate the installed library:
 
@@ -212,7 +228,7 @@ test -r "$PKCS11_MODULE" && echo "library readable: $PKCS11_MODULE"
 
 `PKCS11_MODULE` is used by `pkcs11-tool` and the helper tools in this guide. The TrustEdge documentation does not establish that TrustEdge reads this variable; TrustEdge uses the `modulelibpath` field in `/etc/digicert/pkcs11_smp.conf`.
 
-#### 7. Get `modulename` and `moduleidstr`
+## 7. Get `modulename` and `moduleidstr`
 
 Run the helper tools against the library:
 
@@ -242,9 +258,9 @@ pkcs11-tool --module "$PKCS11_MODULE" --list-slots
 
 The slot index is distinct from the SoftHSM2 slot ID and from the TrustEdge `modulenum`.
 
-#### 8. Write `/etc/digicert/pkcs11_smp.conf`
+## 8. Write `/etc/digicert/pkcs11_smp.conf`
 
-Verify that `/etc/digicert` exists, then create or edit the file with an editor run as root, for example `sudoedit /etc/digicert/pkcs11_smp.conf`. Replace every angle-bracket placeholder with your own values:
+Verify that `/etc/digicert` exists, then create the file `/etc/digicert/pkcs11_smp.conf` with the following content. Replace every angle-bracket placeholder with your own values:
 
 ```ini
 providertype=13
@@ -270,14 +286,15 @@ moduleidstr=0e46a6975aeb8065f0c71ec953f02cb105eabac2705a93341ddd284a3d2f5217
 credfile=default_creds.pkcs11
 ```
 
-Set the owner and group to the TrustEdge runtime account, then check the result:
+Make the file readable and writable by the `trustedge` user, and readable by the `trustedge` group, then check the result:
 
 ```bash
 sudo chown trustedge:trustedge /etc/digicert/pkcs11_smp.conf
+sudo chmod 640 /etc/digicert/pkcs11_smp.conf
 ls -l /etc/digicert/pkcs11_smp.conf
 ```
 
-`chown` changes ownership but not permissions; make sure the `trustedge` user can read the file.
+The listing should show owner and group `trustedge` and mode `-rw-r-----`. Do not give other users access, and never make the file world-writable: it names the library that TrustEdge loads (`modulelibpath`).
 
 The configuration fields are:
 
@@ -288,7 +305,7 @@ The configuration fields are:
 - A relative `credfile` is resolved relative to `/etc/digicert/pkcs11_smp.conf`, so `default_creds.pkcs11` refers to `/etc/digicert/default_creds.pkcs11`.
 - `modulenum` is the TrustEdge module identifier selected by `--tap-modnum`. This guide uses `modulenum=1` with `--tap-modnum 1`. It is not a SoftHSM2 slot ID or a `pkcs11-tool` slot index.
 
-#### 9. Configure PKCS#11 credentials
+## 9. Configure PKCS#11 credentials
 
 TrustCore provides `projects/mocpkcs11_tools/provision/pkcs11_provision_linux.sh` and `projects/mocpkcs11_tools/provision/pkcs11_prov.conf.tmpl`. The script's `DEFAULT_CREDS` template represents entity credentials in the TrustCore credential-file format; the token user PIN is substituted into it before the file is written.
 
@@ -341,17 +358,22 @@ The listing should show owner and group `trustedge` and mode `-rw-r-----`.
 
 Base64 is encoding, not encryption. Do not put a real PIN in shell history, enable verbose provisioning with a real PIN, or print decoded credentials to a terminal or log.
 
-#### 10. Generate RSA and ECC keys
+## 10. Generate RSA and ECC keys
 
-The TrustEdge service runs as a daemon, and an interactive `trustedge` command run by a user can conflict with it. Stop the service before running the commands below. This interrupts the service until you start it again at the end of step 11.
+The TrustEdge service runs as a daemon, and an interactive `trustedge` command run by a user can conflict with it. Stop the service before running the commands below. This guide runs TrustEdge interactively, so it does not start the service again.
 
 ```bash
 sudo systemctl stop trustedge.service
 ```
 
-The checked-in CLI help documents `--tap`, `--tap-provider`, `--tap-modnum`, `--algorithm`, `--size`, `--curve`, and `--output-file`. The following commands use the algorithm and curve capitalization shown by that help:
+The following sample commands generate an RSA 2048-bit key and an ECC P-256 key in the SoftHSM2 token through the PKCS#11 provider. Use the algorithm and curve names exactly as shown.
 
-RSA:
+- `--tap --tap-provider PKCS11` generates the key through the PKCS#11 provider.
+- `--tap-modnum 1` selects the module configured with `modulenum=1` in `/etc/digicert/pkcs11_smp.conf`.
+- `--algorithm`, `--size` (RSA), and `--curve` (ECC) select the key type.
+- `--output-file` is the name of the output file for the generated key.
+
+Sample command to generate an RSA key:
 
 ```bash
 trustedge certificate \
@@ -361,7 +383,7 @@ trustedge certificate \
   --log-level VERBOSE
 ```
 
-ECC:
+Sample command to generate an ECC key:
 
 ```bash
 trustedge certificate \
@@ -371,7 +393,7 @@ trustedge certificate \
   --log-level VERBOSE
 ```
 
-A successful run ends with output similar to the following (abridged, from an RSA run):
+A successful RSA run prints output similar to the following (the exact lines can vary between TrustEdge versions):
 
 ```text
 [TRUSTEDGE-CERTIFICATE] VERBOSE: Certificate mode running
@@ -382,9 +404,11 @@ VERBOSE: Writing private/public key pair to file rsa_key_2048 in PEM form...
 [TRUSTEDGE-CERTIFICATE] VERBOSE: Key generated successfully
 ```
 
-The output file is written in the directory `/etc/digicert/keystore/keys/`.
+If the output ends with an `ERROR` line instead, such as `ERR_NOT_IMPLEMENTED (-6017)` or `-6000`, see [Troubleshooting](#troubleshooting).
 
-#### 11. Verify token objects
+`--output-file` is a file name, not a path. The key pair is written to the keystore directory `/etc/digicert/keystore/keys/`, which the `trustedge` group can write to (this is why step 2 adds your user to that group).
+
+## 11. Verify token objects
 
 List slots with OpenSC and identify the slot **index** corresponding to the initialized token label. This index is not necessarily the slot ID shown by SoftHSM2:
 
@@ -401,15 +425,15 @@ pkcs11-tool --module "$PKCS11_MODULE" \
 
 Replace the example slot index `0` with the index for the intended token from `--list-slots`. Review the listed object types and labels/IDs to identify the expected RSA and ECC objects. Public-key objects contain public key data; private-key objects represent private keys; certificate objects represent certificates. Listing objects reports metadata and does not require exporting private-key material. Confirm the slot belongs to the intended token by matching the token label from `--list-slots` with the label from `softhsm2-util --show-slots`. Object presence confirms only that objects are listed in that token; it does not by itself prove persistence across restarts, non-exportability, or hardware protection.
 
-#### Troubleshooting
+## Troubleshooting
 
 - **Library not found:** Check the package's installed files with `dpkg -L libsofthsm2 | grep '/libsofthsm2\.so$'`, then use the resolved path for `PKCS11_MODULE` and `modulelibpath`.
 - **Helper tools not found:** Confirm the appropriate archive was extracted and its `bin` directory is in `PATH` (see step 3).
-- **`-6000` (`ERR_GENERAL`):** Check that `SOFTHSM2_CONF` points to an existing, readable SoftHSM2 configuration and that its `directories.tokendir` is writable by the account running the command (see step 4).
+- **`-6000` (`ERR_GENERAL`) from `trustedge`:** Check that `SOFTHSM2_CONF` points to an existing, readable SoftHSM2 configuration and that its `directories.tokendir` is writable by the account running the command (see step 4).
 - **Token or slot not found:** Run `softhsm2-util --show-slots` and `pkcs11-tool --module "$PKCS11_MODULE" --list-slots`; check `SOFTHSM2_CONF` if using a nondefault configuration file.
 - **Wrong module or slot selection:** Confirm `--tap-modnum` matches `modulenum` in `/etc/digicert/pkcs11_smp.conf`. Separately, confirm the intended token is at slot index `0`, which TrustEdge uses by default; do not treat the slot index as the TrustEdge module number or SoftHSM2 slot ID.
 - **`modulename` or `moduleidstr` mismatch:** Re-run both helper tools from step 7 and compare their output for the intended slot with `/etc/digicert/pkcs11_smp.conf`. Values from another token or installation will not match.
-- **`ERR_NOT_IMPLEMENTED (-6017)` during key generation:** A missing, incorrectly generated, or unreadable credentials file may cause `Unable to generate key, error code = ERR_NOT_IMPLEMENTED (-6017)`. Check `credfile` in `/etc/digicert/pkcs11_smp.conf`, then confirm the TrustEdge account can read both files (each command prints `readable` on success):
+- **`ERR_NOT_IMPLEMENTED (-6017)` during key generation:** A missing, incorrectly generated, or unreadable credentials file may cause `Unable to generate key, error code = ERR_NOT_IMPLEMENTED (-6017)`. Check `credfile` in `/etc/digicert/pkcs11_smp.conf`, then confirm that both files are readable as your user, which is in the `trustedge` group (each command prints `readable` on success):
 
   ```bash
   test -r /etc/digicert/pkcs11_smp.conf && echo readable
