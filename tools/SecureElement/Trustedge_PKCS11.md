@@ -272,6 +272,20 @@ ls -1 dist/*.deb
 sudo dpkg -i dist/<GENERATED-TRUSTEDGE-PACKAGE>.deb
 ```
 
+Add your user to the `trustedge` group:
+
+```bash
+sudo adduser "$(whoami)" trustedge
+```
+
+Log out and log back in to activate the new group membership. Restore any environment variables set in earlier steps, including `SOFTHSM2_CONF` and `PKCS11_MODULE` if used.
+
+Stop the TrustEdge service before trying the commands below. This interrupts the service until it is started again.
+
+```bash
+sudo systemctl stop trustedge.service
+```
+
 #### 9. Generate RSA and ECC keys
 
 The checked-in CLI help documents `--tap`, `--tap-provider`, `--tap-modnum`, `--algorithm`, `--size`, `--curve`, and `--output-file`. The following commands use the algorithm and curve capitalization shown by that help:
