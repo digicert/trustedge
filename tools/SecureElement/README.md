@@ -31,13 +31,39 @@ The `tpm2_tools` package is available for multiple platforms to ensure portabili
 
 For a fuller TPM2 local integration-test example, see the [NanoSSL TAP local integration workflow](https://github.com/digicert/trustcore/blob/main/.github/workflows/nanossl_tap_local_integration_test.yml). It uses an isolated software TPM, provisions it with the bundle in this repository, checks the resulting TPM configuration and device permissions, and then runs an EST/TAP integration test. The workflow's automated setup is for a disposable test TPM; do not copy its reset/clear steps onto a pre-owned device.
 
-The CLI must be built or packaged with the provider required by the device. Provider support depends on the TrustEdge build; confirm it before testing:
+Each TrustEdge build includes one TAP module at a time. TAP modules are mutually exclusive, so build or package a separate TrustEdge CLI for each module you need to use. Check which module is included by running:
 
 ```bash
 trustedge certificate --help
 ```
 
-The help output should list `PKCS11` or `TPM2` for `--tap-provider`. The `--tap` option enables TAP key generation through the selected provider, `--tap-provider` selects the configured provider, and `--tap-modnum` selects the TAP module (default: `1`). Key storage and protection depend on the provider and its configuration.
+The `--tap` description identifies the hardware-backed key type for that build. For example:
+
+**TPM2 build**
+
+```text
+-t, --tap                [Optional] Generate a hardware-based TPM2 TAP key
+```
+
+**PKCS11 build**
+
+```text
+-t, --tap                [Optional] Generate a hardware-based PKCS11 TAP key
+```
+
+**NanoROOT build**
+
+```text
+-t, --tap                [Optional] Generate a hardware-based NanoROOT TAP key
+```
+
+**TEE build**
+
+```text
+-t, --tap                [Optional] Generate a hardware-based TEE TAP key
+```
+
+The `--tap` option enables TAP key generation through the selected provider, `--tap-provider` selects the configured provider, and `--tap-modnum` selects the TAP module (default: `1`). Key storage and protection depend on the provider and its configuration.
 
 ### PKCS#11 device (for example, NXP)
 
